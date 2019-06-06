@@ -11,7 +11,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * @author c2090
  * @date 2019/06/05
  */
 @RunWith(AndroidJUnit4::class)
