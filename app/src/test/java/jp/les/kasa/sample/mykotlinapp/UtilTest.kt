@@ -1,10 +1,9 @@
 package jp.les.kasa.sample.mykotlinapp
 
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 
 /**
- * @author c2090
  * @date 2019/06/05
  */
 class UtilTest {
