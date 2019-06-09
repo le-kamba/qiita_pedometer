@@ -37,6 +37,7 @@ class MainActivityTest {
 
     @Test
     fun inputDialogFragmentShown() {
+        // Robolectricのバグか、DialogのテストはEspressoで行えない
         val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
         assertThat(dialog).isNotNull()
 
@@ -52,6 +53,7 @@ class MainActivityTest {
 
     @Test
     fun inputStep() {
+        // Robolectricのバグか、DialogのテストはEspressoで行えない
         val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
         assertThat(dialog.isShowing).isTrue()
 
@@ -61,6 +63,7 @@ class MainActivityTest {
 
         assertThat(dialog.isShowing).isFalse()
 
+        // Dialogが消えた後なのでEspressoでテスト可
         onView(ViewMatchers.withId(R.id.textView)).check(matches(withText("12345")))
     }
 }
