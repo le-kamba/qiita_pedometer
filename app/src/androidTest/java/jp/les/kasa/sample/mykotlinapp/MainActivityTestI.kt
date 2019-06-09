@@ -44,7 +44,7 @@ class MainActivityTestI {
         onView(withText(R.string.resist)).perform(click())
 
         onView(withText(R.string.label_input_title)).check(doesNotExist())
-//        onView(withId(R.id.textView)).check(matches(withText("12345")))
+        onView(withText("12345")).check(matches(isDisplayed()))
     }
 
     @Test
