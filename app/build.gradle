@@ -52,4 +52,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     testImplementation "android.arch.core:core-testing:$lifecycle_version"
+
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha06'
 }

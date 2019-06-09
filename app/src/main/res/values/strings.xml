@@ -5,4 +5,7 @@
     <string name="label_step">歩</string>
     <string name="hint_edit_step">歩数を入力</string>
     <string name="resist">登録</string>
+    <string name="menu_label_add_record">記録を追加</string>
+    <string name="label_log_prefix">この日は</string>
+    <string name="label_log_suffix">歩 歩きました</string>
 </resources>
