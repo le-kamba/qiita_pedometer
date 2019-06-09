@@ -102,8 +102,7 @@ class MainActivityTestI {
             )
     }
 
-
-    fun atPositionOnView(
+    private fun atPositionOnView(
         position: Int, itemMatcher: Matcher<View>, targetViewId: Int
     ): Matcher<View> {
 
