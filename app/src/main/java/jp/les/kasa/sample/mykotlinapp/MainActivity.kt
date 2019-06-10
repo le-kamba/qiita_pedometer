@@ -6,6 +6,7 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         log_list.layoutManager = LinearLayoutManager(this)
         adapter = LogRecyclerAdapter(viewModel.stepCountList.value!!)
         log_list.adapter = adapter
+        // 区切り線を追加
+        val decor = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        log_list.addItemDecoration(decor)
 
         InputDialogFragment().show(supportFragmentManager, INPUT_TAG)
     }
