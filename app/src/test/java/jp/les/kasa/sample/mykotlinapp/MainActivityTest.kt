@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -74,6 +75,21 @@ class MainActivityTest {
         onView(
             Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
         ).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun addRecordMenu() {
+        Espresso.pressBack()
+
+        onView(
+            Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
+        ).perform(ViewActions.click())
+
+        // Robolectricのバグか、DialogのテストはEspressoで行えない
+        val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
+        assertThat(dialog.isShowing).isTrue()
+        assertThat(dialog.editStep).isNotNull()
+        assertThat(dialog.label_Title.text).isEqualTo(getString(R.string.label_input_title))
     }
 
     @Test
