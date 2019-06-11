@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_step_log.view.*
 
@@ -63,17 +64,17 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
-
 }
 
 
-class LogRecyclerAdapter(private var list: List<Int>) : RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
+class LogRecyclerAdapter(private var list: List<StepCountLog>) :
+    RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val rowView = LayoutInflater.from(parent.context).inflate(R.layout.item_step_log, parent, false)
         return LogViewHolder(rowView)
     }
 
-    fun setList(newList: List<Int>) {
+    fun setList(newList: List<StepCountLog>) {
         list = newList
         notifyDataSetChanged()
     }
@@ -82,10 +83,18 @@ class LogRecyclerAdapter(private var list: List<Int>) : RecyclerView.Adapter<Log
 
 
     override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
-        holder.textCount.text = if (position < list.size) list[position].toString() else ""
+        if (position >= list.size) return
+        val stepCountLog = list[position]
+        holder.textCount.text = stepCountLog.step.toString()
+        holder.textDate.text = stepCountLog.date
+        holder.level.setImageResource(stepCountLog.level.drawableRes)
+        holder.weather.setImageResource(stepCountLog.weather.drawableRes)
     }
 
     class LogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textCount = itemView.stepTextView!!
+        val textDate = itemView.dateTextView!!
+        val level = itemView.levelImageView!!
+        val weather = itemView.weatherImageView!!
     }
 }

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".IconPreviewActivity">
+
+    <TextView
+            android:text="レベル用"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="24sp"/>
+    <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_sentiment_neutral_green_24dp"
+                />
+                <TextView
+                        android:text="ic_sentiment_neutral_green_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_sentiment_very_satisfied_pink_24dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_sentiment_very_satisfied_pink_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_sentiment_dissatisfied_black_24dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_sentiment_dissatisfied_black_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+    <TextView
+            android:text="天気用"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="24sp" android:layout_marginTop="16dp"/>
+    <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_wb_sunny_yellow_24dp"
+                />
+                <TextView
+                        android:text="ic_wb_sunny_yellow_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_cloud_gley_24dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_cloud_gley_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_iconmonstr_umbrella_1"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_iconmonstr_umbrella_1.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+        </TableRow>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_flare_red_24dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_flare_red_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_iconmonstr_weather_64"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_iconmonstr_weather_64.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_grain_gley_24dp"
+                        android:layout_weight="1"/>
+                <TextView
+                        android:text="ic_grain_gley_24dp.xml"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="12sp" android:textAlignment="center"/>
+            </LinearLayout>
+        </TableRow>
+
+    </TableLayout>
+</LinearLayout>
