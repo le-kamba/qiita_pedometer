@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_weathers">
+        <item>晴れ</item>
+        <item>雨</item>
+        <item>曇り</item>
+        <item>雪</item>
+        <item>寒い</item>
+        <item>暑い</item>
+    </string-array>
+</resources>

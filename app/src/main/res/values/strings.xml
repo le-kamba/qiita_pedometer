@@ -3,9 +3,20 @@
 
     <string name="label_input_title">今日は何歩歩いた？</string>
     <string name="label_step">歩</string>
+    <string name="label_step_count">歩数</string>
     <string name="hint_edit_step">歩数を入力</string>
     <string name="resist">登録</string>
     <string name="menu_label_add_record">記録を追加</string>
     <string name="label_log_prefix">この日は</string>
     <string name="label_log_suffix">歩 歩きました</string>
+
+    <string name="title_activity_log_item">LogItemActivity</string>
+
+    <string name="level_normal">普通</string>
+    <string name="level_good">頑張った</string>
+    <string name="level_bad">悪い</string>
+    <string name="label_date">日付</string>
+    <string name="label_select_date">日付を選ぶ</string>
+    <string name="label_level">気分</string>
+    <string name="label_weather">天気</string>
 </resources>

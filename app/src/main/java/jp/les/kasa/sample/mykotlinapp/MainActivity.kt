@@ -1,5 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
@@ -20,7 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val INPUT_TAG = "input_dialog"
+        const val REQUEST_CODE_LOGITEM = 100
     }
 
     lateinit var viewModel: MainViewModel
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         val decor = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         log_list.addItemDecoration(decor)
 
-        InputDialogFragment().show(supportFragmentManager, INPUT_TAG)
+//        InputDialogFragment().show(supportFragmentManager, INPUT_TAG)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -57,7 +59,8 @@ class MainActivity : AppCompatActivity() {
         item?.let {
             return when (it.itemId) {
                 R.id.add_record -> {
-                    InputDialogFragment().show(supportFragmentManager, INPUT_TAG)
+                    val intent = Intent(this, LogItemActivity::class.java)
+                    startActivityForResult(intent, REQUEST_CODE_LOGITEM)
                     true
                 }
                 else -> false
