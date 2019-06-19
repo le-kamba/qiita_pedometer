@@ -14,13 +14,13 @@ class LogItemActivity : AppCompatActivity() {
         setContentView(R.layout.activity_log_item)
         setSupportActionBar(toolbar)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, LogInputFragment.newInstance())
+                .replace(R.id.logitem_container, LogInputFragment.newInstance())
                 .commitNow()
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
