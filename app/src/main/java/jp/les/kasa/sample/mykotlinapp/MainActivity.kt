@@ -68,6 +68,27 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        when (requestCode) {
+            REQUEST_CODE_LOGITEM -> {
+                onNewStepCountLog(resultCode, data!!)
+                return
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun onNewStepCountLog(resultCode: Int, data: Intent) {
+        when (resultCode) {
+            RESULT_OK -> {
+                val log = data.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                viewModel.addStepCount(log)
+            }
+        }
+    }
 }
 
 

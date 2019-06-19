@@ -1,5 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
+import java.io.Serializable
+
 enum class LEVEL {
     NORMAL,
     GOOD,
@@ -20,4 +22,4 @@ data class StepCountLog(
     val step: Int,
     val level: LEVEL = LEVEL.NORMAL,
     val weather: WEATHER = WEATHER.FINE
-)
+) : Serializable
