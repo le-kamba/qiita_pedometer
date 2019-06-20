@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import java.util.*
 
 /**
  * ログアイテム表示画面用のViewModel
@@ -13,11 +14,18 @@ import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 class LogItemViewModel : ViewModel() {
 
     private val _stepCountLog = MutableLiveData<StepCountLog>()
+    private val _selectDate = MutableLiveData<Calendar>()
 
     val stepCountLog = _stepCountLog as LiveData<StepCountLog>
+    val selectDate = _selectDate as LiveData<Calendar>
 
     @UiThread
     fun changeLog(data: StepCountLog) {
         _stepCountLog.value = data
+    }
+
+    @UiThread
+    fun dateSelected(selectedDate: Calendar) {
+        _selectDate.value = selectedDate
     }
 }

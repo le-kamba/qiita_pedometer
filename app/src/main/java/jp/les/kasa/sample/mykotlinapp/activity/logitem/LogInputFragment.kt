@@ -6,29 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
+import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
+import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import java.util.*
 
 
-/**
- * A simple [Fragment] subclass.
- *
- */
 class LogInputFragment : Fragment() {
 
     companion object {
+        const val DATE_SELECT_TAG = "date_select"
+
         fun newInstance(): LogInputFragment {
             val f = LogInputFragment()
             return f
         }
     }
 
+    private val today = Calendar.getInstance().clearTime()
     lateinit var viewModel: LogItemViewModel
 
     override fun onCreateView(
@@ -39,16 +42,29 @@ class LogInputFragment : Fragment() {
         val contentView = inflater.inflate(R.layout.fragment_log_input, container, false)
 
         contentView.radio_group.check(R.id.radio_normal)
-        contentView.text_date.text = Calendar.getInstance().getDateStringYMD()
+
+        contentView.text_date.text = today.getDateStringYMD()
 
         contentView.button_resist.setOnClickListener {
-            val dateText = contentView.text_date.text.toString()
-            val stepCount = contentView.edit_count.text.toString().toInt()
-            val level = levelFromRadioId(contentView.radio_group.checkedRadioButtonId)
-            val weather = weatherFromSpinner(contentView.spinner_weather.selectedItemPosition)
+            validation()?.let {
+                val fgm = fragmentManager ?: return@setOnClickListener
+                ErrorDialog.Builder().message(it).create().show(fgm, null)
+                return@setOnClickListener
+            }
+
+            val dateText = text_date.text.toString()
+            val stepCount = edit_count.text.toString().toInt()
+            val level = levelFromRadioId(radio_group.checkedRadioButtonId)
+            val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
             val stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 
             viewModel.changeLog(stepCountLog)
+        }
+
+        // 日付を選ぶボタンで日付選択ダイアログを表示
+        contentView.button_date.setOnClickListener {
+            val fgm = fragmentManager ?: return@setOnClickListener // nullチェック
+            DateSelectDialogFragment().show(fgm, DATE_SELECT_TAG)
         }
 
         return contentView
@@ -57,6 +73,11 @@ class LogInputFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
+
+        // 日付の選択を監視
+        viewModel.selectDate.observe(this, Observer {
+            text_date.text = it.getDateStringYMD()
+        })
     }
 
     private fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
@@ -69,5 +90,19 @@ class LogInputFragment : Fragment() {
 
     private fun weatherFromSpinner(selectedItemPosition: Int): WEATHER {
         return WEATHER.values()[selectedItemPosition]
+    }
+
+    private fun validation(): Int? {
+        val selectDate = viewModel.selectDate.value?.clearTime()
+        if (today.before(selectDate)) {
+            // 今日より未来はNG
+            return R.string.error_validation_future_date
+        }
+        val stepCountText = edit_count.text.toString()
+        // ステップ数が1文字以上入力されていること
+        if (stepCountText.isNullOrEmpty()) {
+            return R.string.error_validation_empty_count
+        }
+        return null
     }
 }
