@@ -1,6 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import android.app.Activity
 import android.app.Instrumentation
+import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -13,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity.Companion.EXTRA_KEY_DATA
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
@@ -32,6 +35,8 @@ import org.junit.runner.RunWith
 class MainActivityTestI {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext!!
 
     @Test
     fun addRecordMenuIcon() {
@@ -100,4 +105,39 @@ class MainActivityTestI {
         // @formatter:on
     }
 
+    @Test
+    fun onActivityResult() {
+        val resultData = Intent().apply {
+            putExtra(EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
+        }
+
+        val monitor = Instrumentation.ActivityMonitor(
+            LogItemActivity::class.java.canonicalName, null, false
+        )
+        getInstrumentation().addMonitor(monitor)
+
+        // 登録画面を起動
+        onView(
+            Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
+        ).perform(click())
+
+        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
+        resultActivity.setResult(Activity.RESULT_OK, resultData)
+        resultActivity.finish()
+
+        // 反映を確認
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_grain_gley_24dp),R.id.weatherImageView)))
+            // @formatter:on
+
+    }
 }

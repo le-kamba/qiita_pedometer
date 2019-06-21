@@ -1,6 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import android.app.Activity
 import android.app.Instrumentation
+import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -19,6 +21,7 @@ import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
 
 /**
  * @date 2019/06/05
@@ -91,6 +94,38 @@ class MainActivityTest {
             .check(matches(atPositionOnView(index,
                         withDrawable(R.drawable.ic_iconmonstr_umbrella_1),R.id.weatherImageView)))
         // @formatter:on
+    }
+
+    @Test
+    fun onActivityResult() {
+        val resultData = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
+        }
+
+        // 登録画面を起動
+        onView(
+            Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
+        ).perform(click())
+
+        val activity = activityRule.activity
+        shadowOf(activity).receiveResult(
+            Intent(activity, LogItemActivity::class.java),
+            Activity.RESULT_OK, resultData
+        )
+
+        // 反映を確認
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_grain_gley_24dp),R.id.weatherImageView)))
+            // @formatter:on
     }
 
 }
