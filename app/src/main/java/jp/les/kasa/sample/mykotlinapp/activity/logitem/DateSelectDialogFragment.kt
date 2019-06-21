@@ -14,23 +14,33 @@ import java.util.*
  **/
 class DateSelectDialogFragment : DialogFragment() {
 
+    // CalendarViewで選択している日付の保存
     private val selectDate = Calendar.getInstance()
+
+    // CalendarView
+    lateinit var calendarView: CalendarView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
 
+        // AlertDialogで作成する
         val builder = AlertDialog.Builder(requireContext())
 
-        val calendarView = CalendarView(requireContext())
+        // CalendarViewのインスタンス生成
+        calendarView = CalendarView(requireContext())
+        // 初期値(今日)をセット
         calendarView.date = selectDate.timeInMillis
 
+        // 選択している日付が変わったときのイベントリスナー
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             selectDate.set(year, month, dayOfMonth)
         }
 
+        // AlertDialogのセットアップ
         builder.setView(calendarView)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
+                // ポジティブボタンでVieModelに最後に選択した日付をセット
                 viewModel.dateSelected(selectDate)
             }
         return builder.create()
