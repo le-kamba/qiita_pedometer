@@ -29,8 +29,8 @@ class MainViewModelTest {
 
     @Test
     fun addStepCount() {
-        viewModel.addStepCount(123)
-        viewModel.addStepCount(456)
+//        viewModel.addStepCount(123)
+//        viewModel.addStepCount(456)
 
         assertThat(viewModel.stepCountList.value)
             .isNotEmpty()

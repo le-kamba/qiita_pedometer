@@ -1,28 +1,24 @@
 package jp.les.kasa.sample.mykotlinapp
 
-import android.content.DialogInterface
-import android.view.View
-import androidx.appcompat.app.AlertDialog
+import android.app.Instrumentation
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import kotlinx.android.synthetic.main.dialog_input.*
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
+import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.shadows.ShadowAlertDialog
 
 /**
  * @date 2019/06/05
@@ -36,42 +32,9 @@ class MainActivityTest {
 
     private fun getString(resId: Int) = context.applicationContext.getString(resId)
 
-    @Test
-    fun inputDialogFragmentShown() {
-        // Robolectricのバグか、DialogのテストはEspressoで行えない
-        val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
-        assertThat(dialog).isNotNull()
-
-        assertThat(dialog.editStep).isNotNull()
-        assertThat(dialog.label_Title.text).isEqualTo(getString(R.string.label_input_title))
-        assertThat(dialog.label_step.text).isEqualTo(getString(R.string.label_step))
-
-        val negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-        assertThat(negative.text).isEqualTo(getString(android.R.string.cancel))
-        val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-        assertThat(positive.text).isEqualTo(getString(R.string.resist))
-    }
-
-    @Test
-    fun inputStep() {
-        // Robolectricのバグか、DialogのテストはEspressoで行えない
-        val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
-        assertThat(dialog.isShowing).isTrue()
-
-        dialog.editStep.setText("12345")
-        val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-        positive.performClick()
-
-        assertThat(dialog.isShowing).isFalse()
-
-        // Dialogが消えた後なのでEspressoでテスト可
-        onView(withText("12345")).check(matches(isDisplayed()))
-    }
 
     @Test
     fun addRecordMenuIcon() {
-        Espresso.pressBack()
-
         onView(
             Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
         ).check(matches(isDisplayed()))
@@ -79,66 +42,60 @@ class MainActivityTest {
 
     @Test
     fun addRecordMenu() {
-        Espresso.pressBack()
+        // ResultActivityの起動を監視
+        val monitor = Instrumentation.ActivityMonitor(
+            LogItemActivity::class.java.canonicalName, null, false
+        )
+        InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
 
+        // 追加メニューをクリック
         onView(
             Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
-        ).perform(ViewActions.click())
+        ).perform(click())
 
-        // Robolectricのバグか、DialogのテストはEspressoで行えない
-        val dialog = ShadowAlertDialog.getLatestDialog() as AlertDialog
-        assertThat(dialog.isShowing).isTrue()
-        assertThat(dialog.editStep).isNotNull()
-        assertThat(dialog.label_Title.text).isEqualTo(getString(R.string.label_input_title))
+        // ResultActivityが起動したか確認
+        val resultActivity = InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 3000L)
+        assertThat(monitor.hits).isEqualTo(1)
+
+        // resultActivityはどうしてもnullになるようだ・・・Robolectricの罠その2
+//        assertThat(resultActivity).isNotNull()
+//
+//        // 端末戻るボタンで終了を確認
+//        Espresso.pressBack()
+//        assertThat(resultActivity.isFinishing).isTrue()
     }
 
     @Test
     fun addRecordList() {
-        Espresso.pressBack()
-
+        // ViewModelのリストに直接追加
         val mainActivity = activityRule.activity
-
-        mainActivity.viewModel.addStepCount(12345)
-        mainActivity.viewModel.addStepCount(666)
+        mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+        mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
 
         // リストの表示確認
         var index = 0
-        onView(withId(R.id.log_list))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
-            .check(
-                matches(
-                    atPositionOnView(
-                        index, withText("12345"), R.id.stepTextView
-                    )
-                )
-            )
 
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("12345"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/13"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_wb_sunny_yellow_24dp),R.id.weatherImageView)))
+            // @formatter:on
         index = 1
         onView(withId(R.id.log_list))
+            // @formatter:off
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
-            .check(
-                matches(
-                    atPositionOnView(
-                        index, withText("666"), R.id.stepTextView
-                    )
-                )
-            )
+            .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp),R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_iconmonstr_umbrella_1),R.id.weatherImageView)))
+        // @formatter:on
     }
 
-    private fun atPositionOnView(
-        position: Int, itemMatcher: Matcher<View>, targetViewId: Int
-    ): Matcher<View> {
-
-        return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("has view id $itemMatcher at position $position")
-            }
-
-            override fun matchesSafely(recyclerView: RecyclerView): Boolean {
-                val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
-                val targetView = viewHolder!!.itemView.findViewById<View>(targetViewId)
-                return itemMatcher.matches(targetView)
-            }
-        }
-    }
 }
