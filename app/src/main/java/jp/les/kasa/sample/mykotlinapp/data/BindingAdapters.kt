@@ -16,8 +16,8 @@ import jp.les.kasa.sample.mykotlinapp.R
 fun setImageLevel(view: ImageView, level: LEVEL) {
     val res =
         when (level) {
-            LEVEL.BAD -> R.drawable.ic_sentiment_very_satisfied_pink_24dp
-            LEVEL.GOOD -> R.drawable.ic_sentiment_dissatisfied_black_24dp
+            LEVEL.GOOD -> R.drawable.ic_sentiment_very_satisfied_pink_24dp
+            LEVEL.BAD -> R.drawable.ic_sentiment_dissatisfied_black_24dp
             else -> R.drawable.ic_sentiment_neutral_green_24dp
         }
     view.setImageResource(res)
