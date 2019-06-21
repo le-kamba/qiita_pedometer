@@ -23,6 +23,7 @@ import java.util.*
 class LogInputFragment : Fragment() {
 
     companion object {
+        const val TAG = "LogInputFragment"
         const val DATE_SELECT_TAG = "date_select"
 
         fun newInstance(): LogInputFragment {
@@ -94,15 +95,21 @@ class LogInputFragment : Fragment() {
 
     private fun validation(): Int? {
         val selectDate = viewModel.selectDate.value?.clearTime()
-        if (today.before(selectDate)) {
-            // 今日より未来はNG
-            return R.string.error_validation_future_date
-        }
-        val stepCountText = edit_count.text.toString()
-        // ステップ数が1文字以上入力されていること
-        if (stepCountText.isNullOrEmpty()) {
-            return R.string.error_validation_empty_count
-        }
-        return null
+        return logInputValidation(today, selectDate, edit_count.text.toString())
     }
+}
+
+fun logInputValidation(
+    today: Calendar, selectDate: Calendar?,
+    stepCountText: String?
+): Int? {
+    if (today.before(selectDate)) {
+        // 今日より未来はNG
+        return R.string.error_validation_future_date
+    }
+    // ステップ数が1文字以上入力されていること
+    if (stepCountText.isNullOrEmpty()) {
+        return R.string.error_validation_empty_count
+    }
+    return null
 }

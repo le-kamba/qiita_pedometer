@@ -27,7 +27,7 @@ class LogItemActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.logitem_container, LogInputFragment.newInstance())
+                .replace(R.id.logitem_container, LogInputFragment.newInstance(), LogInputFragment.TAG)
                 .commitNow()
         }
 

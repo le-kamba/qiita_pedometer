@@ -66,4 +66,7 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha06'
+
+    androidTestImplementation("androidx.test:core:1.1.0")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.1.0-alpha03")
 }

@@ -49,4 +49,48 @@ class UtilTest {
         assertThat(cal.get(Calendar.SECOND)).isEqualTo(0)
         assertThat(cal.get(Calendar.MILLISECOND)).isEqualTo(0)
     }
+
+    @Test
+    fun getYear() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        assertThat(cal.getYear()).isEqualTo(2020)
+    }
+
+    @Test
+    fun getMonth() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        assertThat(cal.getMonth()).isEqualTo(9)
+    }
+
+    @Test
+    fun getDay() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        assertThat(cal.getDay()).isEqualTo(10)
+    }
+
+    @Test
+    fun addDay() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        val next = cal.addDay(1)
+        val prev = cal.addDay(-1)
+
+        assertThat(next.getDateStringYMD()).isEqualTo("2020/10/11")
+        assertThat(prev.getDateStringYMD()).isEqualTo("2020/10/09")
+    }
 }

@@ -28,11 +28,6 @@ class MainActivityTest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
 
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext!!
-
-    private fun getString(resId: Int) = context.applicationContext.getString(resId)
-
-
     @Test
     fun addRecordMenuIcon() {
         onView(

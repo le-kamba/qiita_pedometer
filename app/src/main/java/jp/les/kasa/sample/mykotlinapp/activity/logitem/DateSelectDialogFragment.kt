@@ -3,6 +3,7 @@ package jp.les.kasa.sample.mykotlinapp.activity.logitem
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.CalendarView
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
@@ -15,7 +16,8 @@ import java.util.*
 class DateSelectDialogFragment : DialogFragment() {
 
     // CalendarViewで選択している日付の保存
-    private val selectDate = Calendar.getInstance()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val selectDate = Calendar.getInstance()!!
 
     // CalendarView
     lateinit var calendarView: CalendarView

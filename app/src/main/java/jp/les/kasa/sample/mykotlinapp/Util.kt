@@ -29,3 +29,21 @@ fun Calendar.clearTime(): Calendar {
     return this
 }
 
+
+fun Calendar.getYear(): Int {
+    return get(Calendar.YEAR)
+}
+
+fun Calendar.getMonth(): Int {
+    return get(Calendar.MONTH)
+}
+
+fun Calendar.getDay(): Int {
+    return get(Calendar.DAY_OF_MONTH)
+}
+
+fun Calendar.addDay(addDayNum: Int): Calendar {
+    val newCal = this.clone() as Calendar
+    newCal.add(Calendar.DAY_OF_MONTH, addDayNum)
+    return newCal
+}
