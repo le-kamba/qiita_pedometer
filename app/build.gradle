@@ -74,6 +74,9 @@ dependencies {
     // permission
     implementation"com.github.hotchemi:permissionsdispatcher:3.3.1"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:3.3.1"
+
+    implementation("com.rmtheis:tess-two:9.0.0")
+    implementation("androidx.exifinterface:exifinterface:1.0.0")
 }
 
 apply plugin: 'com.google.gms.google-services'

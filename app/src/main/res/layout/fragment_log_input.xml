@@ -151,4 +151,13 @@
             app:layout_constraintStart_toEndOf="@+id/edit_count"
             android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="@+id/edit_count"/>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                 android:id="@+id/layout_ocr_progress" app:layout_constraintTop_toTopOf="parent"
+                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintBottom_toBottomOf="parent" android:background="#80313131"
+                 android:translationZ="2dp" android:visibility="invisible">
+
+        <ProgressBar android:layout_width="wrap_content" android:layout_height="wrap_content"
+                     android:layout_gravity="center"/>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,9 +2,9 @@ package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 
 import android.Manifest.permission
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Environment
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import com.googlecode.tesseract.android.TessBaseAPI
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.clearTime
@@ -27,7 +28,6 @@ import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
-import java.io.File
 import java.util.*
 
 @RuntimePermissions()
@@ -95,6 +95,26 @@ class LogInputFragment : Fragment() {
         viewModel.selectDate.observe(this, Observer {
             text_date.text = it.getDateStringYMD()
         })
+        // OCR結果文字列の確定を監視
+        viewModel.ocrResultText.observe(this, Observer {
+            showProgress(false)
+
+            OcrResultDialogFragment().show(fragmentManager!!, null)
+        })
+        // OCR画像の確定を監視
+        viewModel.ocrBitmapSource.observe(this, Observer {
+            showProgress(true)
+//            onCameraButtonMLKit(it)
+            onCameraButtonTessTwo(it)
+        })
+        // OCR結果文字列をInt型に変換した結果を監視
+        viewModel.ocrResultStepCount.observe(this, Observer {
+            edit_count.setText(it?.toString())
+        })
+    }
+
+    private fun showProgress(flag: Boolean) {
+        layout_ocr_progress?.visibility = if (flag) View.VISIBLE else View.INVISIBLE
     }
 
     private fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
@@ -116,36 +136,51 @@ class LogInputFragment : Fragment() {
 
     @NeedsPermission(permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE)
     internal fun onCameraButton() {
-        // ストレージから固定ファイルを読込
-        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-//        val file = File(dir, "Camera/IMG_20190622_165554.jpg")
-        val file = File(dir, "Camera/IMG_20190622_180008.jpg")
-//        val file = File(dir, "Camera/IMG_20190622_174454.jpg")
-//        val file = File(dir, "Camera/IMG_20190622_174413.jpg")
-        Log.d("MYOCR", "file=${file.absoluteFile}")
-        if (!file.exists()) return
+        // 取り敢えずストレージから固定ファイルを読込んでリストアップして表示
+        val fgm = fragmentManager
+        fgm?.let {
+            OcrSelectSourceDialogFrament().show(fragmentManager!!, null)
+        }
+    }
 
-        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+    private fun onCameraButtonMLKit(bitmap: Bitmap) {
 
         val image = FirebaseVisionImage.fromBitmap(bitmap)
 //        val detector = FirebaseVision.getInstance()
 //            .onDeviceTextRecognizer
 
+//        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
         val detector = FirebaseVision.getInstance().cloudTextRecognizer
 
         val result = detector.processImage(image)
             .addOnSuccessListener { firebaseVisionText ->
                 // Task completed successfully
-                processTextBlock(firebaseVisionText)
+                val string = processTextBlock(firebaseVisionText)
+
+                viewModel.ocrResult(string)
             }
             .addOnFailureListener {
                 // Task failed with an exception
                 // ...
-                Toast.makeText(context, "OCR出来ない！", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "OCR出来ない！", Toast.LENGTH_LONG).show()
             }
     }
 
-    private fun processTextBlock(result: FirebaseVisionText) {
+    private fun onCameraButtonTessTwo(bitmap: Bitmap) {
+        Handler().post {
+            val baseApi = TessBaseAPI()
+            // initで言語データを読み込む
+            baseApi.init(context?.filesDir?.absolutePath, "eng")
+            // ギャラリーから読み込んだ画像をFile or Bitmap or byte[] or Pix形式に変換して渡してあげる
+            baseApi.setImage(bitmap)
+            // これだけで読み取ったテキストを取得できる
+            val recognizedText = baseApi.utF8Text
+            viewModel.ocrResult(recognizedText)
+            baseApi.end()
+        }
+    }
+
+    private fun processTextBlock(result: FirebaseVisionText): String {
         val resultText = result.text
         for (block in result.textBlocks) {
             val blockText = block.text
@@ -157,20 +192,22 @@ class LogInputFragment : Fragment() {
             for (line in block.lines) {
                 val lineText = line.text
                 Log.d("MYOCR", "lineText=$lineText")
-                val lineConfidence = line.confidence
-                val lineLanguages = line.recognizedLanguages
-                val lineCornerPoints = line.cornerPoints
-                val lineFrame = line.boundingBox
-                for (element in line.elements) {
-                    val elementText = element.text
-                    Log.d("MYOCR", "elementText=$elementText")
-                    val elementConfidence = element.confidence
-                    val elementLanguages = element.recognizedLanguages
-                    val elementCornerPoints = element.cornerPoints
-                    val elementFrame = element.boundingBox
-                }
+                return lineText
+//                val lineConfidence = line.confidence
+//                val lineLanguages = line.recognizedLanguages
+//                val lineCornerPoints = line.cornerPoints
+//                val lineFrame = line.boundingBox
+//                for (element in line.elements) {
+//                    val elementText = element.text
+//                    Log.d("MYOCR", "elementText=$elementText")
+//                    val elementConfidence = element.confidence
+//                    val elementLanguages = element.recognizedLanguages
+//                    val elementCornerPoints = element.cornerPoints
+//                    val elementFrame = element.boundingBox
+//                }
             }
         }
+        return resultText
     }
 }
 
