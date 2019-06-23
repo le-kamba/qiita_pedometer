@@ -46,27 +46,39 @@ fun copyFiles(context: Context) {
     }
 }
 
+fun File.isImageFile(): Boolean {
+    if (isDirectory) return false
+    if (extension == "png") return true
+    if (extension == "PNG") return true
+    if (extension == "jpg") return true
+    if (extension == "JPG") return true
+    if (extension == "jpeg") return true
+    if (extension == "JPEG") return true
+    return false
+}
+
 /**
  * カメラのディレクトリにある固定画像を読み込み
  */
 fun getSrcBitmaps(): List<Bitmap> {
-    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-    val files = listOf(
-        File(dir, "Camera/IMG_20190622_165554.jpg"),
-        File(dir, "Camera/IMG_20190622_180008~2.jpg"),
-        File(dir, "Camera/IMG_20190622_174454.jpg"),
-        File(dir, "Camera/IMG_20190622_174413.jpg"),
-        File(dir, "Camera/MVIMG_20190622_230731.jpg"),
-        File(dir, "Camera/IMG_20190622_231028.jpg")
-    )
+    val root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+    val dir = File(root, "Camera")
+    val files = dir.walkTopDown().filter { it.isImageFile() }.sortedByDescending { it.lastModified() }
 
     val bitmapList = mutableListOf<Bitmap>()
-    files.forEach { file ->
-        if (file.exists()) {
-            Log.d("MYOCR", "file = ${file.name}")
-            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            bitmapList.add(bitmap)
+    val options = BitmapFactory.Options()
+    options.inSampleSize = 4
+
+    run loop@{
+        files.forEach { file ->
+            if (file.exists()) {
+                Log.d("MYOCR", "file = ${file.name}")
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath, options)
+                bitmapList.add(bitmap)
+                if (bitmapList.size > 6) return@loop
+            }
         }
     }
     return bitmapList
 }
+

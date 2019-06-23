@@ -1,10 +1,12 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
+import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.LogRecyclerAdapter
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.BitmapRecyclerAdapter
 
 
 /**
@@ -44,4 +46,18 @@ fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
     logs?.let {
         adapter.setList(logs)
     }
+}
+
+@BindingAdapter("app:items")
+fun setBitmapItems(view: RecyclerView, bitmaps: List<Bitmap>?) {
+    val adapter = view.adapter as BitmapRecyclerAdapter? ?: return
+
+    bitmaps?.let {
+        adapter.setList(bitmaps)
+    }
+}
+
+@BindingAdapter("android:src")
+fun setOcrImageBitmap(view: ImageView, bitmap: Bitmap) {
+    view.setImageBitmap(bitmap)
 }

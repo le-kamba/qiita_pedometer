@@ -1,4 +1,4 @@
-package jp.les.kasa.sample.mykotlinapp.dialog
+package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 import android.app.Dialog
 import android.os.Bundle
@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
-import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
 import java.util.*
 
 /**

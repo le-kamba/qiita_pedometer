@@ -18,14 +18,13 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.googlecode.tesseract.android.TessBaseAPI
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrResultDialogFragment
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrSourceSelectFragment
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
-import jp.les.kasa.sample.mykotlinapp.dialog.DateSelectDialogFragment
-import jp.les.kasa.sample.mykotlinapp.dialog.OcrResultDialogFragment
-import jp.les.kasa.sample.mykotlinapp.dialog.OcrSelectSourceDialogFragment
 import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
@@ -107,8 +106,8 @@ class LogInputFragment : Fragment() {
         // OCR画像の確定を監視
         viewModel.ocrBitmapSource.observe(this, Observer {
             showProgress(true)
-//            onCameraButtonMLKit(it)
-            onCameraButtonTessTwo(it)
+            onCameraButtonMLKit(it)
+//            onCameraButtonTessTwo(it)
         })
         // OCR結果文字列をInt型に変換した結果を監視
         viewModel.ocrResultStepCount.observe(this, Observer {
@@ -139,11 +138,10 @@ class LogInputFragment : Fragment() {
 
     @NeedsPermission(permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE)
     internal fun onCameraButton() {
-        // 取り敢えずストレージから固定ファイルを読込んでリストアップして表示
-        val fgm = fragmentManager
-        fgm?.let {
-            OcrSelectSourceDialogFragment().show(fragmentManager!!, null)
-        }
+        val transaction = fragmentManager?.beginTransaction()
+        transaction?.add(R.id.logitem_container, OcrSourceSelectFragment(), OcrSourceSelectFragment.TAG)
+        transaction?.addToBackStack(null)
+        transaction?.commit()
     }
 
     private fun onCameraButtonMLKit(bitmap: Bitmap) {
@@ -166,6 +164,7 @@ class LogInputFragment : Fragment() {
                 // Task failed with an exception
                 // ...
                 Toast.makeText(context, "OCR出来ない！", Toast.LENGTH_LONG).show()
+                showProgress(false)
             }
     }
 
