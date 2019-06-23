@@ -3,7 +3,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable name="viewmodel"
-                  type="jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel"/>
+                  type="jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrViewModel"/>
     </data>
     <LinearLayout
             android:orientation="vertical"

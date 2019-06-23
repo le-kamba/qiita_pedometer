@@ -26,7 +26,7 @@ class OcrSourceSelectFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
+        val viewModel = ViewModelProviders.of(this).get(OcrViewModel::class.java)
 
         val binding: FragmentSelectOcrsrcBinding =
             DataBindingUtil.inflate(
@@ -52,7 +52,11 @@ class OcrSourceSelectFragment : Fragment() {
             viewModel.bitmapSourceList.postValue(list)
         }
 
-        viewModel.ocrBitmapSource.observe(this, Observer {
+        viewModel.ocrBitmapSource.observe(this, Observer { bitmap ->
+            val viewModel2 = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
+            bitmap?.let {
+                viewModel2.ocrSource(bitmap)
+            }
             fragmentManager?.popBackStack()
         })
 
@@ -63,7 +67,7 @@ class OcrSourceSelectFragment : Fragment() {
 
 class BitmapRecyclerAdapter(
     private var list: List<Bitmap>,
-    private val viewModel: LogItemViewModel
+    private val viewModel: OcrViewModel
 ) :
     RecyclerView.Adapter<BitmapRecyclerAdapter.LogViewHolder>() {
 

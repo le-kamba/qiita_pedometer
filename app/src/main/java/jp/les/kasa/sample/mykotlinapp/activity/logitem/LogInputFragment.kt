@@ -17,6 +17,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.googlecode.tesseract.android.TessBaseAPI
+import jp.les.kasa.sample.mykotlinapp.BuildConfig
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrResultDialogFragment
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrSourceSelectFragment
@@ -106,8 +107,11 @@ class LogInputFragment : Fragment() {
         // OCR画像の確定を監視
         viewModel.ocrBitmapSource.observe(this, Observer {
             showProgress(true)
-            onCameraButtonMLKit(it)
-//            onCameraButtonTessTwo(it)
+            if (BuildConfig.OCR_TESSTWO) {
+                ocrTessTwo(it)
+            } else {
+                ocrMLKit(it)
+            }
         })
         // OCR結果文字列をInt型に変換した結果を監視
         viewModel.ocrResultStepCount.observe(this, Observer {
@@ -144,14 +148,16 @@ class LogInputFragment : Fragment() {
         transaction?.commit()
     }
 
-    private fun onCameraButtonMLKit(bitmap: Bitmap) {
+    private fun ocrMLKit(bitmap: Bitmap) {
 
         val image = FirebaseVisionImage.fromBitmap(bitmap)
-//        val detector = FirebaseVision.getInstance()
-//            .onDeviceTextRecognizer
 
-//        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-        val detector = FirebaseVision.getInstance().cloudTextRecognizer
+        val detector =
+            if (BuildConfig.OCR_MLKIT_DEVICE) {
+                FirebaseVision.getInstance().onDeviceTextRecognizer
+            } else /* if (BuildConfig.OCR_MLKIT_CLOUD) */ {
+                FirebaseVision.getInstance().cloudTextRecognizer
+            }
 
         val result = detector.processImage(image)
             .addOnSuccessListener { firebaseVisionText ->
@@ -168,7 +174,7 @@ class LogInputFragment : Fragment() {
             }
     }
 
-    private fun onCameraButtonTessTwo(bitmap: Bitmap) {
+    private fun ocrTessTwo(bitmap: Bitmap) {
         Handler().post {
             val baseApi = TessBaseAPI()
             // initで言語データを読み込む

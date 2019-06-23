@@ -26,6 +26,7 @@ class OcrResultDialogFragment : DialogFragment() {
 
         val view = View.inflate(context, R.layout.dialog_ocr_result, null)
 
+        view.image_ocr_source.setImageBitmap(viewModel.ocrBitmapSource.value)
         view.text_ocr_result.setText(viewModel.ocrResultText.value)
 
         // AlertDialogのセットアップ
@@ -34,7 +35,7 @@ class OcrResultDialogFragment : DialogFragment() {
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 // ポジティブボタンでVieModelに数字をセット
                 try {
-                    viewModel.ocrResultTextToEdit()
+                    viewModel.ocrResultTextToEdit(view.text_ocr_result.text.toString())
                 } catch (e: NumberFormatException) {
                     Toast.makeText(activity, "数値以外の文字があります", Toast.LENGTH_LONG).show()
                 }

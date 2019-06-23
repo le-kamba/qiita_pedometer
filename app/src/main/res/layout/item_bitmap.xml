@@ -5,7 +5,7 @@
         <variable name="bitmap"
                   type="android.graphics.Bitmap"/>
         <variable name="viewmodel"
-                  type="jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel"/>
+                  type="jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrViewModel"/>
     </data>
 
     <FrameLayout android:layout_width="match_parent"
@@ -21,7 +21,6 @@
                     tools:src="@drawable/ic_cloud_gley_24dp"
                     android:id="@+id/weatherImageView"
                     android:src="@{bitmap}"
-                    android:clickable="true"
                     android:onClick="@{viewmodel::onClickBitmap}"/>
         </FrameLayout>
     </FrameLayout>
