@@ -16,7 +16,11 @@ fun copyFiles(context: Context) {
     try {
         TESS_TRAINED_DATA.forEach {
             val filePath = context.filesDir.toString() + File.separator + TESS_DATA_DIR + it
-            val f = File(context.filesDir.toString() + File.separator + TESS_DATA_DIR)
+            val f = File(filePath).parentFile!!
+            if (f.exists() && f.listFiles().isNotEmpty()) {
+                return
+            }
+
             f.mkdirs()
 
             // assets以下をinputStreamでopenしてbaseApi.initで読み込める領域にコピー
