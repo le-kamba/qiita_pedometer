@@ -1,4 +1,4 @@
-package jp.les.kasa.sample.mykotlinapp.activity.logitem
+package jp.les.kasa.sample.mykotlinapp.dialog
 
 import android.app.Dialog
 import android.os.Bundle
@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
 import jp.les.kasa.sample.mykotlinapp.getSrcBitmaps
 import kotlinx.android.synthetic.main.dialog_ocr_result.view.*
 import kotlinx.android.synthetic.main.dialog_select_src.view.*
@@ -44,7 +45,10 @@ class OcrResultDialogFragment : DialogFragment() {
     }
 }
 
-class OcrSelectSourceDialogFrament : DialogFragment() {
+/**
+ * OCR用画像選択ダイアログ:暫定,固定画像を選択
+ */
+class OcrSelectSourceDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
         val bitmapList = getSrcBitmaps()

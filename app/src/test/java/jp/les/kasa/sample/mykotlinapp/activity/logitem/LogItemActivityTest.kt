@@ -19,6 +19,7 @@ import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity.Companion
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.dialog.DateSelectDialogFragment
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 import org.hamcrest.Matchers.not

@@ -23,6 +23,9 @@ import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.dialog.DateSelectDialogFragment
+import jp.les.kasa.sample.mykotlinapp.dialog.OcrResultDialogFragment
+import jp.les.kasa.sample.mykotlinapp.dialog.OcrSelectSourceDialogFragment
 import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
@@ -139,7 +142,7 @@ class LogInputFragment : Fragment() {
         // 取り敢えずストレージから固定ファイルを読込んでリストアップして表示
         val fgm = fragmentManager
         fgm?.let {
-            OcrSelectSourceDialogFrament().show(fragmentManager!!, null)
+            OcrSelectSourceDialogFragment().show(fragmentManager!!, null)
         }
     }
 
