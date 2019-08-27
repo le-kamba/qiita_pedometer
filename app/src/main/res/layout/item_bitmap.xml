@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="bitmap"
+                  type="android.graphics.Bitmap"/>
+        <variable name="viewmodel"
+                  type="jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrViewModel"/>
+    </data>
+
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:padding="2dp">
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:background="@android:color/white">
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    tools:src="@drawable/ic_cloud_gley_24dp"
+                    android:id="@+id/weatherImageView"
+                    android:src="@{bitmap}"
+                    android:onClick="@{viewmodel::onClickBitmap}"/>
+        </FrameLayout>
+    </FrameLayout>
+</layout>

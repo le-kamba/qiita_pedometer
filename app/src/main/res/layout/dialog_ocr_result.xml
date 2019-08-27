@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:src="@mipmap/ic_launcher_round"
+            android:id="@+id/image_ocr_source"
+            android:adjustViewBounds="true"/>
+    <TextView
+            android:text="文字を見つけました！"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textAlignment="center"/>
+    <EditText
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_ocr_result"
+            android:textSize="24sp"
+            tools:text="12345" android:textAlignment="center" android:inputType="numberSigned"/>
+    <TextView
+            android:text="直すときは文字をタップして下さい。"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"/>
+</LinearLayout>

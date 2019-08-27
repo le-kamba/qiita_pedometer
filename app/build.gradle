@@ -15,6 +15,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("boolean", "OCR_MLKIT_DEVICE", "false")
+        buildConfigField("boolean", "OCR_MLKIT_CLOUD", "true")
+        buildConfigField("boolean", "OCR_TESSTWO", "false")
     }
     buildTypes {
         release {
@@ -66,4 +70,17 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha06'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-ml-vision:21.0.0'
+
+    // permission
+    implementation "com.github.hotchemi:permissionsdispatcher:3.3.1"
+    kapt "com.github.hotchemi:permissionsdispatcher-processor:3.3.1"
+
+    implementation("com.rmtheis:tess-two:9.0.0")
+    implementation("androidx.exifinterface:exifinterface:1.0.0")
 }
+
+apply plugin: 'com.google.gms.google-services'

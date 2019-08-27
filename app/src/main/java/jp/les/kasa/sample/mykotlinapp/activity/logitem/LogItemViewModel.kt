@@ -1,5 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
+import android.graphics.Bitmap
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,9 +16,21 @@ class LogItemViewModel : ViewModel() {
 
     private val _stepCountLog = MutableLiveData<StepCountLog>()
     private val _selectDate = MutableLiveData<Calendar>()
+    private val _ocrResultText = MutableLiveData<String>()
+    private val _ocrBitmapSource = MutableLiveData<Bitmap>()
+    private val _ocrResultStepCount = MutableLiveData<Int?>()
 
     val stepCountLog = _stepCountLog as LiveData<StepCountLog>
     val selectDate = _selectDate as LiveData<Calendar>
+    var ocrResultText = _ocrResultText as LiveData<String>
+    var ocrBitmapSource = _ocrBitmapSource as LiveData<Bitmap>
+    val ocrResultStepCount = _ocrResultStepCount as LiveData<Int?>
+
+    val bitmapSourceList = MutableLiveData<List<Bitmap>>()
+
+    init {
+        bitmapSourceList.value = listOf()
+    }
 
     @UiThread
     fun changeLog(data: StepCountLog) {
@@ -28,4 +41,21 @@ class LogItemViewModel : ViewModel() {
     fun dateSelected(selectedDate: Calendar) {
         _selectDate.value = selectedDate
     }
+
+
+    @UiThread
+    fun ocrSource(sourceImage: Bitmap) {
+        _ocrBitmapSource.value = sourceImage
+    }
+
+    @UiThread
+    fun ocrResult(resultText: String) {
+        _ocrResultText.value = resultText
+    }
+
+    @UiThread
+    fun ocrResultTextToEdit(editResultText: String) {
+        _ocrResultStepCount.value = editResultText.toInt()
+    }
+
 }
