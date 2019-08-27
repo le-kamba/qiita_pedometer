@@ -1,6 +1,9 @@
 package jp.les.kasa.sample.mykotlinapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -29,15 +32,15 @@ class MainViewModelTest {
 
     @Test
     fun addStepCount() {
-//        viewModel.addStepCount(123)
-//        viewModel.addStepCount(456)
+        viewModel.addStepCount(StepCountLog("2019/06/21", 123))
+        viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
 
         assertThat(viewModel.stepCountList.value)
             .isNotEmpty()
 
-        val list = viewModel.stepCountList.value as List<Int>
+        val list = viewModel.stepCountList.value as List<StepCountLog>
         assertThat(list.size).isEqualTo(2)
-        assertThat(list[0]).isEqualTo(123)
-        assertThat(list[1]).isEqualTo(456)
+        assertThat(list[0]).isEqualToComparingFieldByField(StepCountLog("2019/06/21", 123))
+        assertThat(list[1]).isEqualToComparingFieldByField(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
     }
 }
