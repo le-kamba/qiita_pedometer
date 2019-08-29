@@ -1,26 +1,48 @@
 package jp.les.kasa.sample.mykotlinapp
 
-import androidx.annotation.UiThread
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import jp.les.kasa.sample.mykotlinapp.data.LogRepository
+import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * MainViewModel
  * @date 2019/06/06
  **/
-class MainViewModel : ViewModel() {
+class MainViewModel(app: Application) : AndroidViewModel(app) {
 
-    val stepCountList = MutableLiveData<MutableList<StepCountLog>>()
+    // データ操作用のリポジトリクラス
+    private val repository: LogRepository
+    // 全データリスト
+    val stepCountList: LiveData<List<StepCountLog>>
+
+    // coroutine用
+    private var parentJob = Job()
+
+    private val coroutineContext: CoroutineContext
+        get() = parentJob + Dispatchers.Main
+
+    private val scope = CoroutineScope(coroutineContext)
 
     init {
-        stepCountList.value = mutableListOf()
+        val logDao = LogRoomDatabase.getDatabase(app).logDao()
+        repository = LogRepository(logDao)
+        stepCountList = repository.allLogs
     }
 
-    @UiThread
-    fun addStepCount(stepLog: StepCountLog) {
-        val list = stepCountList.value ?: return
-        list.add(stepLog)
-        stepCountList.value = list
+    override fun onCleared() {
+        super.onCleared()
+        parentJob.cancel()
+    }
+
+    fun addStepCount(stepLog: StepCountLog) = scope.launch(Dispatchers.IO) {
+        repository.insert(stepLog)
     }
 }

@@ -40,13 +40,11 @@ class MainActivity : AppCompatActivity() {
 
         // RecyclerViewの初期化
         log_list.layoutManager = LinearLayoutManager(this)
-        adapter = LogRecyclerAdapter(viewModel.stepCountList.value!!)
+        adapter = LogRecyclerAdapter()
         log_list.adapter = adapter
         // 区切り線を追加
         val decor = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         log_list.addItemDecoration(decor)
-
-//        InputDialogFragment().show(supportFragmentManager, INPUT_TAG)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -92,8 +90,10 @@ class MainActivity : AppCompatActivity() {
 }
 
 
-class LogRecyclerAdapter(private var list: List<StepCountLog>) :
+class LogRecyclerAdapter :
     RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
+
+    private var list: List<StepCountLog> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val binding: ItemStepLogBinding = DataBindingUtil.inflate(

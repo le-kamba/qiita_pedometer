@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">MyKotlinApp</string>
 
-    <string name="label_input_title">今日は何歩歩いた？</string>
     <string name="label_step">歩</string>
     <string name="label_step_count">歩数</string>
     <string name="hint_edit_step">歩数を入力</string>
@@ -10,7 +9,7 @@
     <string name="label_log_prefix">この日は</string>
     <string name="label_log_suffix">歩 歩きました</string>
 
-    <string name="title_activity_log_item">LogItemActivity</string>
+    <string name="title_activity_log_item">今日は何歩歩いた？</string>
 
     <string name="level_normal">普通</string>
     <string name="level_good">頑張った</string>
