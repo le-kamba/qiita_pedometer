@@ -10,7 +10,7 @@
     <string name="label_log_prefix">この日は</string>
     <string name="label_log_suffix">歩 歩きました</string>
 
-    <string name="title_activity_log_item">LogItemActivity</string>
+    <string name="title_activity_log_item">記録を入力</string>
 
     <string name="level_normal">普通</string>
     <string name="level_good">頑張った</string>
@@ -23,4 +23,5 @@
     <string name="close">閉じる</string>
     <string name="error_validation_future_date">未来の日付はダメです</string>
     <string name="error_validation_empty_count">0歩はないでしょ</string>
+    <string name="error_no_image_sources">カメラロールに\n画像がありません</string>
 </resources>

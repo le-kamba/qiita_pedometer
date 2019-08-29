@@ -2,10 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View"/>
+
         <variable name="viewmodel"
                   type="jp.les.kasa.sample.mykotlinapp.activity.logitem.ocr.OcrViewModel"/>
     </data>
-    <LinearLayout
+    <FrameLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -16,7 +18,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/bitmap_list"
+                android:visibility="@{viewmodel.bitmapSourceList.size > 0 ? View.VISIBLE : View.GONE }"
                 app:items="@{viewmodel.bitmapSourceList}"/>
-        />
-    </LinearLayout>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_empty"
+                android:text="@string/error_no_image_sources"
+                android:visibility="@{viewmodel.bitmapSourceList.size > 0 ? View.GONE : View.VISIBLE }"
+                android:textSize="30sp"
+                android:layout_gravity="center"/>
+    </FrameLayout>
 </layout>

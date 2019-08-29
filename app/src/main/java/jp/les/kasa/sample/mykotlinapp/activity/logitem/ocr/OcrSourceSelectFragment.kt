@@ -18,7 +18,9 @@ import jp.les.kasa.sample.mykotlinapp.databinding.ItemBitmapBinding
 import jp.les.kasa.sample.mykotlinapp.getSrcBitmaps
 import kotlinx.android.synthetic.main.fragment_select_ocrsrc.view.*
 
-
+/**
+ * OCR用の画像を選ぶ画面。カメラロールの画像をGrid表示する
+ */
 class OcrSourceSelectFragment : Fragment() {
 
     companion object {
@@ -41,22 +43,25 @@ class OcrSourceSelectFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
 
-        // RecyclyerView
+        // RecyclerView(2x2のGridLayout)
         root.bitmap_list.layoutManager = GridLayoutManager(requireContext(), 2)
 
         val adapter = BitmapRecyclerAdapter(viewModel.bitmapSourceList.value!!, viewModel)
         root.bitmap_list.adapter = adapter
 
         Handler().post {
+            // 画像のリストを取得
             val list = getSrcBitmaps()
             viewModel.bitmapSourceList.postValue(list)
         }
 
+        // 画像選択を監視
         viewModel.ocrBitmapSource.observe(this, Observer { bitmap ->
             val viewModel2 = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
             bitmap?.let {
                 viewModel2.ocrSource(bitmap)
             }
+            // 選択したら戻る
             fragmentManager?.popBackStack()
         })
 

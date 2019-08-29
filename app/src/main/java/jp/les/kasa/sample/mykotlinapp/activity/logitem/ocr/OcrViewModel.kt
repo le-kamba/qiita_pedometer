@@ -11,8 +11,11 @@ import androidx.lifecycle.ViewModel
 
 class OcrViewModel : ViewModel() {
     private val _ocrBitmapSource = MutableLiveData<Bitmap>()
+
+    // 選択した画像
     var ocrBitmapSource = _ocrBitmapSource as LiveData<Bitmap>
 
+    // 画像のリスト
     val bitmapSourceList = MutableLiveData<List<Bitmap>>()
 
     init {

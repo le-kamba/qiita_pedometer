@@ -33,7 +33,7 @@ import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
 import java.util.*
 
-@RuntimePermissions()
+@RuntimePermissions
 class LogInputFragment : Fragment() {
 
     companion object {

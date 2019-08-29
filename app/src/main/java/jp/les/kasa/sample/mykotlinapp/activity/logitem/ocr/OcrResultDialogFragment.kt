@@ -33,7 +33,7 @@ class OcrResultDialogFragment : DialogFragment() {
         builder.setView(view)
             .setNegativeButton(android.R.string.cancel, null)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                // ポジティブボタンでVieModelに数字をセット
+                // ポジティブボタンでViewModelに数字をセット
                 try {
                     viewModel.ocrResultTextToEdit(view.text_ocr_result.text.toString())
                 } catch (e: NumberFormatException) {
