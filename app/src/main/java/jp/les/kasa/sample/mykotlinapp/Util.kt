@@ -1,5 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,4 +48,16 @@ fun Calendar.addDay(addDayNum: Int): Calendar {
     val newCal = this.clone() as Calendar
     newCal.add(Calendar.DAY_OF_MONTH, addDayNum)
     return newCal
+}
+
+fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
+    return when (checkedRadioButtonId) {
+        R.id.radio_good -> LEVEL.GOOD
+        R.id.radio_bad -> LEVEL.BAD
+        else -> LEVEL.NORMAL
+    }
+}
+
+fun weatherFromSpinner(selectedItemPosition: Int): WEATHER {
+    return WEATHER.values()[selectedItemPosition]
 }

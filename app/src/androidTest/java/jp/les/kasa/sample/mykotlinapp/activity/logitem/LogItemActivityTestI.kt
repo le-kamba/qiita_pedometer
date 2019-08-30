@@ -279,7 +279,7 @@ class LogItemActivityTestI {
         onView(withId(R.id.spinner_weather)).perform(click())
         onView(withText("曇り")).perform(click())
 
-        onView(withId(R.id.button_resist)).check(matches(isDisplayed()))
+        onView(withId(R.id.button_update)).check(matches(isDisplayed()))
             .perform(click())
 
         assertThat(activityRule.activityResult.resultCode).isEqualTo(Activity.RESULT_OK)
@@ -308,7 +308,7 @@ class LogItemActivityTestI {
         onView(withId(R.id.edit_count)).check(matches(isDisplayed()))
             .perform(replaceText("12345"))
 
-        onView(withId(R.id.button_resist)).check(matches(isDisplayed()))
+        onView(withId(R.id.button_update)).check(matches(isDisplayed()))
             .perform(click())
 
         onView(withText(R.string.error_validation_future_date)).check(matches(isDisplayed()))
@@ -327,7 +327,7 @@ class LogItemActivityTestI {
         }
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        onView(withId(R.id.button_resist)).check(matches(isDisplayed()))
+        onView(withId(R.id.button_update)).check(matches(isDisplayed()))
             .perform(click())
 
         onView(withText(R.string.error_validation_empty_count)).check(matches(isDisplayed()))

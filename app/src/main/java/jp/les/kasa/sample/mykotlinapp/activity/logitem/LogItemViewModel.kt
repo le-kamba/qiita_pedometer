@@ -19,6 +19,9 @@ class LogItemViewModel : ViewModel() {
     val stepCountLog = _stepCountLog as LiveData<StepCountLog>
     val selectDate = _selectDate as LiveData<Calendar>
 
+    private val _deleteLog = MutableLiveData<StepCountLog>()
+    val deleteLog = _deleteLog as LiveData<StepCountLog>
+
     @UiThread
     fun changeLog(data: StepCountLog) {
         _stepCountLog.value = data
@@ -27,5 +30,10 @@ class LogItemViewModel : ViewModel() {
     @UiThread
     fun dateSelected(selectedDate: Calendar) {
         _selectDate.value = selectedDate
+    }
+
+    @UiThread
+    fun deleteLog(data: StepCountLog) {
+        _deleteLog.value = data
     }
 }

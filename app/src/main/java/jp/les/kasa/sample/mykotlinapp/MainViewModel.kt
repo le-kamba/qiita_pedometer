@@ -45,4 +45,8 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun addStepCount(stepLog: StepCountLog) = scope.launch(Dispatchers.IO) {
         repository.insert(stepLog)
     }
+
+    fun deleteStepCount(stepLog: StepCountLog) = scope.launch(Dispatchers.IO) {
+        repository.delete(stepLog)
+    }
 }

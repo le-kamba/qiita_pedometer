@@ -19,10 +19,12 @@ import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LogRecyclerAdapter.OnItemClickListener {
 
     companion object {
         const val REQUEST_CODE_LOGITEM = 100
+
+        const val RESULT_CODE_DELETE = 10
     }
 
     lateinit var viewModel: MainViewModel
@@ -40,11 +42,17 @@ class MainActivity : AppCompatActivity() {
 
         // RecyclerViewの初期化
         log_list.layoutManager = LinearLayoutManager(this)
-        adapter = LogRecyclerAdapter()
+        adapter = LogRecyclerAdapter(this)
         log_list.adapter = adapter
         // 区切り線を追加
         val decor = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         log_list.addItemDecoration(decor)
+    }
+
+    override fun onItemClick(data: StepCountLog) {
+        val intent = Intent(this, LogItemActivity::class.java)
+        intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data)
+        startActivityForResult(intent, REQUEST_CODE_LOGITEM)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -85,13 +93,21 @@ class MainActivity : AppCompatActivity() {
                 val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                 viewModel.addStepCount(log)
             }
+            RESULT_CODE_DELETE -> {
+                val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                viewModel.deleteStepCount(log)
+            }
         }
     }
 }
 
 
-class LogRecyclerAdapter :
+class LogRecyclerAdapter(private val listener: OnItemClickListener) :
     RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
+
+    interface OnItemClickListener {
+        fun onItemClick(data: StepCountLog)
+    }
 
     private var list: List<StepCountLog> = emptyList()
 
@@ -111,7 +127,11 @@ class LogRecyclerAdapter :
 
     override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
         if (position >= list.size) return
-        holder.binding.stepLog = list[position]
+        val data = list[position]
+        holder.binding.stepLog = data
+        holder.binding.logItemLayout.setOnClickListener {
+            listener.onItemClick(data)
+        }
     }
 
     class LogViewHolder(val binding: ItemStepLogBinding) : RecyclerView.ViewHolder(binding.root)

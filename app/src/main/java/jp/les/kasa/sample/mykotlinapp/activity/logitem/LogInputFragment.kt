@@ -8,13 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.*
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
-import jp.les.kasa.sample.mykotlinapp.clearTime
-import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import jp.les.kasa.sample.mykotlinapp.data.WEATHER
-import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import java.util.*
@@ -46,7 +42,7 @@ class LogInputFragment : Fragment() {
 
         contentView.text_date.text = today.getDateStringYMD()
 
-        contentView.button_resist.setOnClickListener {
+        contentView.button_update.setOnClickListener {
             validation()?.let {
                 val fgm = fragmentManager ?: return@setOnClickListener
                 ErrorDialog.Builder().message(it).create().show(fgm, null)
@@ -79,18 +75,6 @@ class LogInputFragment : Fragment() {
         viewModel.selectDate.observe(this, Observer {
             text_date.text = it.getDateStringYMD()
         })
-    }
-
-    private fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
-        return when (checkedRadioButtonId) {
-            R.id.radio_good -> LEVEL.GOOD
-            R.id.radio_bad -> LEVEL.BAD
-            else -> LEVEL.NORMAL
-        }
-    }
-
-    private fun weatherFromSpinner(selectedItemPosition: Int): WEATHER {
-        return WEATHER.values()[selectedItemPosition]
     }
 
     private fun validation(): Int? {

@@ -294,7 +294,7 @@ class LogItemActivityTest {
         // 同じコードは逆に、androidTestでは動かない
         scenario.onActivity { activity ->
 
-            onView(withId(R.id.button_resist)).check(matches(isDisplayed()))
+            onView(withId(R.id.button_update)).check(matches(isDisplayed()))
 
             val today = Calendar.getInstance().apply {
                 set(Calendar.YEAR, 2019)
@@ -311,7 +311,7 @@ class LogItemActivityTest {
             val spinner = activity.findViewById<Spinner>(R.id.spinner_weather)
             spinner.setSelection(WEATHER.CLOUD.ordinal)
 
-            onView(withId(R.id.button_resist)).perform(click())
+            onView(withId(R.id.button_update)).perform(click())
 
         }
 
@@ -339,7 +339,7 @@ class LogItemActivityTest {
         onView(withId(R.id.edit_count)).check(matches(isDisplayed()))
             .perform(replaceText("12345"))
 
-        onView(withId(R.id.button_resist)).perform(click())
+        onView(withId(R.id.button_update)).perform(click())
 
         // RobolectricはAlertDialogのビューを拾えない・・・
         val alert = ShadowAlertDialog.latestAlertDialog!!
@@ -358,7 +358,7 @@ class LogItemActivityTest {
         val today = Calendar.getInstance()
         activity.viewModel.dateSelected(today)
 
-        onView(withId(R.id.button_resist)).perform(click())
+        onView(withId(R.id.button_update)).perform(click())
 
         // RobolectricはAlertDialogのビューを拾えない・・・
         val alert = ShadowAlertDialog.latestAlertDialog!!

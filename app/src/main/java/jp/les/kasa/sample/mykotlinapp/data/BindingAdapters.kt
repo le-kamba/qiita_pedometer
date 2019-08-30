@@ -1,6 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
 import android.widget.ImageView
+import android.widget.Spinner
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.LogRecyclerAdapter
@@ -44,4 +45,9 @@ fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
     logs?.let {
         adapter.setList(logs)
     }
+}
+
+@BindingAdapter("app:selected")
+fun selectWeather(view: Spinner, weather: WEATHER) {
+    view.setSelection(weather.ordinal)
 }
