@@ -129,7 +129,7 @@
                 android:entries="@array/array_weathers"
                 app:selected="@{stepLog.weather}"/>
         <Button
-                android:text="@string/resist"
+                android:text="@string/update"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/button_update"

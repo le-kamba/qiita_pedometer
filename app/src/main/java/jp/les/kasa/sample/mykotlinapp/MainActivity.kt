@@ -1,5 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,18 +14,24 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
+import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : AppCompatActivity(), LogRecyclerAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity()
+    , LogRecyclerAdapter.OnItemClickListener
+    , ConfirmDialog.ConfirmEventListener {
 
     companion object {
         const val REQUEST_CODE_LOGITEM = 100
 
         const val RESULT_CODE_DELETE = 10
+
+        const val DIALOG_TAG_DELTE_CONRIFM = "delete_confirm"
+        const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 
     lateinit var viewModel: MainViewModel
@@ -53,6 +60,27 @@ class MainActivity : AppCompatActivity(), LogRecyclerAdapter.OnItemClickListener
         val intent = Intent(this, LogItemActivity::class.java)
         intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data)
         startActivityForResult(intent, REQUEST_CODE_LOGITEM)
+    }
+
+    override fun onLongItemClick(data: StepCountLog) {
+        // ダイアログを表示
+        val dialog = ConfirmDialog.Builder()
+            .message(R.string.message_delete_confirm)
+            .data(Bundle().apply {
+                putSerializable(DIALOG_BUNDLE_KEY_DATA, data)
+            })
+            .create()
+        dialog.show(supportFragmentManager, DIALOG_TAG_DELTE_CONRIFM)
+    }
+
+    override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE -> {
+                // 削除を実行
+                val stepCountLog = bundle?.getSerializable(DIALOG_BUNDLE_KEY_DATA) as StepCountLog?
+                viewModel.deleteStepCount(stepCountLog!!)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -107,6 +135,7 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
 
     interface OnItemClickListener {
         fun onItemClick(data: StepCountLog)
+        fun onLongItemClick(data: StepCountLog)
     }
 
     private var list: List<StepCountLog> = emptyList()
@@ -131,6 +160,10 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
         holder.binding.stepLog = data
         holder.binding.logItemLayout.setOnClickListener {
             listener.onItemClick(data)
+        }
+        holder.binding.logItemLayout.setOnLongClickListener {
+            listener.onLongItemClick(data)
+            return@setOnLongClickListener true
         }
     }
 
