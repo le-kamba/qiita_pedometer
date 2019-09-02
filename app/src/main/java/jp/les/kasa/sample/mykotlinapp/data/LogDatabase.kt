@@ -25,6 +25,9 @@ interface LogDao {
 
     @Query("SELECT * from log_table ORDER BY date DESC")
     fun getAllLogs(): LiveData<List<StepCountLog>>
+
+    @Query("SELECT * from log_table WHERE date = :srcDate")
+    fun getLog(srcDate: String): StepCountLog
 }
 
 @Database(entities = [StepCountLog::class], version = 1)

@@ -19,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     // データ操作用のリポジトリクラス
-    private val repository: LogRepository
+    val repository: LogRepository
     // 全データリスト
     val stepCountList: LiveData<List<StepCountLog>>
 

@@ -11,6 +11,8 @@ import android.widget.ImageView
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.BoundedMatcher
@@ -284,4 +286,14 @@ class ShadowAlertController {
 
 fun shadowOfAlert(dialog: AlertDialog): ShadowAlertDialog {
     return Shadow.extract<ShadowAlertDialog>(dialog)
+}
+
+fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
+    val observer = Observer<T> { Unit }
+    try {
+        observeForever(observer)
+        block()
+    } finally {
+        removeObserver(observer)
+    }
 }

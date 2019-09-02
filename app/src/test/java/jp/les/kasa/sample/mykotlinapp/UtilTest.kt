@@ -1,5 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*
@@ -92,5 +94,22 @@ class UtilTest {
 
         assertThat(next.getDateStringYMD()).isEqualTo("2020/10/11")
         assertThat(prev.getDateStringYMD()).isEqualTo("2020/10/09")
+    }
+
+    @Test
+    fun levelFromRadioId() {
+        assertThat(levelFromRadioId(R.id.radio_normal)).isEqualTo(LEVEL.NORMAL)
+        assertThat(levelFromRadioId(R.id.radio_good)).isEqualTo(LEVEL.GOOD)
+        assertThat(levelFromRadioId(R.id.radio_bad)).isEqualTo(LEVEL.BAD)
+    }
+
+    @Test
+    fun weatherFromSpinner() {
+        assertThat(weatherFromSpinner(0)).isEqualTo(WEATHER.FINE)
+        assertThat(weatherFromSpinner(1)).isEqualTo(WEATHER.RAIN)
+        assertThat(weatherFromSpinner(2)).isEqualTo(WEATHER.CLOUD)
+        assertThat(weatherFromSpinner(3)).isEqualTo(WEATHER.SNOW)
+        assertThat(weatherFromSpinner(4)).isEqualTo(WEATHER.COLD)
+        assertThat(weatherFromSpinner(5)).isEqualTo(WEATHER.HOT)
     }
 }
