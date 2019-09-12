@@ -30,11 +30,15 @@ interface LogDao {
     fun getLog(srcDate: String): StepCountLog
 }
 
+const val DATABASE_NAME = "log_database"
+
+
 @Database(entities = [StepCountLog::class], version = 1)
 abstract class LogRoomDatabase : RoomDatabase() {
     abstract fun logDao(): LogDao
 
     companion object {
+
         @Volatile
         private var INSTANCE: LogRoomDatabase? = null
 
@@ -44,7 +48,7 @@ abstract class LogRoomDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     LogRoomDatabase::class.java,
-                    "log_database"
+                    DATABASE_NAME
                 ).build()
                 INSTANCE = instance
                 instance
