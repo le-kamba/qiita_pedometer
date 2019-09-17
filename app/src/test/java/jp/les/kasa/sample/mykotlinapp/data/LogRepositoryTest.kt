@@ -1,10 +1,12 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
+import android.content.Context
 import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,17 +14,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LogRepositoryTest {
 
+    private lateinit var database: LogRoomDatabase
     private lateinit var logDao: LogDao
     private lateinit var repository: LogRepository
 
     @Before
     fun setUp() {
-        val database = Room.inMemoryDatabaseBuilder(
-            InstrumentationRegistry.getInstrumentation().targetContext,
+        database = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext<Context>(),
             LogRoomDatabase::class.java
         ).allowMainThreadQueries().build()
         logDao = database.logDao()
         repository = LogRepository(logDao)
+    }
+
+    @After
+    fun tearDown() {
+        database.close()
     }
 
     @Test
