@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity()
 
         const val RESULT_CODE_DELETE = 10
 
-        const val DIALOG_TAG_DELTE_CONRIFM = "delete_confirm"
+        const val DIALOG_TAG_DELETE_CONFIRM = "delete_confirm"
         const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity()
                 putSerializable(DIALOG_BUNDLE_KEY_DATA, data)
             })
             .create()
-        dialog.show(supportFragmentManager, DIALOG_TAG_DELTE_CONRIFM)
+        dialog.show(supportFragmentManager, DIALOG_TAG_DELETE_CONFIRM)
     }
 
     override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
