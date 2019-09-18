@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity()
 
         when (requestCode) {
             REQUEST_CODE_LOGITEM -> {
-                onNewStepCountLog(resultCode, data)
+                onStepCountLogChanged(resultCode, data)
                 return
             }
         }
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity()
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun onNewStepCountLog(resultCode: Int, data: Intent?) {
+    private fun onStepCountLogChanged(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> {
                 val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
