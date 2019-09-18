@@ -3,11 +3,9 @@ package jp.les.kasa.sample.mykotlinapp
 import android.app.Activity
 import android.app.Application
 import android.app.Instrumentation
-import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
@@ -42,20 +40,24 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainActivityTestI {
     @get:Rule
-    val activityRule = ActivityTestRule(MainActivity::class.java)
+    val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>() as Application
+        val appContext = ApplicationProvider.getApplicationContext<Application>()
 
         // 最初にデータを削除する
         appContext.deleteDatabase(DATABASE_NAME)
+
+        activityRule.launchActivity(null)
     }
 
     @After
     fun tearDown() {
+        activityRule.finishActivity()
+
         // 最後にデータを削除する
-        val appContext = ApplicationProvider.getApplicationContext<Context>() as Application
+        val appContext = ApplicationProvider.getApplicationContext<Application>()
         appContext.deleteDatabase(DATABASE_NAME)
     }
 
@@ -85,7 +87,7 @@ class MainActivityTestI {
         assertThat(resultActivity).isNotNull()
 
         // 端末戻るボタンで終了を確認
-        Espresso.pressBack()
+        pressBack()
         assertThat(resultActivity.isFinishing).isTrue()
     }
 
@@ -145,6 +147,8 @@ class MainActivityTestI {
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
         resultActivity.setResult(Activity.RESULT_OK, resultData)
         resultActivity.finish()
+
+        getInstrumentation().waitForIdleSync()
 
         // 反映を確認
         val index = 0

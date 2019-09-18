@@ -2,8 +2,8 @@ package jp.les.kasa.sample.mykotlinapp
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
@@ -25,7 +25,7 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         viewModel = MainViewModel(
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as Application
+            ApplicationProvider.getApplicationContext() as Application
         )
     }
 
@@ -37,7 +37,7 @@ class MainViewModelTest {
             .isNotNull()
     }
 
-//    @Test
+    //    @Test
     fun addStepCount() {
         viewModel.addStepCount(StepCountLog("2019/06/21", 123))
         viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))

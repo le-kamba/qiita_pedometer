@@ -2,9 +2,12 @@ package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 
 import android.app.Activity
+import android.app.Application
 import android.content.DialogInterface
+import android.content.Intent
 import android.widget.Spinner
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
@@ -15,7 +18,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.*
-import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity.Companion.EXTRA_KEY_DATA
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
@@ -39,7 +41,7 @@ class LogItemActivityTest {
 
     lateinit var activity: LogItemActivity
 
-    private val context = InstrumentationRegistry.getInstrumentation().targetContext!!
+    private val context = ApplicationProvider.getApplicationContext<Application>()
 
     private fun getString(resId: Int) = context.applicationContext.getString(resId)
 
@@ -264,19 +266,18 @@ class LogItemActivityTest {
         // 初期表示
         onView(withText("晴れ")).check(matches(isDisplayed()))
 
-        // Robolectricはspinnerをクリックできないらしい
-        val spinner = activity.findViewById<Spinner>(R.id.spinner_weather)
+        onView(withId(R.id.spinner_weather)).perform(click())
 
         // リスト表示を確認
-        assertThat(spinner.getItemAtPosition(0)).isEqualTo("晴れ")
-        assertThat(spinner.getItemAtPosition(1)).isEqualTo("雨")
-        assertThat(spinner.getItemAtPosition(2)).isEqualTo("曇り")
-        assertThat(spinner.getItemAtPosition(3)).isEqualTo("雪")
-        assertThat(spinner.getItemAtPosition(4)).isEqualTo("寒い")
-        assertThat(spinner.getItemAtPosition(5)).isEqualTo("暑い")
+        onView(withText("晴れ")).check(matches(isDisplayed()))
+        onView(withText("雨")).check(matches(isDisplayed()))
+        onView(withText("曇り")).check(matches(isDisplayed()))
+        onView(withText("雪")).check(matches(isDisplayed()))
+        onView(withText("寒い")).check(matches(isDisplayed()))
+        onView(withText("暑い")).check(matches(isDisplayed()))
 
         // 初期値以外を選択
-        spinner.setSelection(WEATHER.RAIN.ordinal)
+        onView(withText("雨")).perform(click())
 
         onView(withText("晴れ")).check(doesNotExist())
         onView(withText("雨")).check(matches(isDisplayed()))
@@ -317,12 +318,13 @@ class LogItemActivityTest {
 
         assertThat(scenario.result.resultCode).isEqualTo(Activity.RESULT_OK)
         assertThat(scenario.result.resultData).isNotNull()
-        val data = scenario.result.resultData.getSerializableExtra(EXTRA_KEY_DATA)
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
         assertThat(data).isNotNull()
         assertThat(data is StepCountLog).isTrue()
         val expectItem = StepCountLog("2019/06/20", 12345, LEVEL.GOOD, WEATHER.CLOUD)
         assertThat(data).isEqualToComparingFieldByField(expectItem)
 
+        scenario.close()
     }
 
 
@@ -365,5 +367,223 @@ class LogItemActivityTest {
         assertThat(alert.isShowing).isTrue()
         val shadowAlertDialog = shadowOfAlert(alert)
         assertThat(shadowAlertDialog.message).isEqualTo(getString(R.string.error_validation_empty_count))
+    }
+
+    /**
+     *   LogEditFragmentの初期表示をチェックする
+     */
+    @Test
+    fun logEditFragment() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        // 日時ラベル
+        onView(withText(R.string.label_date)).check(matches(isDisplayed()))
+        // 日付
+        onView(withText("2019/06/22")).check(matches(isDisplayed()))
+        // 日付選択ボタン(非表示)
+        onView(withText(R.string.label_select_date)).check(doesNotExist())
+        // 歩数ラベル
+        onView(withText(R.string.label_step_count)).check(matches(isDisplayed()))
+        // 歩数
+        onView(withText("456")).check(matches(isDisplayed()))
+        // 気分ラベル
+        onView(withText(R.string.label_level)).check(matches(isDisplayed()))
+        // 気分ラジオボタン
+        onView(withText(R.string.level_normal)).check(matches(isDisplayed()))
+            .check(matches(not(isChecked())))
+        onView(withText(R.string.level_good)).check(matches(isDisplayed()))
+        onView(withText(R.string.level_bad)).check(matches(isDisplayed()))
+            .check(matches(isChecked()))
+        onView(withId(R.id.imageView))
+            .check(matches(withDrawable(R.drawable.ic_sentiment_neutral_green_24dp)))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.imageView2))
+            .check(matches(withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp)))
+            .check(matches(isDisplayed()))
+        onView(withId(R.id.imageView3))
+            .check(matches(withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp)))
+            .check(matches(isDisplayed()))
+        // 天気ラベル
+        onView(withText(R.string.label_step_count)).check(matches(isDisplayed()))
+        // 天気スピナー
+        onView(withId(R.id.spinner_weather)).check(matches(isDisplayed()))
+        onView(withText("暑い")).check(matches(isDisplayed()))
+        // 登録ボタン
+        onView(withText(R.string.update)).check(matches(isDisplayed()))
+        // 削除ボタン
+        onView(withText(R.string.delete)).check(matches(isDisplayed()))
+    }
+
+    /**
+     * 編集画面：ラジオボタン[GOOD]を押したときのテスト
+     */
+    @Test
+    fun logEdit_levelRadioButtonGood() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        onView(withId(R.id.radio_good)).perform(click())
+
+        // 選択状態
+        onView(withId(R.id.radio_normal)).check(matches(isDisplayed()))
+            .check(matches(not(isChecked())))
+        onView(withId(R.id.radio_good)).check(matches(isDisplayed()))
+            .check(matches(isChecked()))
+        onView(withId(R.id.radio_bad)).check(matches(isDisplayed()))
+            .check(matches(not(isChecked())))
+    }
+
+    /**
+     * 編集画面：ラジオボタン[NORMAL]を押したときのテスト
+     */
+    @Test
+    fun logEdit_levelRadioButtonNormal() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+
+        onView(withId(R.id.radio_normal)).perform(click())
+
+        // 選択状態
+        onView(withId(R.id.radio_bad)).check(matches(isDisplayed()))
+            .check(matches(not(isChecked())))
+        onView(withId(R.id.radio_good)).check(matches(isDisplayed()))
+            .check(matches(not(isChecked())))
+        onView(withId(R.id.radio_normal)).check(matches(isDisplayed()))
+            .check(matches(isChecked()))
+    }
+
+    /**
+     * 編集画面：スピナーを押したときのテスト
+     */
+    @Test
+    fun logEdit_weatherSpinner() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        // 初期表示
+        onView(withText("暑い")).check(matches(isDisplayed()))
+
+        onView(withId(R.id.spinner_weather)).perform(click())
+
+        // リスト表示を確認
+        onView(withText("晴れ")).check(matches(isDisplayed()))
+        onView(withText("雨")).check(matches(isDisplayed()))
+        onView(withText("曇り")).check(matches(isDisplayed()))
+        onView(withText("雪")).check(matches(isDisplayed()))
+        onView(withText("寒い")).check(matches(isDisplayed()))
+        onView(withText("暑い")).check(matches(isDisplayed()))
+
+        // 初期値以外を選択
+        onView(withText("雨")).perform(click())
+
+        onView(withText("暑い")).check(doesNotExist())
+        onView(withText("雨")).check(matches(isDisplayed()))
+    }
+
+    /**
+     * 編集画面：更新ボタン押下のテスト:正常
+     */
+    @Test
+    fun updateButton_success() {
+        // データをセットしてから起動
+        val intent = Intent(context, LogItemActivity::class.java).apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        val scenario = ActivityScenario.launch<LogItemActivity>(intent)
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+
+            onView(withText(R.string.update)).check(matches(isDisplayed()))
+            onView(withText(R.string.delete)).check(matches(isDisplayed()))
+
+            onView(withId(R.id.edit_count)).check(matches(isDisplayed()))
+                .perform(replaceText("12345"))
+            onView(withId(R.id.radio_good)).perform(click())
+
+            // Robolectricはspinnerをクリックできないらしい
+            val spinner = activity.findViewById<Spinner>(R.id.spinner_weather)
+            spinner.setSelection(WEATHER.CLOUD.ordinal)
+
+            onView(withId(R.id.button_update)).check(matches(isDisplayed()))
+                .perform(click())
+        }
+
+        assertThat(scenario.result.resultCode).isEqualTo(Activity.RESULT_OK)
+        assertThat(scenario.result.resultData).isNotNull()
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
+        assertThat(data).isNotNull()
+        assertThat(data is StepCountLog).isTrue()
+        val expectItem = StepCountLog("2019/06/22", 12345, LEVEL.GOOD, WEATHER.CLOUD)
+        assertThat(data).isEqualToComparingFieldByField(expectItem)
+    }
+
+    /**
+     * 編集画面：更新ボタン押下のテスト:カウント未入力エラー
+     */
+    @Test
+    fun updateButton_error_emptyCount() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        onView(withId(R.id.edit_count)).perform(replaceText(""))
+
+        onView(withId(R.id.button_update)).check(matches(isDisplayed()))
+            .perform(click())
+
+        // RobolectricはAlertDialogのビューを拾えない・・・
+        val alert = ShadowAlertDialog.latestAlertDialog!!
+        assertThat(alert.isShowing).isTrue()
+        val shadowAlertDialog = shadowOfAlert(alert)
+        assertThat(shadowAlertDialog.message).isEqualTo(getString(R.string.error_validation_empty_count))
+    }
+
+    /**
+     * 編集画面：削除ボタン押下のテスト
+     */
+    @Test
+    fun deleteButton() {
+        // データをセットしてから起動
+        val intent = Intent(context, LogItemActivity::class.java).apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        val scenario = ActivityScenario.launch<LogItemActivity>(intent)
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+
+            onView(withId(R.id.button_delete)).check(matches(isDisplayed()))
+                .perform(click())
+        }
+
+        // 削除を戻すIntentの確認
+        assertThat(scenario.result.resultCode).isEqualTo(MainActivity.RESULT_CODE_DELETE)
+        assertThat(scenario.result.resultData).isNotNull()
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
+        assertThat(data).isNotNull()
+        assertThat(data is StepCountLog).isTrue()
+        val expectItem = StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+        assertThat(data).isEqualToComparingFieldByField(expectItem)
     }
 }

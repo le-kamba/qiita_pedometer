@@ -63,7 +63,7 @@ class MainActivityTest {
 //        assertThat(resultActivity.isFinishing).isTrue()
     }
 
-    @Test
+    //    @Test
     fun addRecordList() {
         // ViewModelのリストに直接追加
         val mainActivity = activityRule.activity
@@ -96,7 +96,7 @@ class MainActivityTest {
         // @formatter:on
     }
 
-    @Test
+    //    @Test
     fun onActivityResult() {
         val resultData = Intent().apply {
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))

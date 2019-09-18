@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -74,13 +73,17 @@ class LogEditFragment : Fragment() {
         return binding.root
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun validation(): Int? {
-        // ステップ数が1文字以上入力されていること
-        val stepCountText = edit_count.text.toString()
-        if (stepCountText.isNullOrEmpty()) {
-            return R.string.error_validation_empty_count
-        }
-        return null
+    private fun validation(): Int? {
+        return logEditValidation(edit_count.text.toString())
     }
+}
+
+fun logEditValidation(
+    stepCountText: String?
+): Int? {
+    // ステップ数が1文字以上入力されていること
+    if (stepCountText.isNullOrEmpty()) {
+        return R.string.error_validation_empty_count
+    }
+    return null
 }

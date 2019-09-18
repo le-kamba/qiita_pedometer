@@ -1,11 +1,9 @@
 package jp.les.kasa.sample.mykotlinapp
 
 import android.app.Application
-import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
@@ -29,19 +27,21 @@ class MainViewModelTestI {
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>() as Application
+        val appContext = ApplicationProvider.getApplicationContext<Application>()
 
         // 最初にデータを削除する
-        appContext.deleteDatabase(DATABASE_NAME)
-
         viewModel = MainViewModel(appContext)
+        runBlocking {
+            viewModel.repository.deleteAll()
+        }
     }
 
     @After
     fun tearDown() {
         // 最後にデータを削除する
-        val appContext = ApplicationProvider.getApplicationContext<Context>() as Application
-        appContext.deleteDatabase(DATABASE_NAME)
+        runBlocking {
+            viewModel.repository.deleteAll()
+        }
     }
 
     @Test
@@ -86,6 +86,7 @@ class MainViewModelTestI {
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
             viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            Thread.sleep(100)
             viewModel.deleteStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
         }
         listObserver.await()
