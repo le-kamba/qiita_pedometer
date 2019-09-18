@@ -324,9 +324,9 @@ class MainActivityTestI {
         // Dialogの表示確認
         onView(withText(R.string.message_delete_confirm))
             .check(matches(isDisplayed()))
-        onView(withText(android.R.string.ok))
+        onView(withText(android.R.string.yes))
             .check(matches(isDisplayed()))
-        onView(withText(android.R.string.cancel))
+        onView(withText(android.R.string.no))
             .check(matches(isDisplayed()))
 
         // 端末戻るボタン
@@ -372,7 +372,7 @@ class MainActivityTestI {
         // Dialogキャンセル
         onView(withText(R.string.message_delete_confirm))
             .check(matches(isDisplayed()))
-        onView(withText(android.R.string.cancel))
+        onView(withText(android.R.string.no))
             .perform(click())
 
         // Dialogの非表示を確認
@@ -415,7 +415,7 @@ class MainActivityTestI {
         // Dialogの表示確認
         onView(withText(R.string.message_delete_confirm))
             .check(matches(isDisplayed()))
-        onView(withText(android.R.string.ok))
+        onView(withText(android.R.string.yes))
             .perform(click())
 
         // Dialogの非表示を確認

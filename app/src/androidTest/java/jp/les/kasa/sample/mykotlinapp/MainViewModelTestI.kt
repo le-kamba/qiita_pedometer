@@ -29,8 +29,8 @@ class MainViewModelTestI {
     fun setUp() {
         val appContext = ApplicationProvider.getApplicationContext<Application>()
 
-        // 最初にデータを削除する
         viewModel = MainViewModel(appContext)
+        // 最初にデータを削除する
         runBlocking {
             viewModel.repository.deleteAll()
         }
@@ -86,7 +86,7 @@ class MainViewModelTestI {
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
             viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
-            Thread.sleep(100)
+            Thread.sleep(500)
             viewModel.deleteStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
         }
         listObserver.await()
