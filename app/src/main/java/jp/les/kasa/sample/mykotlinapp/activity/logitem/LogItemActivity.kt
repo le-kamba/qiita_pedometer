@@ -8,6 +8,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.MainActivity
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
+import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.activity_log_item.*
 
@@ -16,6 +18,7 @@ class LogItemActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_KEY_DATA = "data"
+        const val EXTRA_KEY_SHARE_STATUS = "share"
     }
 
     lateinit var viewModel: LogItemViewModel
@@ -43,9 +46,10 @@ class LogItemActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(LogItemViewModel::class.java)
 
-        viewModel.stepCountLog.observe(this, Observer {
+        viewModel.logItem.observe(this, Observer {
             val dataIntent = Intent()
-            dataIntent.putExtra(EXTRA_KEY_DATA, it)
+            dataIntent.putExtra(EXTRA_KEY_DATA, it.first)
+            dataIntent.putExtra(EXTRA_KEY_SHARE_STATUS, it.second)
             setResult(RESULT_OK, dataIntent)
             finish()
         })
@@ -55,6 +59,25 @@ class LogItemActivity : AppCompatActivity() {
             dataIntent.putExtra(EXTRA_KEY_DATA, it)
             setResult(MainActivity.RESULT_CODE_DELETE, dataIntent)
             finish()
+        })
+
+        viewModel.selectShareSns.observe(this, Observer { snsType ->
+            when (snsType) {
+                SNSType.Twitter -> {
+                    val intent = Intent(this, TwitterShareActivity::class.java)
+                    startActivity(intent)
+                }
+                SNSType.Instagram -> {
+                    val intent = Intent(this, InstagramShareActivity::class.java).apply {
+                        putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, logData)
+                    }
+                    startActivity(intent)
+                }
+                else -> {
+
+                }
+            }
+
         })
     }
 

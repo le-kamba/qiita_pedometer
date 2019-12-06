@@ -10,6 +10,16 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".activity.share.InstagramShareActivity"
+                android:label="@string/title_activity_instagram_share"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".activity.share.TwitterShareActivity"
+                android:label="@string/title_activity_twitter_share"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
                 android:name=".activity.logitem.LogItemActivity"
                 android:label="@string/title_activity_log_item"
                 android:theme="@style/AppTheme.NoActionBar">

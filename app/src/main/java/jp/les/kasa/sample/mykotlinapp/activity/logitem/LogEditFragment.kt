@@ -1,14 +1,16 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
+import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentLogEditBinding
 import jp.les.kasa.sample.mykotlinapp.levelFromRadioId
@@ -37,6 +39,11 @@ class LogEditFragment : Fragment() {
     lateinit var viewModel: LogItemViewModel
     private lateinit var stepCountLog: StepCountLog
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,8 +69,8 @@ class LogEditFragment : Fragment() {
             val stepCount = edit_count.text.toString().toInt()
             val level = levelFromRadioId(radio_group.checkedRadioButtonId)
             val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
-            val stepCountLog = StepCountLog(dateText, stepCount, level, weather)
-            viewModel.changeLog(stepCountLog)
+            val newLog = StepCountLog(dateText, stepCount, level, weather)
+            viewModel.changeLog(newLog, ShareStatus())
         }
         binding.buttonDelete.setOnClickListener {
 
@@ -76,6 +83,38 @@ class LogEditFragment : Fragment() {
     private fun validation(): Int? {
         return logEditValidation(edit_count.text.toString())
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.log_edit_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.share_sns -> {
+                onShareSnsSelected()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun onShareSnsSelected() {
+        // 変更値を収集する
+        validation()?.let {
+            val fgm = fragmentManager ?: return
+            ErrorDialog.Builder().message(it).create().show(fgm, null)
+            return
+        }
+        val dateText = text_date.text.toString()
+        val stepCount = edit_count.text.toString().toInt()
+        val level = levelFromRadioId(radio_group.checkedRadioButtonId)
+        val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
+        stepCountLog = StepCountLog(dateText, stepCount, level, weather)
+
+        val dialog = SnsChooseDialog()
+        dialog.show(requireActivity().supportFragmentManager, null)
+    }
 }
 
 fun logEditValidation(
@@ -86,4 +125,20 @@ fun logEditValidation(
         return R.string.error_validation_empty_count
     }
     return null
+}
+
+
+class SnsChooseDialog : DialogFragment() {
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
+
+        // AlertDialogで作成する
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setItems(arrayOf("Twitter", "Instagram")) { dialog, which ->
+            viewModel.selectShareSns(which)
+        }
+
+        return builder.create()
+    }
 }

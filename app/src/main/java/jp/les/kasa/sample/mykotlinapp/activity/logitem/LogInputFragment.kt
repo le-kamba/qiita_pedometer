@@ -10,11 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.*
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import java.util.*
-
 
 class LogInputFragment : Fragment() {
 
@@ -55,7 +55,15 @@ class LogInputFragment : Fragment() {
             val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
             val stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 
-            viewModel.changeLog(stepCountLog)
+            val postSns = switch_share.isChecked
+            val postTwitter = checkBox_twitter.isChecked
+            val postInstagram = checkBox_instagram.isChecked
+
+            val shareStatus = ShareStatus(postSns, postTwitter, postInstagram)
+            // 設定に保存
+            saveShareStatus(shareStatus)
+
+            viewModel.changeLog(stepCountLog, shareStatus)
         }
 
         // 日付を選ぶボタンで日付選択ダイアログを表示
@@ -63,6 +71,12 @@ class LogInputFragment : Fragment() {
             val fgm = fragmentManager ?: return@setOnClickListener // nullチェック
             DateSelectDialogFragment().show(fgm, DATE_SELECT_TAG)
         }
+
+        // sns投稿設定
+        val shareStatus = readShareStatus()
+        contentView.switch_share.isChecked = shareStatus.doPost
+        contentView.checkBox_twitter.isChecked = shareStatus.postTwitter
+        contentView.checkBox_instagram.isChecked = shareStatus.postInstagram
 
         return contentView
     }

@@ -74,7 +74,6 @@ dependencies {
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
 
 
-
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta04'
 
     // Room components

@@ -1,6 +1,13 @@
 package jp.les.kasa.sample.mykotlinapp
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import java.text.SimpleDateFormat
 import java.util.*
@@ -60,4 +67,39 @@ fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
 
 fun weatherFromSpinner(selectedItemPosition: Int): WEATHER {
     return WEATHER.values()[selectedItemPosition]
+}
+
+fun Fragment.saveShareStatus(shareStatus: ShareStatus) {
+    // 設定に保存
+    val pref = context?.applicationContext?.getSharedPreferences("settings", AppCompatActivity.MODE_PRIVATE)
+    pref?.apply {
+        val edit = pref.edit()
+        edit.putBoolean("postSns", shareStatus.doPost)
+        edit.putBoolean("postTwitter", shareStatus.postTwitter)
+        edit.putBoolean("postInstagram", shareStatus.postInstagram)
+        edit.apply()
+    }
+}
+
+fun Fragment.readShareStatus(): ShareStatus {
+    val pref = context?.applicationContext?.getSharedPreferences("settings", AppCompatActivity.MODE_PRIVATE)
+    pref ?: return ShareStatus()
+    val doPost = pref.getBoolean("postSns", false)
+    val postTwitter = pref.getBoolean("postTwitter", false)
+    val postInstagram = pref.getBoolean("postInstagram", false)
+    return ShareStatus(doPost, postTwitter, postInstagram)
+}
+
+/**
+ * Playストアの指定アプリのページを開く
+ */
+fun Context.openPlayStore(packageName: String) {
+    val intent = Intent(Intent.ACTION_VIEW)
+    var url = getString(R.string.market_url, packageName)
+    intent.data = Uri.parse(url)
+    try {
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+    }
+
 }

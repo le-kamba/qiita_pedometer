@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
+import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
+import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity()
 
     companion object {
         const val REQUEST_CODE_LOGITEM = 100
+        const val REQUEST_CODE_SHARE_TWITTER = 101
 
         const val RESULT_CODE_DELETE = 10
 
@@ -110,6 +114,15 @@ class MainActivity : AppCompatActivity()
                 onStepCountLogChanged(resultCode, data)
                 return
             }
+
+            REQUEST_CODE_SHARE_TWITTER -> {
+                // 続けてInstagramにも投稿する
+                val intent = Intent(this, InstagramShareActivity::class.java).apply {
+                    val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                    putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log) }
+                startActivity(intent)
+                return
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -120,6 +133,25 @@ class MainActivity : AppCompatActivity()
             RESULT_OK -> {
                 val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                 viewModel.addStepCount(log)
+                val shareStatus = data.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS) as ShareStatus
+                if(shareStatus.doPost){
+                    // 共有フラグがONならDB登録完了後に投稿画面へ遷移する
+                    if(shareStatus.postTwitter){
+                        val intent = Intent(this, TwitterShareActivity::class.java)
+                        if(shareStatus.postInstagram) {
+                            intent.putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
+                            // Instagramもチェックされていれば、戻った後で次に起動するため、結果を受け取る必要がある
+                            startActivityForResult(intent, REQUEST_CODE_SHARE_TWITTER)
+                        }else{
+                            startActivity(intent)
+                        }
+                    }else if(shareStatus.postInstagram){
+                        val intent = Intent(this, InstagramShareActivity::class.java).apply {
+                            putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
+                        }
+                        startActivity(intent)
+                    }
+                }
             }
             RESULT_CODE_DELETE -> {
                 val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog

@@ -4,8 +4,11 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import java.util.*
+
+typealias LogItemData = Pair<StepCountLog, ShareStatus>
 
 /**
  * ログアイテム表示画面用のViewModel
@@ -13,18 +16,18 @@ import java.util.*
  **/
 class LogItemViewModel : ViewModel() {
 
-    private val _stepCountLog = MutableLiveData<StepCountLog>()
     private val _selectDate = MutableLiveData<Calendar>()
-
-    val stepCountLog = _stepCountLog as LiveData<StepCountLog>
     val selectDate = _selectDate as LiveData<Calendar>
 
     private val _deleteLog = MutableLiveData<StepCountLog>()
     val deleteLog = _deleteLog as LiveData<StepCountLog>
 
+    private val _logItem = MutableLiveData<LogItemData>()
+    val logItem = _logItem as LiveData<LogItemData>
+
     @UiThread
-    fun changeLog(data: StepCountLog) {
-        _stepCountLog.value = data
+    fun changeLog(data: StepCountLog, shareStatus: ShareStatus) {
+        _logItem.value = LogItemData(data, shareStatus)
     }
 
     @UiThread
@@ -36,4 +39,17 @@ class LogItemViewModel : ViewModel() {
     fun deleteLog(data: StepCountLog) {
         _deleteLog.value = data
     }
+
+    private val _selectShareSns = MutableLiveData<SNSType>()
+    val selectShareSns = _selectShareSns as LiveData<SNSType>
+
+    @UiThread
+    fun selectShareSns(snsType: Int) {
+        _selectShareSns.value = SNSType.values()[snsType]
+    }
+}
+
+enum class SNSType {
+    Twitter,
+    Instagram,
 }
