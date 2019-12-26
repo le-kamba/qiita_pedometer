@@ -1,15 +1,16 @@
 package jp.les.kasa.sample.mykotlinapp.activity.share
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.view.View
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
 import java.io.File
-import kotlin.coroutines.CoroutineContext
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 /**
  * Instagram投稿画面用のViewModel
@@ -21,48 +22,40 @@ class InstagramShareViewModel : ViewModel() {
     private val _savedBitmapFile = MutableLiveData<File>()
     val savedBitmapFile = _savedBitmapFile as LiveData<File>
 
-    // coroutine用
-    private var parentJob = Job()
+    /**
+     * bitmapを保存する
+     * @param bitmap
+     * @param dir ファイルを保存するディレクトリFile
+     */
+    @WorkerThread
+    suspend fun createShareImage(bitmap: Bitmap, dir: File) {
 
-    private val coroutineContext: CoroutineContext
-        get() = parentJob + Dispatchers.Main
-
-    private val scope = CoroutineScope(coroutineContext)
-
-    fun createShareImage(view: View, fileapth : File) = scope.launch {
-        val bitmap = withContext(context = Dispatchers.Default) {
-            getBitmapFromView(view)
-        }
-        val resultFile = withContext(context = Dispatchers.IO) {
-            saveBidmap(bitmap, fileapth)
-        }
+        // タイムスタンプをファイル名にする
+        val date = Date()
+        val formatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH)
+        val filepath = File(dir, formatter.format(date) + ".jpg") // jpgにする
+        val resultFile = saveBitmap(bitmap, filepath)
         _savedBitmapFile.postValue(resultFile)
     }
 
-    // Bitmapを保存
-    suspend private fun getBitmapFromView(view: View): Bitmap {
+    private fun saveBitmap(bitmap: Bitmap, filepath: File): File? {
 
-        val height = view.height
-        val width = view.width
+        // 親ディレクトリまで作成
+        filepath.parentFile.mkdirs()
 
-        val canvasBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(canvasBitmap)
+        val fos = FileOutputStream(filepath)
+        try {
+            // 書込実施
+            val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
 
-        val bgDrawable = view.background
-        if (bgDrawable != null)
-            bgDrawable.draw(canvas)
-        else
-            canvas.drawColor(Color.WHITE)
+            if (result) {
+                return filepath
+            }
 
-        canvas.save()
-        view.draw(canvas)
-        canvas.restore()
-
-        return canvasBitmap
-    }
-
-    suspend private fun saveBidmap(bitmap: Bitmap, filepath: File): File? {
-
+        } catch (e: IOException) {
+        } finally {
+            fos.close()
+        }
         return null
     }
 }
