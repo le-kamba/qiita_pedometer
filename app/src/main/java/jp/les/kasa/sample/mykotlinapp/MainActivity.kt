@@ -138,6 +138,7 @@ class MainActivity : AppCompatActivity()
                     // 共有フラグがONならDB登録完了後に投稿画面へ遷移する
                     if(shareStatus.postTwitter){
                         val intent = Intent(this, TwitterShareActivity::class.java)
+                        intent.putExtra(TwitterShareActivity.KEY_TEXT, log.getShareMessage())
                         if(shareStatus.postInstagram) {
                             intent.putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
                             // Instagramもチェックされていれば、戻った後で次に起動するため、結果を受け取る必要がある

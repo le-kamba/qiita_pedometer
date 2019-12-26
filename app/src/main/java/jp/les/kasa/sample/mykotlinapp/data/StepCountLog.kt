@@ -52,4 +52,14 @@ data class StepCountLog(
     @ColumnInfo(name = "step") val step: Int,
     @ColumnInfo(name = "level") val level: LEVEL = LEVEL.NORMAL,
     @ColumnInfo(name = "weather") val weather: WEATHER = WEATHER.FINE
-) : Serializable
+) : Serializable {
+
+    fun getShareMessage(): String {
+        val levelText = when (level) {
+            LEVEL.NORMAL -> "まあまあ。"
+            LEVEL.BAD -> "いまいち・・・"
+            LEVEL.GOOD -> "上々！"
+        }
+        return "${this.date} は ${this.step} 歩 歩きました。気分は $levelText"
+    }
+}

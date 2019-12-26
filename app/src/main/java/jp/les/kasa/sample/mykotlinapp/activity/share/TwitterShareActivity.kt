@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
@@ -16,12 +15,18 @@ import kotlinx.android.synthetic.main.content_twitter_share.*
 
 class TwitterShareActivity : AppCompatActivity() {
 
+    companion object {
+        const val KEY_TEXT = "text"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_twitter_share)
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        editText_share_message.setText(intent.getStringExtra(KEY_TEXT))
 
         button_share_twitter.setOnClickListener {
             val message = editText_share_message.text.toString()

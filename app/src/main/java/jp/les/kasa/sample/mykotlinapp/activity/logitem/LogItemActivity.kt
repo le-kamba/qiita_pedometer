@@ -65,6 +65,7 @@ class LogItemActivity : AppCompatActivity() {
             when (snsType) {
                 SNSType.Twitter -> {
                     val intent = Intent(this, TwitterShareActivity::class.java)
+                    intent.putExtra(TwitterShareActivity.KEY_TEXT, logData?.getShareMessage())
                     startActivity(intent)
                 }
                 SNSType.Instagram -> {
