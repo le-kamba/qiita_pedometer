@@ -28,6 +28,9 @@ import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowListView
 import org.robolectric.util.ReflectionHelpers
 import java.lang.reflect.InvocationTargetException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 
 fun atPositionOnView(
@@ -295,5 +298,20 @@ fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
         block()
     } finally {
         removeObserver(observer)
+    }
+}
+
+class TestObserver<T>(count: Int = 1) : Observer<T> {
+
+    private val latch: CountDownLatch = CountDownLatch(count)
+
+    override fun onChanged(t: T?) {
+        latch.countDown()
+    }
+
+    fun await(timeout: Long = 6, unit: TimeUnit = TimeUnit.SECONDS) {
+        if (!latch.await(timeout, unit)) {
+            throw TimeoutException()
+        }
     }
 }

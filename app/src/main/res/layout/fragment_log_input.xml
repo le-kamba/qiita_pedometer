@@ -163,7 +163,7 @@
             app:layout_constraintTop_toBottomOf="@+id/spinner_weather"
             android:layout_marginTop="8dp"/>
     <CheckBox
-            android:text="@string/labal_instagram"
+            android:text="@string/label_instagram"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/checkBox_instagram"

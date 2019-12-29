@@ -1,9 +1,13 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 
+import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.getDay
@@ -15,8 +19,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
+import org.junit.runner.RunWith
 import java.util.*
 
+@RunWith(AndroidJUnit4::class)
 class LogItemViewModelTest {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
@@ -25,21 +31,30 @@ class LogItemViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = LogItemViewModel()
+        val context = ApplicationProvider.getApplicationContext<Application>()
+        viewModel = LogItemViewModel(context)
     }
 
     @Test
     fun init() {
-        Assertions.assertThat(viewModel.stepCountLog.value)
+        Assertions.assertThat(viewModel.logItem.value)
             .isNull() // 初期化したときはnull
     }
 
     @Test
     fun changeLog() {
-        viewModel.changeLog(StepCountLog("2019/06/21", 12345, LEVEL.BAD, WEATHER.COLD))
+        viewModel.changeLog(
+            StepCountLog("2019/06/21", 12345, LEVEL.BAD, WEATHER.COLD),
+            ShareStatus(true, true, false)
+        )
 
-        assertThat(viewModel.stepCountLog.value)
-            .isEqualToComparingFieldByField(StepCountLog("2019/06/21", 12345, LEVEL.BAD, WEATHER.COLD))
+        assertThat(viewModel.logItem.value)
+            .isEqualToComparingFieldByField(
+                LogItemData(
+                    StepCountLog("2019/06/21", 12345, LEVEL.BAD, WEATHER.COLD),
+                    ShareStatus(true, true, false)
+                )
+            )
     }
 
     @Test

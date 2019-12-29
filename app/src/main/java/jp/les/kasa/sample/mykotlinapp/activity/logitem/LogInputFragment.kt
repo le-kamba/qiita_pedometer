@@ -61,8 +61,8 @@ class LogInputFragment : Fragment() {
 
             val shareStatus = ShareStatus(postSns, postTwitter, postInstagram)
             // 設定に保存
-            saveShareStatus(shareStatus)
-
+            viewModel.saveShareStatus(shareStatus)
+            // 登録をpost
             viewModel.changeLog(stepCountLog, shareStatus)
         }
 
@@ -71,12 +71,6 @@ class LogInputFragment : Fragment() {
             val fgm = fragmentManager ?: return@setOnClickListener // nullチェック
             DateSelectDialogFragment().show(fgm, DATE_SELECT_TAG)
         }
-
-        // sns投稿設定
-        val shareStatus = readShareStatus()
-        contentView.switch_share.isChecked = shareStatus.doPost
-        contentView.checkBox_twitter.isChecked = shareStatus.postTwitter
-        contentView.checkBox_instagram.isChecked = shareStatus.postInstagram
 
         return contentView
     }
@@ -89,6 +83,12 @@ class LogInputFragment : Fragment() {
         viewModel.selectDate.observe(this, Observer {
             text_date.text = it.getDateStringYMD()
         })
+
+        // sns投稿設定
+        val shareStatus = viewModel.readShareStatus()
+        switch_share.isChecked = shareStatus.doPost
+        checkBox_twitter.isChecked = shareStatus.postTwitter
+        checkBox_instagram.isChecked = shareStatus.postInstagram
     }
 
     private fun validation(): Int? {

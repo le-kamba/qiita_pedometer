@@ -3,6 +3,7 @@ package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 import android.app.Activity
 import android.app.Application
+import android.app.Instrumentation
 import android.content.DialogInterface
 import android.content.Intent
 import android.widget.Spinner
@@ -18,12 +19,15 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.*
-import jp.les.kasa.sample.mykotlinapp.data.LEVEL
-import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
+import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
+import jp.les.kasa.sample.mykotlinapp.data.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
+import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,6 +48,19 @@ class LogItemActivityTest {
     private val context = ApplicationProvider.getApplicationContext<Application>()
 
     private fun getString(resId: Int) = context.applicationContext.getString(resId)
+
+    private val settingRepository = SettingRepository.getInstance(context)
+
+    @Before
+    fun setUp() {
+        // 設定ファイルを初期化する
+        settingRepository.clear()
+    }
+
+    @After
+    fun tearDown() {
+        settingRepository.clear()
+    }
 
     /**
      *   起動直後の表示のテスト<br>
@@ -83,8 +100,74 @@ class LogItemActivityTest {
         onView(withText(R.string.label_step_count)).check(matches(isDisplayed()))
         // 天気スピナー
         onView(withId(R.id.spinner_weather)).check(matches(isDisplayed()))
+
+        // シェアスイッチ
+        onView(withText(R.string.share_sns)).check(matches(isDisplayed()))
+        // シェアチェックボックス
+        onView(withText(R.string.label_twitter)).check(matches(isDisplayed()))
+        onView(withText(R.string.label_instagram)).check(matches(isDisplayed()))
+
         // 登録ボタン
         onView(withText(R.string.resist)).check(matches(isDisplayed()))
+    }
+
+    /**
+     * シェアスイッチ、チェックボックスの初期状態反映確認
+     */
+    @Test
+    fun shareStatus_default() {
+        // 初期状態
+        activity = activityRule.launchActivity(null)
+
+        // シェアスイッチ(スクロールに要注意)
+        onView(withText(R.string.share_sns)).check(matches(isNotChecked()))
+        // シェアチェックボックス
+        onView(withText(R.string.label_twitter)).check(matches(isNotChecked()))
+        onView(withText(R.string.label_instagram)).check(matches(isNotChecked()))
+
+    }
+
+    /**
+     * シェアスイッチ、チェックボックスの変更保存確認
+     */
+    @Test
+    fun shareStatus_change_saved() {
+        // 初期状態
+        activity = activityRule.launchActivity(null)
+
+        // 変更
+        onView(withText(R.string.share_sns)).perform(click())
+        onView(withText(R.string.label_twitter)).perform(click())
+
+        // 登録ボタンを押したら保存されること
+        onView(withId(R.id.edit_count)).perform(replaceText("12345"))
+        onView(withText(R.string.resist)).perform(click())
+
+        val status = settingRepository.readShareStatus()
+        assertThat(status).isEqualToComparingFieldByField(ShareStatus(true, true, false))
+    }
+
+    /**
+     * シェアスイッチ、チェックボックスの保存状態反映確認
+     */
+    @Test
+    fun shareStatus() {
+
+        settingRepository.saveShareStatus(
+            ShareStatus(
+                doPost = true,
+                postTwitter = true, postInstagram = true
+            )
+        )
+
+        activity = activityRule.launchActivity(null)
+
+        // シェアスイッチ(スクロールに要注意)
+        onView(withText(R.string.share_sns)).check(matches(isChecked()))
+        // シェアチェックボックス
+        onView(withText(R.string.label_twitter)).check(matches(isChecked()))
+        onView(withText(R.string.label_instagram)).check(matches(isChecked()))
+
     }
 
     /**
@@ -416,6 +499,10 @@ class LogItemActivityTest {
         onView(withText(R.string.update)).check(matches(isDisplayed()))
         // 削除ボタン
         onView(withText(R.string.delete)).check(matches(isDisplayed()))
+        // メニューアイコン
+        onView(
+            Matchers.allOf(withId(R.id.share_sns), withContentDescription("共有"))
+        ).check(matches(isDisplayed()))
     }
 
     /**
@@ -585,5 +672,185 @@ class LogItemActivityTest {
         assertThat(data is StepCountLog).isTrue()
         val expectItem = StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
         assertThat(data).isEqualToComparingFieldByField(expectItem)
+    }
+
+    @Test
+    fun shareTwitterResult() {
+        val scenario = ActivityScenario.launch<LogItemActivity>(Intent(context, LogItemActivity::class.java))
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+            // 変更
+            onView(withText(R.string.share_sns)).perform(click())
+            onView(withText(R.string.label_twitter)).perform(click())
+            // 取り敢えず歩数だけ入れて登録
+            onView(withId(R.id.edit_count)).perform(replaceText("12345"))
+
+            onView(withId(R.id.button_update)).perform(click())
+        }
+
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        assertThat(data).isNotNull()
+        assertThat(data is ShareStatus).isTrue()
+        assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, true, false))
+    }
+
+    @Test
+    fun shareInstagramResult() {
+        val scenario = ActivityScenario.launch<LogItemActivity>(Intent(context, LogItemActivity::class.java))
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+            // 変更
+            onView(withText(R.string.share_sns)).perform(click())
+            onView(withText(R.string.label_instagram)).perform(click())
+            // 取り敢えず歩数だけ入れて登録
+            onView(withId(R.id.edit_count)).perform(replaceText("12345"))
+
+            onView(withId(R.id.button_update)).perform(click())
+        }
+
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        assertThat(data).isNotNull()
+        assertThat(data is ShareStatus).isTrue()
+        assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, false, true))
+    }
+
+    @Test
+    fun shareAllResult() {
+        val scenario = ActivityScenario.launch<LogItemActivity>(Intent(context, LogItemActivity::class.java))
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+            // 変更
+            onView(withText(R.string.share_sns)).perform(click())
+            onView(withText(R.string.label_twitter)).perform(click())
+            onView(withText(R.string.label_instagram)).perform(click())
+            // 取り敢えず歩数だけ入れて登録
+            onView(withId(R.id.edit_count)).perform(replaceText("12345"))
+
+            onView(withId(R.id.button_update)).perform(click())
+        }
+
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        assertThat(data).isNotNull()
+        assertThat(data is ShareStatus).isTrue()
+        assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, true, true))
+    }
+
+    @Test
+    fun shareNoneResult() {
+        val scenario = ActivityScenario.launch<LogItemActivity>(Intent(context, LogItemActivity::class.java))
+
+        // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
+        // この方法なら取れたので、こちらにしてある。
+        // 同じコードは逆に、androidTestでは動かない
+        scenario.onActivity { activity ->
+            // 取り敢えず歩数だけ入れて登録
+            onView(withId(R.id.edit_count)).perform(replaceText("12345"))
+
+            onView(withId(R.id.button_update)).perform(click())
+        }
+
+        val data = scenario.result.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        assertThat(data).isNotNull()
+        assertThat(data is ShareStatus).isTrue()
+        assertThat(data).isEqualToComparingFieldByField(ShareStatus())
+    }
+
+    @Test
+    fun logEditShareMenuClick() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        // メニューアイコンタップ
+        onView(
+            Matchers.allOf(withId(R.id.share_sns), withContentDescription("共有"))
+        ).perform(click())
+
+        // ダイアログの表示をチェック
+        // RobolectricはAlertDialogのビューを拾えない・・・
+        val alert = ShadowAlertDialog.latestAlertDialog!!
+        assertThat(alert.isShowing).isTrue()
+        val shadowAlertDialog = shadowOfAlert(alert)
+        val items = shadowAlertDialog.getItems()!!
+        assertThat(items.size).isEqualTo(2)
+        assertThat(items[0]).isEqualTo("Twitter")
+        assertThat(items[1]).isEqualTo("Instagram")
+    }
+
+    @Test
+    fun logEditShare_Twitter() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        // メニューアイコンタップ
+        onView(
+            Matchers.allOf(withId(R.id.share_sns), withContentDescription("共有"))
+        ).perform(click())
+
+        // ResultActivityの起動を監視
+        val monitor = Instrumentation.ActivityMonitor(
+            TwitterShareActivity::class.java.canonicalName, null, false
+        )
+        InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
+
+        // ダイアログの表示をチェック
+        // RobolectricはAlertDialogのビューを拾えない・・・
+        val alert = ShadowAlertDialog.latestAlertDialog!!
+        assertThat(alert.isShowing).isTrue()
+        val shadowAlertDialog = shadowOfAlert(alert)
+        // ダイアログのリストをタップ
+        shadowAlertDialog.clickOnItem(0)
+
+        // ResultActivityが起動したか確認
+        val resultActivity =
+            InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        assertThat(monitor.hits).isEqualTo(1)
+    }
+
+    @Test
+    fun logEditShare_Instagram() {
+        // データをセットしてから起動
+        val intent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+        activity = activityRule.launchActivity(intent)
+
+        // メニューアイコンタップ
+        onView(
+            Matchers.allOf(withId(R.id.share_sns), withContentDescription("共有"))
+        ).perform(click())
+
+        // ResultActivityの起動を監視
+        val monitor = Instrumentation.ActivityMonitor(
+            InstagramShareActivity::class.java.canonicalName, null, false
+        )
+        InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
+
+        // ダイアログの表示をチェック
+        // RobolectricはAlertDialogのビューを拾えない・・・
+        val alert = ShadowAlertDialog.latestAlertDialog!!
+        assertThat(alert.isShowing).isTrue()
+        val shadowAlertDialog = shadowOfAlert(alert)
+        // ダイアログのリストをタップ
+        shadowAlertDialog.clickOnItem(1)
+
+        // ResultActivityが起動したか確認
+        val resultActivity =
+            InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        assertThat(monitor.hits).isEqualTo(1)
     }
 }
