@@ -6,7 +6,7 @@ import android.widget.CalendarView
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 /**
@@ -23,7 +23,7 @@ class DateSelectDialogFragment : DialogFragment() {
     lateinit var calendarView: CalendarView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
+        val viewModel by sharedViewModel<LogItemViewModel>()
 
         // AlertDialogで作成する
         val builder = AlertDialog.Builder(requireContext())

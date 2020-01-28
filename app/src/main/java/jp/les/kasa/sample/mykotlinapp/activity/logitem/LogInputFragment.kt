@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.*
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 class LogInputFragment : Fragment() {
@@ -29,7 +29,7 @@ class LogInputFragment : Fragment() {
     }
 
     private val today = Calendar.getInstance().clearTime()
-    lateinit var viewModel: LogItemViewModel
+    val viewModel by sharedViewModel<LogItemViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,7 +77,6 @@ class LogInputFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
 
         // 日付の選択を監視
         viewModel.selectDate.observe(this, Observer {

@@ -16,6 +16,7 @@ import jp.les.kasa.sample.mykotlinapp.databinding.FragmentLogEditBinding
 import jp.les.kasa.sample.mykotlinapp.levelFromRadioId
 import jp.les.kasa.sample.mykotlinapp.weatherFromSpinner
 import kotlinx.android.synthetic.main.fragment_log_input.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 /**
  * 編集画面
@@ -36,7 +37,8 @@ class LogEditFragment : Fragment() {
         }
     }
 
-    lateinit var viewModel: LogItemViewModel
+    val viewModel by sharedViewModel<LogItemViewModel>()
+
     private lateinit var stepCountLog: StepCountLog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +54,6 @@ class LogEditFragment : Fragment() {
         val binding: FragmentLogEditBinding = DataBindingUtil.inflate(
             layoutInflater, R.layout.fragment_log_edit, container, false
         )
-
-        viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
 
         stepCountLog = arguments!!.getSerializable(ARG_DATA) as StepCountLog
 
