@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 @RunWith(AndroidJUnit4::class)
 class MainViewModelTestI {
@@ -30,18 +31,11 @@ class MainViewModelTestI {
         val appContext = ApplicationProvider.getApplicationContext<Application>()
 
         viewModel = MainViewModel(appContext)
-        // 最初にデータを削除する
-        runBlocking {
-            viewModel.repository.deleteAll()
-        }
     }
 
     @After
     fun tearDown() {
-        // 最後にデータを削除する
-        runBlocking {
-            viewModel.repository.deleteAll()
-        }
+        stopKoin()
     }
 
     @Test

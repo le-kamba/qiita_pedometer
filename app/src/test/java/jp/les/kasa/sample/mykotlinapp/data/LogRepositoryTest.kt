@@ -10,6 +10,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 @RunWith(AndroidJUnit4::class)
 class LogRepositoryTest {
@@ -31,6 +32,7 @@ class LogRepositoryTest {
     @After
     fun tearDown() {
         database.close()
+        stopKoin()
     }
 
     @Test

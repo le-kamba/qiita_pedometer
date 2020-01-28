@@ -29,6 +29,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -36,27 +37,19 @@ class LogItemActivityTestI {
     @get:Rule
     val activityRule = ActivityTestRule(LogItemActivity::class.java, false, false)
 
-    private val context = ApplicationProvider.getApplicationContext<Application>()
     lateinit var activity: LogItemActivity
     lateinit var settingRepository: SettingRepository
 
     @Before
     fun setUp() {
-
-        // 設定ファイルを初期化する
+        val context = ApplicationProvider.getApplicationContext<Application>()
+        // 設定リポジトリ
         settingRepository = SettingRepository.getInstance(context)
-        settingRepository.clear()
-
-        // 最初にデータを削除する
-        context.deleteDatabase(DATABASE_NAME)
     }
 
     @After
     fun tearDown() {
-        settingRepository.clear()
-
-        // 最初にデータを削除する
-        context.deleteDatabase(DATABASE_NAME)
+        stopKoin()
     }
 
     /**

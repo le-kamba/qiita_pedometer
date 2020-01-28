@@ -8,11 +8,13 @@ import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 @RunWith(AndroidJUnit4::class)
 class MainViewModelTest {
@@ -27,6 +29,11 @@ class MainViewModelTest {
         viewModel = MainViewModel(
             ApplicationProvider.getApplicationContext() as Application
         )
+    }
+
+    @After
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test

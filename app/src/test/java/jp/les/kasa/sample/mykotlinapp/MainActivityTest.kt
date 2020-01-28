@@ -18,9 +18,11 @@ import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import org.robolectric.Shadows.shadowOf
 
 /**
@@ -30,6 +32,13 @@ import org.robolectric.Shadows.shadowOf
 class MainActivityTest {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+
+    @After
+    fun tearDown() {
+        activityRule.finishActivity()
+
+        stopKoin()
+    }
 
     @Test
     fun addRecordMenuIcon() {

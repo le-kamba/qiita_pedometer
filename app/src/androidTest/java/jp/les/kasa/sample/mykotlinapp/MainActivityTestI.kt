@@ -1,11 +1,9 @@
 package jp.les.kasa.sample.mykotlinapp
 
 import android.app.Activity
-import android.app.Application
 import android.app.Instrumentation
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
@@ -21,7 +19,10 @@ import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
-import jp.les.kasa.sample.mykotlinapp.data.*
+import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
+import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
 import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import org.assertj.core.api.Assertions.assertThat
@@ -31,6 +32,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 
 /**
@@ -43,11 +45,6 @@ class MainActivityTestI {
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Application>()
-
-        // 最初にデータを削除する
-        appContext.deleteDatabase(DATABASE_NAME)
-
         activityRule.launchActivity(null)
     }
 
@@ -55,9 +52,7 @@ class MainActivityTestI {
     fun tearDown() {
         activityRule.finishActivity()
 
-        // 最後にデータを削除する
-        val appContext = ApplicationProvider.getApplicationContext<Application>()
-        appContext.deleteDatabase(DATABASE_NAME)
+        stopKoin()
     }
 
     @Test

@@ -9,11 +9,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,6 +29,11 @@ class InstagramShareViewModelTest {
     @Before
     fun setUp() {
         viewModel = InstagramShareViewModel()
+    }
+
+    @After
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test

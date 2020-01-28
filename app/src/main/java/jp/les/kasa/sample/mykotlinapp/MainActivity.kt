@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +21,7 @@ import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity()
@@ -38,15 +38,13 @@ class MainActivity : AppCompatActivity()
         const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 
-    lateinit var viewModel: MainViewModel
+    val viewModel by viewModel<MainViewModel>()
     lateinit var adapter: LogRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
@@ -119,7 +117,8 @@ class MainActivity : AppCompatActivity()
                 // 続けてInstagramにも投稿する
                 val intent = Intent(this, InstagramShareActivity::class.java).apply {
                     val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
-                    putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log) }
+                    putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
+                }
                 startActivity(intent)
                 return
             }
@@ -134,19 +133,19 @@ class MainActivity : AppCompatActivity()
                 val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                 viewModel.addStepCount(log)
                 val shareStatus = data.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS) as ShareStatus
-                if(shareStatus.doPost){
+                if (shareStatus.doPost) {
                     // 共有フラグがONならDB登録完了後に投稿画面へ遷移する
-                    if(shareStatus.postTwitter){
+                    if (shareStatus.postTwitter) {
                         val intent = Intent(this, TwitterShareActivity::class.java)
                         intent.putExtra(TwitterShareActivity.KEY_TEXT, log.getShareMessage())
-                        if(shareStatus.postInstagram) {
+                        if (shareStatus.postInstagram) {
                             intent.putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
                             // Instagramもチェックされていれば、戻った後で次に起動するため、結果を受け取る必要がある
                             startActivityForResult(intent, REQUEST_CODE_SHARE_TWITTER)
-                        }else{
+                        } else {
                             startActivity(intent)
                         }
-                    }else if(shareStatus.postInstagram){
+                    } else if (shareStatus.postInstagram) {
                         val intent = Intent(this, InstagramShareActivity::class.java).apply {
                             putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
                         }

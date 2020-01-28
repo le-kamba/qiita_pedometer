@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.MainActivity
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.activity_log_item.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class LogItemActivity : AppCompatActivity() {
@@ -21,7 +21,7 @@ class LogItemActivity : AppCompatActivity() {
         const val EXTRA_KEY_SHARE_STATUS = "share"
     }
 
-    lateinit var viewModel: LogItemViewModel
+    val viewModel by viewModel<LogItemViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +43,6 @@ class LogItemActivity : AppCompatActivity() {
                     .commitNow()
             }
         }
-
-        viewModel = ViewModelProviders.of(this).get(LogItemViewModel::class.java)
 
         viewModel.logItem.observe(this, Observer {
             val dataIntent = Intent()

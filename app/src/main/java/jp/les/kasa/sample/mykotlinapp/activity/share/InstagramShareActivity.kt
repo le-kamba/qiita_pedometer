@@ -14,13 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityInstagramShareBinding
 import kotlinx.android.synthetic.main.activity_instagram_share.*
 import kotlinx.android.synthetic.main.content_instagram_share.view.*
 import kotlinx.coroutines.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
 import java.io.File
@@ -33,7 +33,7 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
     }
 
     lateinit var binding: ActivityInstagramShareBinding
-    lateinit var viewModel: InstagramShareViewModel
+    val viewModel by viewModel<InstagramShareViewModel>() // TODO koinを2.1.0に上げたときはby shareViewModelに要変更
 
     lateinit var job: Job
     override val coroutineContext: CoroutineContext
@@ -54,8 +54,6 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
         binding.root.button_share_instagram.setOnClickListener {
             createShareImageWithPermissionCheck()
         }
-
-        viewModel = ViewModelProviders.of(this).get(InstagramShareViewModel::class.java)
 
         viewModel.savedBitmapFile.observe(this, Observer { file ->
             // シェア用画像が出来た

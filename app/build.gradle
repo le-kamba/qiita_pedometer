@@ -15,6 +15,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+        testApplicationId "jp.les.kasa.sample.mykotlinapp.test"
     }
     buildTypes {
         release {
@@ -26,6 +28,7 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
     dataBinding {
         enabled true
@@ -70,6 +73,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'org.assertj:assertj-core:3.2.0'
+    androidTestUtil 'androidx.test:orchestrator:1.2.0'
 
     def lifecycle_version = "2.1.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
@@ -101,4 +105,20 @@ dependencies {
     // perission dispather
     implementation "org.permissionsdispatcher:permissionsdispatcher:4.6.0"
     kapt "org.permissionsdispatcher:permissionsdispatcher-processor:4.6.0"
+
+    // Koin for Kotlin apps
+    def koin_version= "2.0.1"
+    implementation "org.koin:koin-core:$koin_version"
+    // Testing
+    testImplementation "org.koin:koin-test:$koin_version"
+    // Koin Extended & experimental features
+    implementation "org.koin:koin-core-ext:$koin_version"
+    // Koin for Android
+    implementation "org.koin:koin-android:$koin_version"
+    // Koin AndroidX Scope feature
+    implementation "org.koin:koin-androidx-scope:$koin_version"
+    // Koin AndroidX ViewModel feature
+    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
+    // Koin AndroidX Fragment Factory (unstable version)
+//    implementation "org.koin:koin-androidx-fragment:$koin_version"
 }

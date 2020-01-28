@@ -13,13 +13,14 @@ import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.getDay
 import jp.les.kasa.sample.mykotlinapp.getMonth
 import jp.les.kasa.sample.mykotlinapp.getYear
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -35,9 +36,14 @@ class LogItemViewModelTest {
         viewModel = LogItemViewModel(context)
     }
 
+    @After
+    fun tearDown() {
+        stopKoin()
+    }
+
     @Test
     fun init() {
-        Assertions.assertThat(viewModel.logItem.value)
+        assertThat(viewModel.logItem.value)
             .isNull() // 初期化したときはnull
     }
 
