@@ -11,15 +11,14 @@ import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
 import jp.les.kasa.sample.mykotlinapp.espresso.observeForTesting
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
 
 @RunWith(AndroidJUnit4::class)
-class MainViewModelTestI {
+class MainViewModelTestI : AutoCloseKoinTest() {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -31,11 +30,6 @@ class MainViewModelTestI {
         val appContext = ApplicationProvider.getApplicationContext<Application>()
 
         viewModel = MainViewModel(appContext)
-    }
-
-    @After
-    fun tearDown() {
-        stopKoin()
     }
 
     @Test

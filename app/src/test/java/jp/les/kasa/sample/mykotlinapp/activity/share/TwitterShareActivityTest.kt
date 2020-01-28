@@ -20,22 +20,16 @@ import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import org.assertj.core.api.Assertions
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
 
 
 @RunWith(AndroidJUnit4::class)
-class TwitterShareActivityTest {
+class TwitterShareActivityTest : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(TwitterShareActivity::class.java, false, false)
-
-    @After
-    fun tearDown() {
-        stopKoin()
-    }
 
     @Test
     fun layout() {

@@ -9,32 +9,21 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-class InstagramShareViewModelTest {
+class InstagramShareViewModelTest : AutoCloseKoinTest() {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    lateinit var viewModel: InstagramShareViewModel
-
-    @Before
-    fun setUp() {
-        viewModel = InstagramShareViewModel()
-    }
-
-    @After
-    fun tearDown() {
-        stopKoin()
-    }
+    val viewModel: InstagramShareViewModel by inject()
 
     @Test
     fun createShareImage() {

@@ -32,14 +32,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
 
 
 /**
  * @date 2019/06/05
  */
 @RunWith(AndroidJUnit4::class)
-class MainActivityTestI {
+class MainActivityTestI : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
@@ -51,8 +51,6 @@ class MainActivityTestI {
     @After
     fun tearDown() {
         activityRule.finishActivity()
-
-        stopKoin()
     }
 
     @Test

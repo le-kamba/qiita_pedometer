@@ -31,7 +31,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.core.inject
+import org.koin.test.AutoCloseKoinTest
 import org.robolectric.annotation.Config
 import java.util.*
 
@@ -40,7 +41,7 @@ import java.util.*
     qualifiers = "xlarge-port",
     shadows = [ShadowAlertDialog::class, ShadowAlertController::class]
 ) // 長めの縦画面にしないとスクロールが必要になるようでテストが失敗する
-class LogItemActivityTest {
+class LogItemActivityTest : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(LogItemActivity::class.java, false, false)
 
@@ -50,7 +51,7 @@ class LogItemActivityTest {
 
     private fun getString(resId: Int) = context.applicationContext.getString(resId)
 
-    private val settingRepository = SettingRepository.getInstance(context)
+    private val settingRepository: SettingRepository by inject()
 
     @Before
     fun setUp() {
@@ -61,7 +62,6 @@ class LogItemActivityTest {
     @After
     fun tearDown() {
         settingRepository.clear()
-        stopKoin()
     }
 
     /**

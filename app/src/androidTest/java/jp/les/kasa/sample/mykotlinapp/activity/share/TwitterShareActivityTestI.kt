@@ -18,9 +18,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.test.AutoCloseKoinTest
 
 @RunWith(AndroidJUnit4::class)
-class TwitterShareActivityTestI {
+class TwitterShareActivityTestI : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(TwitterShareActivity::class.java, false, false)
 

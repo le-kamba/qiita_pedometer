@@ -17,15 +17,14 @@ import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
 import java.io.File
 
 @RunWith(AndroidJUnit4::class)
-class InstagramShareActivityTestI {
+class InstagramShareActivityTestI : AutoCloseKoinTest() {
 
     @get:Rule
     val activityRule = ActivityTestRule(InstagramShareActivity::class.java, false, false)
@@ -38,12 +37,6 @@ class InstagramShareActivityTestI {
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
-
-    @After
-    fun tearDown() {
-        stopKoin()
-    }
-
 
     @Test
     fun layout() {

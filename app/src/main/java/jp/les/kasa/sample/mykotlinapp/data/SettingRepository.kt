@@ -6,17 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 /**
  * 設定ファイル読み書きリポジトリ
  **/
-class SettingRepository private constructor(private val applicationContext: Context) {
+class SettingRepository constructor(private val applicationContext: Context) {
     companion object {
         const val PREF_FILE_NAME = "settings"
-
-        private var instance: SettingRepository? = null
-
-        fun getInstance(applicationContext: Context): SettingRepository {
-            if (instance == null)
-                instance = SettingRepository(applicationContext)
-            return instance!!
-        }
     }
 
     fun saveShareStatus(shareStatus: ShareStatus) {

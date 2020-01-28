@@ -16,7 +16,10 @@ typealias LogItemData = Pair<StepCountLog, ShareStatus>
  * ログアイテム表示画面用のViewModel
  * @date 2019/06/19
  **/
-class LogItemViewModel(application: Application) : AndroidViewModel(application) {
+class LogItemViewModel(
+    application: Application,
+    private val settingRepository: SettingRepository
+) : AndroidViewModel(application) {
 
     private val _selectDate = MutableLiveData<Calendar>()
     val selectDate = _selectDate as LiveData<Calendar>
@@ -26,8 +29,6 @@ class LogItemViewModel(application: Application) : AndroidViewModel(application)
 
     private val _logItem = MutableLiveData<LogItemData>()
     val logItem = _logItem as LiveData<LogItemData>
-
-    private val settingRepository = SettingRepository.getInstance(application.applicationContext)
 
     @UiThread
     fun changeLog(data: StepCountLog, shareStatus: ShareStatus) {

@@ -1,22 +1,22 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.KoinComponent
 import org.koin.core.context.stopKoin
+import org.koin.core.inject
 
 @RunWith(AndroidJUnit4::class)
-class SettingRepositoryTest {
-    private lateinit var repository: SettingRepository
+class SettingRepositoryTest : KoinComponent {
+    private val repository: SettingRepository by inject()
 
     @Before
     fun setUp() {
-        repository = SettingRepository.getInstance(ApplicationProvider.getApplicationContext<Context>())
+//        repository = SettingRepository.getInstance(ApplicationProvider.getApplicationContext<Context>())
         repository.clear()
     }
 

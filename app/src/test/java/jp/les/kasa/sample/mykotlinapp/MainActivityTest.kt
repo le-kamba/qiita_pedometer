@@ -22,22 +22,20 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
 import org.robolectric.Shadows.shadowOf
 
 /**
  * @date 2019/06/05
  */
 @RunWith(AndroidJUnit4::class)
-class MainActivityTest {
+class MainActivityTest : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
 
     @After
     fun tearDown() {
         activityRule.finishActivity()
-
-        stopKoin()
     }
 
     @Test

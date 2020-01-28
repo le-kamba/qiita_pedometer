@@ -1,10 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 import android.app.Activity
-import android.app.Application
 import android.app.Instrumentation
 import android.content.Intent
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
@@ -24,33 +22,20 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.core.inject
+import org.koin.test.AutoCloseKoinTest
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-class LogItemActivityTestI {
+class LogItemActivityTestI : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(LogItemActivity::class.java, false, false)
 
     lateinit var activity: LogItemActivity
-    lateinit var settingRepository: SettingRepository
-
-    @Before
-    fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        // 設定リポジトリ
-        settingRepository = SettingRepository.getInstance(context)
-    }
-
-    @After
-    fun tearDown() {
-        stopKoin()
-    }
+    private val settingRepository: SettingRepository by inject()
 
     /**
      *   起動直後の表示のテスト<br>

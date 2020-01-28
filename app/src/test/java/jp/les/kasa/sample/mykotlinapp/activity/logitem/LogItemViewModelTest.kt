@@ -1,9 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
@@ -14,32 +12,20 @@ import jp.les.kasa.sample.mykotlinapp.getDay
 import jp.les.kasa.sample.mykotlinapp.getMonth
 import jp.les.kasa.sample.mykotlinapp.getYear
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-class LogItemViewModelTest {
+class LogItemViewModelTest : AutoCloseKoinTest() {
     @get:Rule
     val rule: TestRule = InstantTaskExecutorRule()
 
-    lateinit var viewModel: LogItemViewModel
-
-    @Before
-    fun setUp() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        viewModel = LogItemViewModel(context)
-    }
-
-    @After
-    fun tearDown() {
-        stopKoin()
-    }
+    val viewModel: LogItemViewModel by inject()
 
     @Test
     fun init() {
