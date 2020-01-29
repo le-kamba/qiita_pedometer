@@ -1,12 +1,11 @@
 package jp.les.kasa.sample.mykotlinapp
 
-import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
 import jp.les.kasa.sample.mykotlinapp.espresso.observeForTesting
 import kotlinx.coroutines.runBlocking
@@ -15,7 +14,9 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
 class MainViewModelTestI : AutoCloseKoinTest() {
@@ -23,13 +24,11 @@ class MainViewModelTestI : AutoCloseKoinTest() {
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    lateinit var viewModel: MainViewModel
+    val viewModel: MainViewModel by inject()
 
     @Before
     fun setUp() {
-        val appContext = ApplicationProvider.getApplicationContext<Application>()
-
-        viewModel = MainViewModel(appContext)
+        loadKoinModules(testMockModule)
     }
 
     @Test

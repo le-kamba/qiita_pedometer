@@ -10,19 +10,24 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
+import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
+import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 
 /**
@@ -32,6 +37,11 @@ import org.robolectric.Shadows.shadowOf
 class MainActivityTest : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java)
+
+    @Before
+    fun setUp() {
+        loadKoinModules(mockModule)
+    }
 
     @After
     fun tearDown() {
@@ -51,7 +61,7 @@ class MainActivityTest : AutoCloseKoinTest() {
         val monitor = Instrumentation.ActivityMonitor(
             LogItemActivity::class.java.canonicalName, null, false
         )
-        InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
+        getInstrumentation().addMonitor(monitor)
 
         // 追加メニューをクリック
         onView(
@@ -59,7 +69,7 @@ class MainActivityTest : AutoCloseKoinTest() {
         ).perform(click())
 
         // ResultActivityが起動したか確認
-        val resultActivity = InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 3000L)
+        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 3000L)
         assertThat(monitor.hits).isEqualTo(1)
 
         // resultActivityはどうしてもnullになるようだ・・・Robolectricの罠その2
@@ -70,27 +80,30 @@ class MainActivityTest : AutoCloseKoinTest() {
 //        assertThat(resultActivity.isFinishing).isTrue()
     }
 
-    //    @Test
-    fun addRecordList() {
+    @Test
+    fun showList() {
         // ViewModelのリストに直接追加
         val mainActivity = activityRule.activity
-        mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-        mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+        }
+        getInstrumentation().waitForIdleSync()
 
         // リストの表示確認
-        var index = 0
+        var index = 1
 
         onView(withId(R.id.log_list))
             // @formatter:off
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .check(matches(atPositionOnView(index, withText("12345"), R.id.stepTextView)))
             .check(matches(atPositionOnView(index, withText("2019/06/13"), R.id.dateTextView)))
-            .check(matches(atPositionOnView(index,
-                withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index, withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
                         withDrawable(R.drawable.ic_wb_sunny_yellow_24dp),R.id.weatherImageView)))
             // @formatter:on
-        index = 1
+        index = 0
         onView(withId(R.id.log_list))
             // @formatter:off
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
@@ -103,10 +116,12 @@ class MainActivityTest : AutoCloseKoinTest() {
         // @formatter:on
     }
 
-    //    @Test
-    fun onActivityResult() {
+    @Test
+    fun onActivityResult_Add() {
+        val mainActivity = activityRule.activity
         val resultData = Intent().apply {
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
+            putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus())
         }
 
         // 登録画面を起動
@@ -114,11 +129,15 @@ class MainActivityTest : AutoCloseKoinTest() {
             Matchers.allOf(withId(R.id.add_record), withContentDescription("記録を追加"))
         ).perform(click())
 
-        val activity = activityRule.activity
-        shadowOf(activity).receiveResult(
-            Intent(activity, LogItemActivity::class.java),
-            Activity.RESULT_OK, resultData
-        )
+        val intent = shadowOf(mainActivity).peekNextStartedActivityForResult().intent
+        assertThat(LogItemActivity::class.java.name).isEqualTo(intent.component.className)
+        // Robolectricの場合、画面遷移は自分で起こさなければならない
+        val resultActivity = Robolectric.buildActivity(LogItemActivity::class.java, intent)
+            .create().get()
+        assertThat(resultActivity).isNotNull()
+
+        resultActivity.setResult(Activity.RESULT_OK, resultData)
+        resultActivity.finish()
 
         // 反映を確認
         val index = 0
@@ -134,5 +153,4 @@ class MainActivityTest : AutoCloseKoinTest() {
                         withDrawable(R.drawable.ic_grain_gley_24dp),R.id.weatherImageView)))
             // @formatter:on
     }
-
 }

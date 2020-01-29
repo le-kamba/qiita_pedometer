@@ -6,12 +6,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.KoinComponent
-import org.koin.core.context.stopKoin
 import org.koin.core.inject
+import org.koin.test.AutoCloseKoinTest
 
 @RunWith(AndroidJUnit4::class)
-class SettingRepositoryTest : KoinComponent {
+class SettingRepositoryTest : AutoCloseKoinTest() {
     private val repository: SettingRepository by inject()
 
     @Before
@@ -23,7 +22,6 @@ class SettingRepositoryTest : KoinComponent {
     @After
     fun tearDown() {
         repository.clear()
-        stopKoin()
     }
 
     @Test

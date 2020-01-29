@@ -1,38 +1,32 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.stopKoin
+import org.koin.core.context.loadKoinModules
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
-class LogRepositoryTest {
+class LogRepositoryTest : AutoCloseKoinTest() {
 
-    private lateinit var database: LogRoomDatabase
-    private lateinit var logDao: LogDao
-    private lateinit var repository: LogRepository
+    private val database: LogRoomDatabase by inject()
+    private val logDao: LogDao by inject()
+    private val repository: LogRepository by inject()
 
     @Before
     fun setUp() {
-        database = Room.inMemoryDatabaseBuilder(
-            ApplicationProvider.getApplicationContext<Context>(),
-            LogRoomDatabase::class.java
-        ).allowMainThreadQueries().build()
-        logDao = database.logDao()
-        repository = LogRepository(logDao)
+        loadKoinModules(mockModule)
     }
 
     @After
     fun tearDown() {
         database.close()
-        stopKoin()
     }
 
     @Test

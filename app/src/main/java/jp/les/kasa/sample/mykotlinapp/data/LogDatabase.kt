@@ -1,6 +1,5 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
@@ -36,23 +35,4 @@ const val DATABASE_NAME = "log_database"
 @Database(entities = [StepCountLog::class], version = 1)
 abstract class LogRoomDatabase : RoomDatabase() {
     abstract fun logDao(): LogDao
-
-    companion object {
-
-        @Volatile
-        private var INSTANCE: LogRoomDatabase? = null
-
-        fun getDatabase(context: Context): LogRoomDatabase {
-            return INSTANCE ?: synchronized(this) {
-                // Create database here
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    LogRoomDatabase::class.java,
-                    DATABASE_NAME
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
 }
