@@ -660,7 +660,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
         // この方法なら取れたので、こちらにしてある。
         // 同じコードは逆に、androidTestでは動かない
-        scenario.onActivity { activity ->
+        scenario.onActivity {
 
             onView(withId(R.id.button_delete)).check(matches(isDisplayed()))
                 .perform(click())
@@ -683,7 +683,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
         // この方法なら取れたので、こちらにしてある。
         // 同じコードは逆に、androidTestでは動かない
-        scenario.onActivity { activity ->
+        scenario.onActivity {
             // 変更
             onView(withText(R.string.share_sns)).perform(click())
             onView(withText(R.string.label_twitter)).perform(click())
@@ -706,7 +706,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
         // この方法なら取れたので、こちらにしてある。
         // 同じコードは逆に、androidTestでは動かない
-        scenario.onActivity { activity ->
+        scenario.onActivity {
             // 変更
             onView(withText(R.string.share_sns)).perform(click())
             onView(withText(R.string.label_instagram)).perform(click())
@@ -729,7 +729,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
         // この方法なら取れたので、こちらにしてある。
         // 同じコードは逆に、androidTestでは動かない
-        scenario.onActivity { activity ->
+        scenario.onActivity {
             // 変更
             onView(withText(R.string.share_sns)).perform(click())
             onView(withText(R.string.label_twitter)).perform(click())
@@ -753,7 +753,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         // Robolectricでは、ActivityRule#getActivityResultでresultが取れなかった
         // この方法なら取れたので、こちらにしてある。
         // 同じコードは逆に、androidTestでは動かない
-        scenario.onActivity { activity ->
+        scenario.onActivity {
             // 取り敢えず歩数だけ入れて登録
             onView(withId(R.id.edit_count)).perform(replaceText("12345"))
 
@@ -818,8 +818,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         shadowAlertDialog.clickOnItem(0)
 
         // ResultActivityが起動したか確認
-        val resultActivity =
-            InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
         assertThat(monitor.hits).isEqualTo(1)
     }
 
@@ -851,8 +850,7 @@ class LogItemActivityTest : AutoCloseKoinTest() {
         shadowAlertDialog.clickOnItem(1)
 
         // ResultActivityが起動したか確認
-        val resultActivity =
-            InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
         assertThat(monitor.hits).isEqualTo(1)
     }
 }

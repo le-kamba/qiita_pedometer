@@ -38,7 +38,7 @@ fun setImageWeather(view: ImageView, level: WEATHER) {
     view.setImageResource(res)
 }
 
-@BindingAdapter("app:items")
+@BindingAdapter("items")
 fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
     val adapter = view.adapter as LogRecyclerAdapter? ?: return
 
@@ -47,7 +47,7 @@ fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
     }
 }
 
-@BindingAdapter("app:selected")
+@BindingAdapter("selected")
 fun selectWeather(view: Spinner, weather: WEATHER) {
     view.setSelection(weather.ordinal)
 }
