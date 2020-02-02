@@ -33,7 +33,7 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
     }
 
     lateinit var binding: ActivityInstagramShareBinding
-    val viewModel by viewModel<InstagramShareViewModel>() // TODO koinを2.1.0に上げたときはby shareViewModelに要変更
+    val viewModel by viewModel<InstagramShareViewModel>()
 
     lateinit var job: Job
     override val coroutineContext: CoroutineContext
