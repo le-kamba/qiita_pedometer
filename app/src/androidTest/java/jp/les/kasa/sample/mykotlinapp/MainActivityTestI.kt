@@ -47,7 +47,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Before
     fun setUp() {
         loadKoinModules(testMockModule)
-        activityRule.launchActivity(null)
+        activityRule.launchActivity(Intent())
     }
 
     @After

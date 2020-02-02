@@ -78,7 +78,7 @@ class InstagramShareActivityTest : AutoCloseKoinTest() {
 
         onView(withText(R.string.label_post)).perform(click())
 
-        testObserver.await()
+        testObserver.await(10)
 
         assertThat(activity.viewModel.savedBitmapFile.value).isFile()
 
