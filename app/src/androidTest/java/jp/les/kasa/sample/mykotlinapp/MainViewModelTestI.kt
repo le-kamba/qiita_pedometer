@@ -2,6 +2,7 @@ package jp.les.kasa.sample.mykotlinapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER

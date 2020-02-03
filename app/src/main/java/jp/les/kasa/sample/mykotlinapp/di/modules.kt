@@ -1,8 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
 import androidx.room.Room
-import jp.les.kasa.sample.mykotlinapp.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
+import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareViewModel
 import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
@@ -25,7 +25,10 @@ val viewModelModule = module {
 
 // database,dao
 val daoModule = module {
-    single { Room.databaseBuilder(androidApplication(), LogRoomDatabase::class.java, DATABASE_NAME).build() }
+    single {
+        Room.databaseBuilder(androidApplication(), LogRoomDatabase::class.java, DATABASE_NAME)
+            .build()
+    }
     factory { get<LogRoomDatabase>().logDao() }
 }
 

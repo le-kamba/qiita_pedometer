@@ -2,10 +2,11 @@ package jp.les.kasa.sample.mykotlinapp.data
 
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import jp.les.kasa.sample.mykotlinapp.LogRecyclerAdapter
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
 
 
 /**
@@ -51,3 +52,12 @@ fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
 fun selectWeather(view: Spinner, weather: WEATHER) {
     view.setSelection(weather.ordinal)
 }
+
+@BindingAdapter("yearMonth")
+fun setDataYearMonth(view: TextView, yearMonth: String?) {
+    if (yearMonth == null) return
+    val date = yearMonth.split('/')
+    val str = view.context.getString(R.string.year_month_label, date[0], Integer.valueOf(date[1]))
+    view.text = str
+}
+
