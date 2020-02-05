@@ -38,7 +38,6 @@ class MainViewModelTest : AutoCloseKoinTest() {
     @After
     fun tearDown() {
         get<LogRoomDatabase>().clearAllTables()
-        get<LogRoomDatabase>().close()
     }
 
     @Test
@@ -47,12 +46,17 @@ class MainViewModelTest : AutoCloseKoinTest() {
             .isNotNull()
         assertThat(viewModel.stepCountList)
             .isNotNull()
+        viewModel.stepCountList.observeForTesting {
+            assertThat(viewModel.stepCountList.value)
+                .isNull()
+        }
     }
 
     @Test
     fun addStepCount() {
-        val listObserver = TestObserver<List<StepCountLog>>(2)
+        val listObserver = TestObserver<List<StepCountLog>>(3)
         viewModel.stepCountList.observeForever(listObserver)
+        viewModel.setYearMonth("2019/06")
 
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
@@ -75,6 +79,7 @@ class MainViewModelTest : AutoCloseKoinTest() {
     fun deleteStepCount() {
         val listObserver = TestObserver<List<StepCountLog>>(3)
         viewModel.stepCountList.observeForever(listObserver)
+        viewModel.setYearMonth("2019/06")
 
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
@@ -94,4 +99,14 @@ class MainViewModelTest : AutoCloseKoinTest() {
         viewModel.stepCountList.removeObserver(listObserver)
     }
 
+    @Test
+    fun getFromToYMD() {
+        val pair = viewModel.getFromToYMD("2020/01")
+        assertThat(pair.first).isEqualTo("2020/01/01")
+        assertThat(pair.second).isEqualTo("2020/02/01")
+
+        val pair2 = viewModel.getFromToYMD("2020/12")
+        assertThat(pair2.first).isEqualTo("2020/12/01")
+        assertThat(pair2.second).isEqualTo("2021/01/01")
+    }
 }

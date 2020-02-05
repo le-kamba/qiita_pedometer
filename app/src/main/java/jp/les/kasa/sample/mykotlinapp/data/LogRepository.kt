@@ -9,8 +9,6 @@ import androidx.lifecycle.LiveData
  **/
 class LogRepository(private val logDao: LogDao) {
 
-    val allLogs: LiveData<List<StepCountLog>> = logDao.getAllLogs()
-
     @WorkerThread
     suspend fun insert(stepCountLog: StepCountLog) {
         logDao.insert(stepCountLog)
@@ -31,4 +29,13 @@ class LogRepository(private val logDao: LogDao) {
         logDao.deleteAll()
     }
 
+    @WorkerThread
+    fun searchRange(from: String, to: String): LiveData<List<StepCountLog>> {
+        return logDao.getRangeLog(from, to)
+    }
+
+    @WorkerThread
+    fun allLogs(): List<StepCountLog> {
+        return logDao.getAllLogs()
+    }
 }

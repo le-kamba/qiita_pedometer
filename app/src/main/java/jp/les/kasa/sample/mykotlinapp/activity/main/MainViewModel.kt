@@ -1,14 +1,14 @@
 package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * MainViewModel
@@ -24,7 +24,11 @@ class MainViewModel(
     val dataYearMonth: LiveData<String> = _dataYearMonth
 
     // データリスト
-    val stepCountList: LiveData<List<StepCountLog>> = repository.allLogs
+    val stepCountList: LiveData<List<StepCountLog>> =
+        Transformations.switchMap(_dataYearMonth) {
+            val ymd = getFromToYMD(it)
+            repository.searchRange(ymd.first, ymd.second)
+        }
 
     fun setYearMonth(yearMonth: String) {
         _dataYearMonth.postValue(yearMonth)
@@ -36,5 +40,25 @@ class MainViewModel(
 
     fun deleteStepCount(stepLog: StepCountLog) = viewModelScope.launch(Dispatchers.IO) {
         repository.delete(stepLog)
+    }
+
+    /**
+     * クエリー用のfromとto日付を取得する
+     * @param yyyyMM `yyyy/MM`の形の日付
+     * @return <yyyy/MM/01, yyyy/(MM+1)/01>のPair
+     */
+    fun getFromToYMD(yyyyMM: String): Pair<String, String> {
+        val formatter = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
+        val from = Calendar.getInstance()
+        from.time = formatter.parse(yyyyMM)
+        from.set(Calendar.DATE, 1)
+        from.clearTime()
+        val to = from.clone() as Calendar
+        to.add(Calendar.MONTH, 1)
+
+        val formatter2 = SimpleDateFormat("yyyy/MM/dd", Locale.JAPAN)
+        val fromStr = formatter2.format(from.time)
+        val toStr = formatter2.format(to.time)
+        return Pair(fromStr, toStr)
     }
 }

@@ -40,7 +40,7 @@ class MainViewModelTestI : AutoCloseKoinTest() {
             .isNotNull()
         viewModel.stepCountList.observeForTesting {
             assertThat(viewModel.stepCountList.value)
-                .isEmpty()
+                .isNull()
         }
     }
 
@@ -48,6 +48,7 @@ class MainViewModelTestI : AutoCloseKoinTest() {
     fun addStepCount() {
         val listObserver = TestObserver<List<StepCountLog>>(2)
         viewModel.stepCountList.observeForever(listObserver)
+        viewModel.setYearMonth("2019/06")
 
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
@@ -70,6 +71,7 @@ class MainViewModelTestI : AutoCloseKoinTest() {
     fun deleteStepCount() {
         val listObserver = TestObserver<List<StepCountLog>>(3)
         viewModel.stepCountList.observeForever(listObserver)
+        viewModel.setYearMonth("2019/06")
 
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))

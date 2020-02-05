@@ -71,3 +71,21 @@ class DrawableMatcher(private val expectedId: Int) : TypeSafeMatcher<View>(View:
 fun withDrawable(resourceId: Int): Matcher<View> {
     return DrawableMatcher(resourceId)
 }
+
+object RecyclerViewMatchers {
+    @JvmStatic
+    fun hasItemCount(itemCount: Int): Matcher<View> {
+        return object : BoundedMatcher<View, RecyclerView>(
+            RecyclerView::class.java
+        ) {
+
+            override fun describeTo(description: Description) {
+                description.appendText("has $itemCount items")
+            }
+
+            override fun matchesSafely(view: RecyclerView): Boolean {
+                return view.adapter!!.itemCount == itemCount
+            }
+        }
+    }
+}

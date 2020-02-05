@@ -36,17 +36,15 @@ class LogRepositoryTest : AutoCloseKoinTest() {
             repository.insert(StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD))
         }
 
-        val items = repository.allLogs
-        items.observeForever {
-            assertThat(items.value).isNotEmpty()
-            assertThat(items.value!!.size).isEqualTo(2)
-            assertThat(items.value!![0]).isEqualToComparingFieldByField(
-                StepCountLog("2019/08/30", 12345)
-            )
-            assertThat(items.value!![1]).isEqualToComparingFieldByField(
-                StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD)
-            )
-        }
+        val items = repository.allLogs()
+        assertThat(items).isNotEmpty()
+        assertThat(items.size).isEqualTo(2)
+        assertThat(items[1]).isEqualToComparingFieldByField(
+            StepCountLog("2019/08/30", 12345)
+        )
+        assertThat(items[0]).isEqualToComparingFieldByField(
+            StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD)
+        )
     }
 
     @Test
@@ -93,9 +91,71 @@ class LogRepositoryTest : AutoCloseKoinTest() {
             repository.deleteAll()
         }
 
-        val items = repository.allLogs
-        items.observeForever() {
-            assertThat(items.value).isEmpty()
+        val items = repository.allLogs()
+        assertThat(items).isEmpty()
+    }
+
+    @Test
+    fun searchRange() {
+        runBlocking {
+            repository.insert(StepCountLog("2019/07/31", 12345))
+            repository.insert(StepCountLog("2019/08/01", 12345))
+            repository.insert(StepCountLog("2019/08/30", 12345))
+            repository.insert(StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD))
+            repository.insert(StepCountLog("2019/09/01", 123, LEVEL.BAD, WEATHER.RAIN))
+            repository.insert(StepCountLog("2019/12/31", 1111, LEVEL.BAD, WEATHER.RAIN))
+            repository.insert(StepCountLog("2019/01/01", 1111)) // 古いデータ
+            repository.insert(StepCountLog("2020/01/01", 11115))
+            repository.insert(StepCountLog("2020/02/29", 29))
+            repository.insert(StepCountLog("2020/02/28", 28))
+            repository.insert(StepCountLog("2020/03/01", 31))
         }
+
+        val data6 = repository.searchRange("2019/06/01", "2019/07/01")
+        data6.observeForever {
+            assertThat(it).isEmpty()
+        }
+
+        val data8 = repository.searchRange("2019/08/01", "2019/09/01")
+        data8.observeForever {
+            assertThat(it).isNotEmpty()
+            assertThat(it!!.size).isEqualTo(3)
+            assertThat(it!![2]).isEqualToComparingFieldByField(
+                StepCountLog("2019/08/01", 12345)
+            )
+            assertThat(it!![1]).isEqualToComparingFieldByField(
+                StepCountLog("2019/08/30", 12345)
+            )
+            assertThat(it!![0]).isEqualToComparingFieldByField(
+                StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD)
+            )
+        }
+
+        // 月またぎ、年またぎ
+        val data12 = repository.searchRange("2019/12/01", "2020/02/01")
+        data12.observeForever {
+            assertThat(it).isNotEmpty()
+            assertThat(it!!.size).isEqualTo(2)
+            assertThat(it[1]).isEqualToComparingFieldByField(
+                StepCountLog("2019/12/31", 1111, LEVEL.BAD, WEATHER.RAIN)
+            )
+            assertThat(it[0]).isEqualToComparingFieldByField(
+                StepCountLog("2020/01/01", 11115)
+            )
+        }
+
+        // 閏月
+        val data2 = repository.searchRange("2020/02/01", "2020/03/01")
+        data2.observeForever {
+            assertThat(it).isNotEmpty()
+            assertThat(it!!.size).isEqualTo(2)
+            assertThat(it[1]).isEqualToComparingFieldByField(
+                StepCountLog("2020/02/29", 29)
+            )
+            assertThat(it[0]).isEqualToComparingFieldByField(
+                StepCountLog("2020/02/28", 28)
+            )
+        }
+
     }
 }

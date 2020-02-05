@@ -315,3 +315,12 @@ class TestObserver<T>(count: Int = 1) : Observer<T> {
         }
     }
 }
+
+fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
+    observeForever(object : Observer<T> {
+        override fun onChanged(t: T?) {
+            observer.onChanged(t)
+            removeObserver(this)
+        }
+    })
+}

@@ -23,10 +23,13 @@ interface LogDao {
     fun deleteAll()
 
     @Query("SELECT * from log_table ORDER BY date DESC")
-    fun getAllLogs(): LiveData<List<StepCountLog>>
+    fun getAllLogs(): List<StepCountLog>
 
     @Query("SELECT * from log_table WHERE date = :srcDate")
     fun getLog(srcDate: String): StepCountLog
+
+    @Query("SELECT * from log_table WHERE date>= :from AND date < :to ORDER BY date DESC")
+    fun getRangeLog(from: String, to: String): LiveData<List<StepCountLog>>
 }
 
 const val DATABASE_NAME = "log_database"

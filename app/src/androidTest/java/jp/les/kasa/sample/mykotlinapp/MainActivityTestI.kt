@@ -24,6 +24,7 @@ import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
+import jp.les.kasa.sample.mykotlinapp.espresso.RecyclerViewMatchers.hasItemCount
 import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
 import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import org.assertj.core.api.Assertions.assertThat
@@ -92,10 +93,16 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/05/31", 333, LEVEL.NORMAL, WEATHER.HOT))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
+
+        onView(withId(R.id.log_list)).check(matches(hasItemCount(2)))
 
         // リストの表示確認
         var index = 1
@@ -125,9 +132,17 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_Add() {
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.setYearMonth("2019/06")
+        }
+
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus())
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -167,8 +182,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
@@ -194,7 +212,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
         assertThat(resultActivity).isNotNull()
 
         // その起動Intentに必要な情報があるかチェック
-        val extraData = resultActivity.intent.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+        val extraData =
+            resultActivity.intent.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
         assertThat(extraData)
             .isEqualToComparingFieldByField(
                 StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN)
@@ -207,14 +226,19 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 5000, LEVEL.NORMAL, WEATHER.CLOUD))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus())
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -256,13 +280,18 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -304,8 +333,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
@@ -352,8 +384,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
@@ -395,8 +430,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val mainActivity = activityRule.activity
 
         mainActivity.runOnUiThread {
+            // @formatter:off
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
+            mainActivity.viewModel.setYearMonth("2019/06")
+            // @formatter:on
         }
         getInstrumentation().waitForIdleSync()
 
@@ -435,8 +473,10 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_TwitterShare() {
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(true, true, false))
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -464,7 +504,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().waitForIdleSync()
 
         // Twitterシェア画面起動を確認
-        val shareActivity = getInstrumentation().waitForMonitorWithTimeout(shareMonitor, 500L) as TwitterShareActivity
+        val shareActivity = getInstrumentation()
+            .waitForMonitorWithTimeout(shareMonitor, 500L) as TwitterShareActivity
         assertThat(shareMonitor.hits).isEqualTo(1)
         assertThat(shareActivity).isNotNull()
     }
@@ -472,8 +513,10 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_InstagramShare() {
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(true, false, true))
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -510,8 +553,10 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_NoneShare() {
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(false, true, true))
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -554,8 +599,10 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_ShareAll() {
         val resultData = Intent().apply {
+            // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(true, true, true))
+            // @formatter:on
         }
 
         val monitor = Instrumentation.ActivityMonitor(
@@ -603,5 +650,18 @@ class MainActivityTestI : AutoCloseKoinTest() {
                 as InstagramShareActivity
         assertThat(shareMonitor2.hits).isEqualTo(1)
         assertThat(shareActivity2).isNotNull()
+    }
+
+    @Test
+    fun showDateLabel() {
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.setYearMonth("2020/02")
+        }
+        getInstrumentation().waitForIdleSync()
+
+        onView(withId(R.id.textViewYM)).check(matches(isDisplayed()))
+            .check(matches(withText("2020年 2月")))
     }
 }
