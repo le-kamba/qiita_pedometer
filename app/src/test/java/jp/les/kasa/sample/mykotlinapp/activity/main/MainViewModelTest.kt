@@ -47,6 +47,27 @@ class MainViewModelTest : AutoCloseKoinTest() {
     }
 
     @Test
+    fun addStepCount() {
+
+        runBlocking {
+            viewModel.addStepCount(StepCountLog("2019/06/21", 123))
+            viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        }
+
+        val list = viewModel.repository.allLogs()
+        assertThat(list.size).isEqualTo(2)
+        assertThat(list[0]).isEqualToComparingFieldByField(
+            StepCountLog(
+                "2019/06/22",
+                456,
+                LEVEL.BAD,
+                WEATHER.HOT
+            )
+        )
+        assertThat(list[1]).isEqualToComparingFieldByField(StepCountLog("2019/06/21", 123))
+    }
+
+    @Test
     fun deleteStepCount() {
 
         runBlocking {

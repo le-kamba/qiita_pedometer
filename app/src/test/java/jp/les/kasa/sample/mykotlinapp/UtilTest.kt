@@ -24,7 +24,7 @@ class UtilTest {
     }
 
     @Test
-    fun calendar_getStringYMD() {
+    fun calendar_getDateStringYMD() {
         val cal = Calendar.getInstance()
         cal.set(2020, 9 - 1, 11) // 月だけはindex扱いなので、実際の月-1のセットとしなければならない
         assertThat(cal.getDateStringYMD()).isEqualTo("2020/09/11")
