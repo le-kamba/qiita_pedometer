@@ -31,7 +31,6 @@ class MainViewModel(
     val pages = Transformations.switchMap(oldestYearMonth) {
         val liveData = MutableLiveData<List<String>>()
         val today = Calendar.getInstance().clearTime()
-//        liveData.postValue(makePageList(it, today))
         liveData.value = makePageList(it, today)
         return@switchMap liveData
     }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import jp.les.kasa.sample.mykotlinapp.R
@@ -13,6 +14,7 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,12 +33,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val list = listOf("2019/10", "2019/11", "2019/12", "2020/01", "2020/02")
+        binding.lifecycleOwner = this
+        binding.viewmodel = viewModel
 
-        viewPager.adapter = MonthlyPagerAdapter(this, list)
-        viewPager.setCurrentItem(list.size - 1, false)
+        viewPager.adapter = MonthlyPagerAdapter(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -119,11 +122,15 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class MonthlyPagerAdapter(
-    fragmentActivity: FragmentActivity,
-    private val items: List<String>
-) : FragmentStateAdapter(fragmentActivity) {
+class MonthlyPagerAdapter(fragmentActivity: FragmentActivity) :
+    FragmentStateAdapter(fragmentActivity) {
 
+    private var items: List<String> = emptyList()
     override fun getItemCount(): Int = items.size
     override fun createFragment(position: Int) = MonthlyPageFragment.newInstance(items[position])
+
+    fun setList(items: List<String>) {
+        this.items = items
+        notifyDataSetChanged()
+    }
 }

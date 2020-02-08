@@ -5,8 +5,10 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
+import jp.les.kasa.sample.mykotlinapp.activity.main.MonthlyPagerAdapter
 
 
 /**
@@ -61,3 +63,12 @@ fun setDataYearMonth(view: TextView, yearMonth: String?) {
     view.text = str
 }
 
+@BindingAdapter("items")
+fun setPageItems(view: ViewPager2, pages: List<String>?) {
+    val adapter = view.adapter as MonthlyPagerAdapter? ?: return
+
+    pages?.let {
+        adapter.setList(it)
+        view.setCurrentItem(it.size - 1, false)
+    }
+}
