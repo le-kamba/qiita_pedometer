@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -52,9 +53,6 @@ class MonthlyPageViewModel(
         val to = from.clone() as Calendar
         to.add(Calendar.MONTH, 1)
 
-        val formatter2 = SimpleDateFormat("yyyy/MM/dd", Locale.JAPAN)
-        val fromStr = formatter2.format(from.time)
-        val toStr = formatter2.format(to.time)
-        return Pair(fromStr, toStr)
+        return Pair(from.getDateStringYMD(), to.getDateStringYMD())
     }
 }

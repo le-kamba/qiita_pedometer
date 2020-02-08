@@ -25,10 +25,10 @@ class MainViewModel(
 ) : AndroidViewModel(app) {
 
     // 一番古いデータの年月
-    private val oldestYearMonth = repository.getOldestDate()
+    private val oldestDate = repository.getOldestDate()
 
     // ページ
-    val pages = Transformations.switchMap(oldestYearMonth) {
+    val pages = Transformations.switchMap(oldestDate) {
         val liveData = MutableLiveData<List<String>>()
         val today = Calendar.getInstance().clearTime()
         liveData.value = makePageList(it, today)
