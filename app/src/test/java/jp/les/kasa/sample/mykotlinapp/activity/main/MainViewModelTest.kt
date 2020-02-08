@@ -1,8 +1,7 @@
-package jp.les.kasa.sample.mykotlinapp
+package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog

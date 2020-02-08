@@ -1,14 +1,12 @@
-package jp.les.kasa.sample.mykotlinapp
+package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
-import jp.les.kasa.sample.mykotlinapp.espresso.observeForTesting
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

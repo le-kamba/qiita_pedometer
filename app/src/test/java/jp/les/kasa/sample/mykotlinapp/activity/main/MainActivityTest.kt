@@ -1,4 +1,4 @@
-package jp.les.kasa.sample.mykotlinapp
+package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Instrumentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -9,8 +9,10 @@ import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.ShadowAlertController
+import jp.les.kasa.sample.mykotlinapp.ShadowAlertDialog
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
-import jp.les.kasa.sample.mykotlinapp.activity.main.MainActivity
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import org.assertj.core.api.Assertions.assertThat
