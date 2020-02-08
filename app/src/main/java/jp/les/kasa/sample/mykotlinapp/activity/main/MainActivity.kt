@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -30,9 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        supportFragmentManager.beginTransaction().replace(
-            R.id.main_container, MonthlyPageFragment()
-        ).commit()
+        val list = listOf("2019/10", "2019/11", "2019/12", "2020/01", "2020/02")
+
+        viewPager.adapter = MonthlyPagerAdapter(this, list)
+        viewPager.setCurrentItem(list.size - 1, false)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -66,7 +70,8 @@ class MainActivity : AppCompatActivity() {
             REQUEST_CODE_SHARE_TWITTER -> {
                 // 続けてInstagramにも投稿する
                 val intent = Intent(this, InstagramShareActivity::class.java).apply {
-                    val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                    val log =
+                        data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                     putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
                 }
                 startActivity(intent)
@@ -80,9 +85,11 @@ class MainActivity : AppCompatActivity() {
     private fun onStepCountLogChanged(resultCode: Int, data: Intent?) {
         when (resultCode) {
             RESULT_OK -> {
-                val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                val log =
+                    data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                 viewModel.addStepCount(log)
-                val shareStatus = data.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS) as ShareStatus
+                val shareStatus =
+                    data.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS) as ShareStatus
                 if (shareStatus.doPost) {
                     // 共有フラグがONならDB登録完了後に投稿画面へ遷移する
                     if (shareStatus.postTwitter) {
@@ -104,11 +111,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             RESULT_CODE_DELETE -> {
-                val log = data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+                val log =
+                    data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
                 viewModel.deleteStepCount(log)
             }
         }
     }
 }
 
+class MonthlyPagerAdapter(
+    fragmentActivity: FragmentActivity,
+    private val items: List<String>
+) : FragmentStateAdapter(fragmentActivity) {
 
+    override fun getItemCount(): Int = items.size
+    override fun createFragment(position: Int) = MonthlyPageFragment.newInstance(items[position])
+}

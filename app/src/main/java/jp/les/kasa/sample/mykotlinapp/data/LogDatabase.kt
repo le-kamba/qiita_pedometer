@@ -30,6 +30,9 @@ interface LogDao {
 
     @Query("SELECT * from log_table WHERE date>= :from AND date < :to ORDER BY date DESC")
     fun getRangeLog(from: String, to: String): LiveData<List<StepCountLog>>
+
+    @Query("SELECT date from log_table ORDER BY date limit 1")
+    fun getOldestDate(): LiveData<String>
 }
 
 const val DATABASE_NAME = "log_database"

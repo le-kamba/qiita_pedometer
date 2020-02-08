@@ -20,6 +20,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.get
 import org.koin.test.inject
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class MainViewModelTest : AutoCloseKoinTest() {
@@ -44,42 +45,10 @@ class MainViewModelTest : AutoCloseKoinTest() {
     fun init() {
         assertThat(viewModel.repository)
             .isNotNull()
-        assertThat(viewModel.stepCountList)
-            .isNotNull()
-        viewModel.stepCountList.observeForTesting {
-            assertThat(viewModel.stepCountList.value)
-                .isNull()
-        }
-    }
-
-    @Test
-    fun addStepCount() {
-        val listObserver = TestObserver<List<StepCountLog>>(3)
-        viewModel.stepCountList.observeForever(listObserver)
-        viewModel.setYearMonth("2019/06")
-
-        runBlocking {
-            viewModel.addStepCount(StepCountLog("2019/06/21", 123))
-            viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
-        }
-        listObserver.await()
-
-        assertThat(viewModel.stepCountList.value)
-            .isNotEmpty()
-
-        val list = viewModel.stepCountList.value as List<StepCountLog>
-        assertThat(list.size).isEqualTo(2)
-        assertThat(list[0]).isEqualToComparingFieldByField(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
-        assertThat(list[1]).isEqualToComparingFieldByField(StepCountLog("2019/06/21", 123))
-
-        viewModel.stepCountList.removeObserver(listObserver)
     }
 
     @Test
     fun deleteStepCount() {
-        val listObserver = TestObserver<List<StepCountLog>>(3)
-        viewModel.stepCountList.observeForever(listObserver)
-        viewModel.setYearMonth("2019/06")
 
         runBlocking {
             viewModel.addStepCount(StepCountLog("2019/06/21", 123))
@@ -87,26 +56,37 @@ class MainViewModelTest : AutoCloseKoinTest() {
             Thread.sleep(500)
             viewModel.deleteStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
         }
-        listObserver.await()
 
-        assertThat(viewModel.stepCountList.value)
-            .isNotEmpty()
-
-        val list = viewModel.stepCountList.value as List<StepCountLog>
+        val list = viewModel.repository.allLogs()
         assertThat(list.size).isEqualTo(1)
         assertThat(list[0]).isEqualToComparingFieldByField(StepCountLog("2019/06/21", 123))
-
-        viewModel.stepCountList.removeObserver(listObserver)
     }
 
     @Test
-    fun getFromToYMD() {
-        val pair = viewModel.getFromToYMD("2020/01")
-        assertThat(pair.first).isEqualTo("2020/01/01")
-        assertThat(pair.second).isEqualTo("2020/02/01")
+    fun makePageList() {
+        val calendar = Calendar.getInstance()
+        calendar.set(2020, 2 - 1, 3)
+        val list = viewModel.makePageList("2019/10/10", calendar)
+        assertThat(list.size).isEqualTo(5)
+        assertThat(list[0]).isEqualTo("2019/10")
+        assertThat(list[1]).isEqualTo("2019/11")
+        assertThat(list[2]).isEqualTo("2019/12")
+        assertThat(list[3]).isEqualTo("2020/01")
+        assertThat(list[4]).isEqualTo("2020/02")
 
-        val pair2 = viewModel.getFromToYMD("2020/12")
-        assertThat(pair2.first).isEqualTo("2020/12/01")
-        assertThat(pair2.second).isEqualTo("2021/01/01")
+        val cal2 = Calendar.getInstance()
+        cal2.set(2020, 2 - 1, 22)
+        val list2 = viewModel.makePageList("2019/09/10", cal2)
+        assertThat(list2.size).isEqualTo(6)
+        assertThat(list2[0]).isEqualTo("2019/09")
+        assertThat(list2[1]).isEqualTo("2019/10")
+        assertThat(list2[2]).isEqualTo("2019/11")
+        assertThat(list2[3]).isEqualTo("2019/12")
+        assertThat(list2[4]).isEqualTo("2020/01")
+        assertThat(list2[5]).isEqualTo("2020/02")
+
+        val list3 = viewModel.makePageList(null, cal2)
+        assertThat(list3.size).isEqualTo(1)
+        assertThat(list3[0]).isEqualTo("2020/02")
     }
 }

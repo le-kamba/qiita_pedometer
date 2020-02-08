@@ -1,12 +1,15 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
@@ -14,6 +17,9 @@ import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
 class LogRepositoryTest : AutoCloseKoinTest() {
+
+    @get:Rule
+    val rule: TestRule = InstantTaskExecutorRule()
 
     private val database: LogRoomDatabase by inject()
     private val logDao: LogDao by inject()
@@ -150,12 +156,32 @@ class LogRepositoryTest : AutoCloseKoinTest() {
             assertThat(it).isNotEmpty()
             assertThat(it!!.size).isEqualTo(2)
             assertThat(it[1]).isEqualToComparingFieldByField(
-                StepCountLog("2020/02/29", 29)
-            )
-            assertThat(it[0]).isEqualToComparingFieldByField(
                 StepCountLog("2020/02/28", 28)
             )
+            assertThat(it[0]).isEqualToComparingFieldByField(
+                StepCountLog("2020/02/29", 29)
+            )
+        }
+    }
+
+    @Test
+    fun getOldestDate() {
+        runBlocking {
+            repository.insert(StepCountLog("2019/08/30", 12345))
+            repository.insert(StepCountLog("2019/09/01", 12345))
+            repository.insert(StepCountLog("2019/09/22", 12345))
+            repository.insert(StepCountLog("2019/10/10", 12345))
+            repository.insert(StepCountLog("2019/10/13", 12345))
+            repository.insert(StepCountLog("2019/01/13", 12345))
+            repository.insert(StepCountLog("2020/02/03", 12345))
+            repository.insert(StepCountLog("2019/02/03", 12345))
+            repository.insert(StepCountLog("2020/02/04", 12345))
         }
 
+        val date = repository.getOldestDate()
+        date.observeForever {
+            assertThat(it).isNotEmpty()
+            assertThat(it).isEqualTo("2019/01/13")
+        }
     }
 }

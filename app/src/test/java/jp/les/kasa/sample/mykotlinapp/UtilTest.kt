@@ -31,6 +31,13 @@ class UtilTest {
     }
 
     @Test
+    fun calendar_getDateStringYM() {
+        val cal = Calendar.getInstance()
+        cal.set(2020, 9 - 1, 11) // 月だけはindex扱いなので、実際の月-1のセットとしなければならない
+        assertThat(cal.getDateStringYM()).isEqualTo("2020/09")
+    }
+
+    @Test
     fun calendar_clearTime() {
         val cal = Calendar.getInstance()
         // 時間関連が0にならないようにセット

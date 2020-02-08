@@ -17,7 +17,7 @@ import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * 月ページFragment
@@ -27,11 +27,21 @@ class MonthlyPageFragment : Fragment(),
     , ConfirmDialog.ConfirmEventListener {
 
     companion object {
+        const val KEY_DATE_YEAR_MONTH = "dateYearMonth"
+
+        fun newInstance(dateYearMonth: String): MonthlyPageFragment {
+            val f = MonthlyPageFragment()
+            f.arguments = Bundle().apply {
+                putString(KEY_DATE_YEAR_MONTH, dateYearMonth)
+            }
+            return f
+        }
+
         const val DIALOG_TAG_DELETE_CONFIRM = "delete_confirm"
         const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 
-    val viewModel by sharedViewModel<MainViewModel>()
+    val viewModel by viewModel<MonthlyPageViewModel>()
     lateinit var adapter: LogRecyclerAdapter
 
     override fun onCreateView(
@@ -54,7 +64,7 @@ class MonthlyPageFragment : Fragment(),
         val decor = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         binding.logList.addItemDecoration(decor)
 
-        viewModel.setYearMonth("2020/02")
+        viewModel.setYearMonth(arguments!!.getString(KEY_DATE_YEAR_MONTH)!!)
 
         return binding.root
     }

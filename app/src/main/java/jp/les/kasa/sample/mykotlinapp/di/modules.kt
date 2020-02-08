@@ -3,6 +3,7 @@ package jp.les.kasa.sample.mykotlinapp.di
 import androidx.room.Room
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
+import jp.les.kasa.sample.mykotlinapp.activity.main.MonthlyPageViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareViewModel
 import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
@@ -19,6 +20,7 @@ import org.koin.dsl.module
 // ViewModel
 val viewModelModule = module {
     viewModel { MainViewModel(androidApplication(), get()) }
+    viewModel { MonthlyPageViewModel(androidApplication(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
     viewModel { InstagramShareViewModel() }
 }

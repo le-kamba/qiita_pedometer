@@ -38,4 +38,9 @@ class LogRepository(private val logDao: LogDao) {
     fun allLogs(): List<StepCountLog> {
         return logDao.getAllLogs()
     }
+
+    @WorkerThread
+    fun getOldestDate(): LiveData<String> {
+        return logDao.getOldestDate()
+    }
 }

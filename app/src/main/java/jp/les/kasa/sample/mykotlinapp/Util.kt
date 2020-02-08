@@ -27,6 +27,11 @@ fun Calendar.getDateStringYMD(): String {
     return fmt.format(time)
 }
 
+fun Calendar.getDateStringYM(): String {
+    val fmt = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
+    return fmt.format(time)
+}
+
 fun Calendar.clearTime(): Calendar {
     set(Calendar.HOUR, 0)
     set(Calendar.MINUTE, 0)

@@ -7,7 +7,7 @@
 
         <variable
                 name="viewmodel"
-                type="jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel" />
+                type="jp.les.kasa.sample.mykotlinapp.activity.main.MonthlyPageViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
