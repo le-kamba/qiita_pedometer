@@ -15,6 +15,9 @@ import org.koin.test.inject
 @RunWith(AndroidJUnit4::class)
 class LogRepositoryTest : AutoCloseKoinTest() {
 
+    @get:Rule
+    val rule: TestRule = InstantTaskExecutorRule()
+
     private val database: LogRoomDatabase by inject()
     private val logDao: LogDao by inject()
     private val repository: LogRepository by inject()
