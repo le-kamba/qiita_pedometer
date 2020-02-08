@@ -1,6 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
 import android.content.Context
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,11 +9,16 @@ import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class LogRepositoryTest {
+
+    @get:Rule
+    val rule: TestRule = InstantTaskExecutorRule()
 
     private lateinit var database: LogRoomDatabase
     private lateinit var logDao: LogDao
@@ -44,10 +50,10 @@ class LogRepositoryTest {
         items.observeForever {
             assertThat(items.value).isNotEmpty()
             assertThat(items.value!!.size).isEqualTo(2)
-            assertThat(items.value!![0]).isEqualToComparingFieldByField(
+            assertThat(items.value!![1]).isEqualToComparingFieldByField(
                 StepCountLog("2019/08/30", 12345)
             )
-            assertThat(items.value!![1]).isEqualToComparingFieldByField(
+            assertThat(items.value!![0]).isEqualToComparingFieldByField(
                 StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD)
             )
         }
@@ -98,7 +104,7 @@ class LogRepositoryTest {
         }
 
         val items = repository.allLogs
-        items.observeForever() {
+        items.observeForever {
             assertThat(items.value).isEmpty()
         }
     }
