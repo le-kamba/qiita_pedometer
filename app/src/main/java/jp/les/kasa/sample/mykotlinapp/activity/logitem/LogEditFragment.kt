@@ -135,7 +135,7 @@ class SnsChooseDialog : DialogFragment() {
 
         // AlertDialogで作成する
         val builder = AlertDialog.Builder(requireContext())
-        builder.setItems(arrayOf("Twitter", "Instagram")) { dialog, which ->
+        builder.setItems(arrayOf("Twitter", "Instagram")) { _, which ->
             viewModel.selectShareSns(which)
         }
 
