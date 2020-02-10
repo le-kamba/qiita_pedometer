@@ -28,7 +28,8 @@ class TestCalendarProvider : CalendarProviderI {
         get() {
             val cal = Calendar.getInstance().clearTime()
             cal.set(Calendar.YEAR, 2019)
-            cal.set(Calendar.MONTH, 6 - 1) // 月は0base index
+            cal.set(Calendar.MONTH, 6 - 1) // 月は0 based index
+            cal.set(Calendar.DATE, 29)
             return cal
         }
 }

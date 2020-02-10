@@ -4,10 +4,10 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressBack
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -81,7 +81,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         assertThat(resultActivity).isNotNull()
 
         // 端末戻るボタンで終了を確認
-        pressBack()
+        Espresso.pressBack()
         assertThat(resultActivity.isFinishing).isTrue()
     }
 
@@ -461,7 +461,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         // 右からスワイプしてカレントページインデックスのチェック
         onView(withId(R.id.viewPager)).perform(swipeNext())
-        
+
         idleWatcher.waitForIdle()
         onIdle()
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(6)))
