@@ -126,13 +126,13 @@ class LogRepositoryTest : AutoCloseKoinTest() {
         data8.observeForever {
             assertThat(it).isNotEmpty()
             assertThat(it!!.size).isEqualTo(3)
-            assertThat(it!![2]).isEqualToComparingFieldByField(
+            assertThat(it[2]).isEqualToComparingFieldByField(
                 StepCountLog("2019/08/01", 12345)
             )
-            assertThat(it!![1]).isEqualToComparingFieldByField(
+            assertThat(it[1]).isEqualToComparingFieldByField(
                 StepCountLog("2019/08/30", 12345)
             )
-            assertThat(it!![0]).isEqualToComparingFieldByField(
+            assertThat(it[0]).isEqualToComparingFieldByField(
                 StepCountLog("2019/08/31", 12345, LEVEL.GOOD, WEATHER.CLOUD)
             )
         }
