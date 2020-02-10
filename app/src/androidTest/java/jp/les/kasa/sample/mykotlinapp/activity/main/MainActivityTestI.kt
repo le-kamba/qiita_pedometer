@@ -8,6 +8,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -165,6 +167,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
         resultActivity.setResult(Activity.RESULT_OK, resultData)
         resultActivity.finish()
+        getInstrumentation().waitForIdleSync()
 
         // 反映を確認
         onView(withId(R.id.log_list))
@@ -217,6 +220,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
         resultActivity.setResult(MainActivity.RESULT_CODE_DELETE, resultData)
         resultActivity.finish()
+        getInstrumentation().waitForIdleSync()
 
         // 反映を確認
         onView(withId(R.id.log_list))
@@ -414,6 +418,209 @@ class MainActivityTestI : AutoCloseKoinTest() {
     }
 
     @Test
+    fun onClickListItem() {
+        // 最初にデータ投入
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            mainActivity.viewModel.addStepCount(
+                StepCountLog(
+                    "2019/06/19",
+                    666,
+                    LEVEL.BAD,
+                    WEATHER.RAIN
+                )
+            )
+        }
+        getInstrumentation().waitForIdleSync()
+
+        // 監視モニター
+        val monitor = Instrumentation.ActivityMonitor(
+            LogItemActivity::class.java.canonicalName, null, false
+        )
+        getInstrumentation().addMonitor(monitor)
+
+
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
+        getInstrumentation().waitForIdleSync()
+
+        // ResultActivityが起動したか確認
+        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        assertThat(monitor.hits).isEqualTo(1)
+        assertThat(resultActivity).isNotNull()
+
+        // その起動Intentに必要な情報があるかチェック
+        val extraData =
+            resultActivity.intent.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+        assertThat(extraData)
+            .isEqualToComparingFieldByField(
+                StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN)
+            )
+    }
+
+    @Test
+    fun onLongClickListItem_cancel_back() {
+        // 最初にデータ投入
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            mainActivity.viewModel.addStepCount(
+                StepCountLog(
+                    "2019/06/19",
+                    666,
+                    LEVEL.BAD,
+                    WEATHER.RAIN
+                )
+            )
+        }
+        getInstrumentation().waitForIdleSync()
+
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, longClick()))
+        // @formatter:on
+        getInstrumentation().waitForIdleSync()
+
+        // Dialogの表示確認
+        onView(withText(R.string.message_delete_confirm))
+            .check(matches(isDisplayed()))
+        onView(withText(android.R.string.yes))
+            .check(matches(isDisplayed()))
+        onView(withText(android.R.string.no))
+            .check(matches(isDisplayed()))
+
+        // 端末戻るボタン
+        Espresso.pressBack()
+
+        // Dialogの非表示を確認
+        onView(withText(R.string.message_delete_confirm))
+            .check(doesNotExist())
+
+        // 削除されてないことの確認
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_iconmonstr_umbrella_1),R.id.weatherImageView)))
+            // @formatter:on
+    }
+
+    @Test
+    fun onLongClickListItem_cancel() {
+        // 最初にデータ投入
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            mainActivity.viewModel.addStepCount(
+                StepCountLog(
+                    "2019/06/19",
+                    666,
+                    LEVEL.BAD,
+                    WEATHER.RAIN
+                )
+            )
+        }
+        getInstrumentation().waitForIdleSync()
+
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, longClick()))
+        // @formatter:on
+        getInstrumentation().waitForIdleSync()
+
+        // Dialogキャンセル
+        onView(withText(R.string.message_delete_confirm))
+            .check(matches(isDisplayed()))
+        onView(withText(android.R.string.no))
+            .perform(click())
+
+        // Dialogの非表示を確認
+        onView(withText(R.string.message_delete_confirm))
+            .check(doesNotExist())
+
+        // 削除されてないことの確認
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_iconmonstr_umbrella_1),R.id.weatherImageView)))
+            // @formatter:on
+    }
+
+    @Test
+    fun onLongClickListItem_delete() {
+        // 最初にデータ投入
+        val mainActivity = activityRule.activity
+
+        mainActivity.runOnUiThread {
+            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            mainActivity.viewModel.addStepCount(
+                StepCountLog(
+                    "2019/06/19",
+                    666,
+                    LEVEL.BAD,
+                    WEATHER.RAIN
+                )
+            )
+        }
+        getInstrumentation().waitForIdleSync()
+
+        val index = 0
+
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, longClick()))
+        // @formatter:on
+        getInstrumentation().waitForIdleSync()
+
+        // Dialogの表示確認
+        onView(withText(R.string.message_delete_confirm))
+            .check(matches(isDisplayed()))
+        onView(withText(android.R.string.yes))
+            .perform(click())
+
+        // Dialogの非表示を確認
+        onView(withText(R.string.message_delete_confirm))
+            .check(doesNotExist())
+
+        // 反映を確認
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index, withText("12345"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index, withText("2019/06/13"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_wb_sunny_yellow_24dp),R.id.weatherImageView)))
+            // @formatter:on
+    }
+
+    @Test
     fun pages() {
         // 最初にデータ投入
         val mainActivity = activityRule.activity
@@ -426,7 +633,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         }
         getInstrumentation().waitForIdleSync()
 
-        // ページ数が正しいかのテスト(2018/12〜2019/06までの7ページあるはず
+        // ページ数が正しいかのテスト(2018/12〜2019/06までの7ページあるはず)
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.hasItemCount(7)))
 
         // 今表示されているのが2019/06かどうかのテスト
