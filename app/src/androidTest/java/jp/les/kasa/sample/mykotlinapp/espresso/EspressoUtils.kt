@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.viewpager2.widget.ViewPager2
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -73,7 +74,6 @@ fun withDrawable(resourceId: Int): Matcher<View> {
 }
 
 object RecyclerViewMatchers {
-    @JvmStatic
     fun hasItemCount(itemCount: Int): Matcher<View> {
         return object : BoundedMatcher<View, RecyclerView>(
             RecyclerView::class.java
@@ -85,6 +85,38 @@ object RecyclerViewMatchers {
 
             override fun matchesSafely(view: RecyclerView): Boolean {
                 return view.adapter!!.itemCount == itemCount
+            }
+        }
+    }
+}
+
+object ViewPagerMatchers {
+    fun hasItemCount(itemCount: Int): Matcher<View> {
+        return object : BoundedMatcher<View, ViewPager2>(
+            ViewPager2::class.java
+        ) {
+
+            override fun describeTo(description: Description) {
+                description.appendText("has $itemCount items")
+            }
+
+            override fun matchesSafely(view: ViewPager2): Boolean {
+                return view.adapter!!.itemCount == itemCount
+            }
+        }
+    }
+
+    fun isCurrent(index: Int): Matcher<View> {
+        return object : BoundedMatcher<View, ViewPager2>(
+            ViewPager2::class.java
+        ) {
+
+            override fun describeTo(description: Description) {
+                description.appendText("is $index index is current")
+            }
+
+            override fun matchesSafely(view: ViewPager2): Boolean {
+                return view.currentItem == index
             }
         }
     }

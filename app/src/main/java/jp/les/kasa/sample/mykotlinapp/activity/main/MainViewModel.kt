@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.getDateStringYM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ import java.util.*
  **/
 class MainViewModel(
     app: Application,
-    val repository: LogRepository
+    val repository: LogRepository,
+    private val calendarProvider: CalendarProviderI
 ) : AndroidViewModel(app) {
 
     // 一番古いデータの年月
@@ -30,8 +32,7 @@ class MainViewModel(
     // ページ
     val pages = Transformations.switchMap(oldestDate) {
         val liveData = MutableLiveData<List<String>>()
-        val today = Calendar.getInstance().clearTime()
-        liveData.value = makePageList(it, today)
+        liveData.value = makePageList(it, calendarProvider.now)
         return@switchMap liveData
     }
 
