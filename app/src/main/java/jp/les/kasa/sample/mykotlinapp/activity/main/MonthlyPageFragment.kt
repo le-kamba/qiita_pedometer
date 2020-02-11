@@ -8,15 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
-import jp.les.kasa.sample.mykotlinapp.databinding.ItemStepLogBinding
+import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -57,39 +56,23 @@ class MonthlyPageFragment : Fragment(),
         binding.viewmodel = viewModel
 
         // RecyclerViewの初期化
-        binding.logList.layoutManager = LinearLayoutManager(context)
+        binding.logList.layoutManager = GridLayoutManager(context, 7)
         adapter = LogRecyclerAdapter(this)
         binding.logList.adapter = adapter
-        // 区切り線を追加
-        val decor = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        binding.logList.addItemDecoration(decor)
 
         viewModel.setYearMonth(arguments!!.getString(KEY_DATE_YEAR_MONTH)!!)
 
         return binding.root
     }
 
-    override fun onItemClick(data: StepCountLog) {
+    override fun onItemClick(data: StepCountLog?) {
         val intent = Intent(context, LogItemActivity::class.java)
-        intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data)
+        data?.let {
+            intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data)
+        }
         activity?.startActivityForResult(
             intent,
             MainActivity.REQUEST_CODE_LOGITEM
-        )
-    }
-
-    override fun onLongItemClick(data: StepCountLog) {
-        // ダイアログを表示
-        val dialog = ConfirmDialog.Builder()
-            .message(R.string.message_delete_confirm)
-            .data(Bundle().apply {
-                putSerializable(DIALOG_BUNDLE_KEY_DATA, data)
-            })
-            .target(this)
-            .create()
-        dialog.show(
-            requireFragmentManager(),
-            DIALOG_TAG_DELETE_CONFIRM
         )
     }
 
@@ -109,23 +92,22 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
     RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClick(data: StepCountLog)
-        fun onLongItemClick(data: StepCountLog)
+        fun onItemClick(data: StepCountLog?)
     }
 
-    private var list: List<StepCountLog> = emptyList()
+    private var list: List<StepCountLog?> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
-        val binding: ItemStepLogBinding = DataBindingUtil.inflate(
+        val binding: ItemCellBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
-            R.layout.item_step_log, parent, false
+            R.layout.item_cell, parent, false
         )
         return LogViewHolder(
             binding
         )
     }
 
-    fun setList(newList: List<StepCountLog>) {
+    fun setList(newList: List<StepCountLog?>) {
         list = newList
         notifyDataSetChanged()
     }
@@ -139,11 +121,7 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
         holder.binding.logItemLayout.setOnClickListener {
             listener.onItemClick(data)
         }
-        holder.binding.logItemLayout.setOnLongClickListener {
-            listener.onLongItemClick(data)
-            return@setOnLongClickListener true
-        }
     }
 
-    class LogViewHolder(val binding: ItemStepLogBinding) : RecyclerView.ViewHolder(binding.root)
+    class LogViewHolder(val binding: ItemCellBinding) : RecyclerView.ViewHolder(binding.root)
 }

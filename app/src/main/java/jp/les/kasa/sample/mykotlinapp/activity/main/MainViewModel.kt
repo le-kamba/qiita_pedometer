@@ -61,7 +61,7 @@ class MainViewModel(
 
         val list = mutableListOf<String>()
 
-        // 今の年月を超えるまで月を足し続ける
+        // toの年月を超えるまで月を足し続ける
         while (!date.after(to)) {
             list.add(date.getDateStringYM())
             date.add(Calendar.MONTH, 1)
