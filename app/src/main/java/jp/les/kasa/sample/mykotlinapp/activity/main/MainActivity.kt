@@ -5,15 +5,18 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
-import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.viewpager.widget.PagerAdapter
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,14 +34,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+//        setContentView(R.layout.activity_main)
 
-        viewModel.pages.observe(this, Observer { list ->
-            list?.let {
-                viewPager.adapter = MonthlyPagerAdapter(this, it)
-                viewPager.setCurrentItem(it.size - 1, false)
-            }
-        })
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        binding.lifecycleOwner = this
+        binding.viewmodel = viewModel
+        viewPager.adapter = MonthlyPagerAdapter(supportFragmentManager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -121,10 +124,19 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class MonthlyPagerAdapter(fragmentActivity: FragmentActivity, private val items: List<String>) :
-    FragmentStateAdapter(fragmentActivity) {
+class MonthlyPagerAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-    override fun getItemCount(): Int = items.size
-    override fun createFragment(position: Int) = MonthlyPageFragment.newInstance(items[position])
+    var items: List<String> = emptyList()
+
+    override fun getCount(): Int = items.size
+
+    override fun getItem(position: Int): Fragment = MonthlyPageFragment.newInstance(items[position])
+
+    fun setList(list: List<String>) {
+        items = list
+    }
+
+    override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
 
 }

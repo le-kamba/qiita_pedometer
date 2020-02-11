@@ -5,10 +5,8 @@ import android.app.Instrumentation
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -25,8 +23,9 @@ import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
-import jp.les.kasa.sample.mykotlinapp.espresso.*
-import kotlinx.android.synthetic.main.activity_main.*
+import jp.les.kasa.sample.mykotlinapp.espresso.ViewPagerMatchers
+import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
+import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
 import org.junit.After
@@ -659,20 +658,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         // currentPageのチェック
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(6)))
         // 左からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(swipePrevious())
+        onView(withId(R.id.viewPager)).perform(swipeRight())
 
-        val idleWatcher = ViewPagerIdleWatcher(mainActivity.viewPager)
-        idleWatcher.waitForIdle()
-        onIdle()
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(5)))
 
         // 右からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(swipeNext())
-
-        idleWatcher.waitForIdle()
-        onIdle()
-        onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(6)))
-
-        idleWatcher.unregister()
+        onView(withId(R.id.viewPager)).perform(swipeLeft())
     }
 }
