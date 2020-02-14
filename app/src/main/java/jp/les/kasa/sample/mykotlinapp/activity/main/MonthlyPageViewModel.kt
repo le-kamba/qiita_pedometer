@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import java.util.*
  **/
 class MonthlyPageViewModel(
     app: Application,
-    val repository: LogRepository
+    val repository: LogRepository,
+    val calendarProvider: CalendarProviderI
 ) : AndroidViewModel(app) {
 
     // 表示する年月

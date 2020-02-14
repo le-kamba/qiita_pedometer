@@ -36,7 +36,6 @@ class MonthlyPageFragment : Fragment(),
             return f
         }
 
-        const val DIALOG_TAG_DELETE_CONFIRM = "delete_confirm"
         const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 

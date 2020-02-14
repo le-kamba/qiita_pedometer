@@ -28,7 +28,7 @@ interface LogDao {
     @Query("SELECT * from log_table WHERE date = :srcDate")
     fun getLog(srcDate: String): StepCountLog
 
-    @Query("SELECT * from log_table WHERE date>= :from AND date < :to ORDER BY date DESC")
+    @Query("SELECT * from log_table WHERE date>= :from AND date < :to ORDER BY date")
     fun getRangeLog(from: String, to: String): LiveData<List<StepCountLog>>
 
     @Query("SELECT date from log_table ORDER BY date limit 1")

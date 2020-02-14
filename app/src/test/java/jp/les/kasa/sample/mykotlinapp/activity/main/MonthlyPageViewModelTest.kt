@@ -92,11 +92,11 @@ class MonthlyPageViewModelTest : AutoCloseKoinTest() {
 
     @Test
     fun getFromToYMD() {
-        val pair = viewModel.getFromToYMD("2020/01")
+        val pair = viewModel.getCalendarRange("2020/01")
         assertThat(pair.first).isEqualTo("2020/01/01")
         assertThat(pair.second).isEqualTo("2020/02/01")
 
-        val pair2 = viewModel.getFromToYMD("2020/12")
+        val pair2 = viewModel.getCalendarRange("2020/12")
         assertThat(pair2.first).isEqualTo("2020/12/01")
         assertThat(pair2.second).isEqualTo("2021/01/01")
     }

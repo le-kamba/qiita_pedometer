@@ -22,7 +22,7 @@ import java.util.*
 // ViewModel
 val viewModelModule = module {
     viewModel { MainViewModel(androidApplication(), get(), get()) }
-    viewModel { MonthlyPageViewModel(androidApplication(), get()) }
+    viewModel { MonthlyPageViewModel(androidApplication(), get(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
     viewModel { InstagramShareViewModel() }
 }
