@@ -44,8 +44,7 @@ class LogInputFragment : Fragment() {
 
         contentView.button_update.setOnClickListener {
             validation()?.let {
-                val fgm = fragmentManager ?: return@setOnClickListener
-                ErrorDialog.Builder().message(it).create().show(fgm, null)
+                ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
 
@@ -68,8 +67,7 @@ class LogInputFragment : Fragment() {
 
         // 日付を選ぶボタンで日付選択ダイアログを表示
         contentView.button_date.setOnClickListener {
-            val fgm = fragmentManager ?: return@setOnClickListener // nullチェック
-            DateSelectDialogFragment().show(fgm, DATE_SELECT_TAG)
+            DateSelectDialogFragment().show(parentFragmentManager, DATE_SELECT_TAG)
         }
 
         return contentView

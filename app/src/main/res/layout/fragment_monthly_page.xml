@@ -37,7 +37,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
-                app:items="@{viewmodel.stepCountList}"
+                app:items="@{viewmodel.cellData}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"

@@ -2,7 +2,9 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Application
 import androidx.lifecycle.*
+import jp.les.kasa.sample.mykotlinapp.addDay
 import jp.les.kasa.sample.mykotlinapp.clearTime
+import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
@@ -30,8 +32,19 @@ class MonthlyPageViewModel(
     val stepCountList: LiveData<List<StepCountLog>> =
         Transformations.switchMap(_dataYearMonth) {
             val ymd = getFromToYMD(it)
-            repository.searchRange(ymd.first, ymd.second)
+            firstDayInPage = ymd.first
+            repository.searchRange(ymd.first.getDateStringYMD(), ymd.second.getDateStringYMD())
         }
+
+    private lateinit var firstDayInPage: Calendar
+
+    // カレンダーのセルデータは、データリストが取れてからにする
+    val cellData: LiveData<List<CalendarCellData>> = Transformations.switchMap(stepCountList) {
+        val liveData = MutableLiveData<List<CalendarCellData>>()
+        val list = createCellData(firstDayInPage, it)
+        liveData.value = list
+        return@switchMap liveData
+    }
 
     fun setYearMonth(yearMonth: String) {
         _dataYearMonth.postValue(yearMonth)
@@ -46,15 +59,33 @@ class MonthlyPageViewModel(
      * @param yyyyMM `yyyy/MM`の形の日付
      * @return <yyyy/MM/01, yyyy/(MM+1)/01>のPair
      */
-    fun getFromToYMD(yyyyMM: String): Pair<String, String> {
+    fun getFromToYMD(yyyyMM: String): Pair<Calendar, Calendar> {
         val formatter = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
         val from = Calendar.getInstance()
         from.time = formatter.parse(yyyyMM)
         from.set(Calendar.DATE, 1)
         from.clearTime()
-        val to = from.clone() as Calendar
-        to.add(Calendar.MONTH, 1)
+        // 日曜日になるまで日付を遡る
+        var dw = from.get(Calendar.DAY_OF_WEEK)
+        while (dw != Calendar.SUNDAY) {
+            from.add(Calendar.DATE, -1)
+            dw = from.get(Calendar.DAY_OF_WEEK)
+        }
+        // 42日後にする
+        val to = from.addDay(42)
 
-        return Pair(from.getDateStringYMD(), to.getDateStringYMD())
+        return Pair(from, to)
+    }
+
+    fun createCellData(from: Calendar, stepCountList: List<StepCountLog>): List<CalendarCellData> {
+
+        val cal = from.clone() as Calendar
+        val list = mutableListOf<CalendarCellData>()
+        for (i in 1..42) {
+            list.add(CalendarCellData(cal.clone() as Calendar, null))
+            cal.add(Calendar.DATE, 1)
+        }
+
+        return list
     }
 }

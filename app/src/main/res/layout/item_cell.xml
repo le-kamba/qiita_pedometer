@@ -8,8 +8,12 @@
         <import type="android.view.View" />
 
         <variable
-                name="stepLog"
-                type="jp.les.kasa.sample.mykotlinapp.data.StepCountLog" />
+                name="cellData"
+                type="jp.les.kasa.sample.mykotlinapp.data.CalendarCellData" />
+
+        <variable
+                name="month"
+                type="int" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,7 +21,8 @@
             android:layout_width="48dp"
             android:layout_height="65dp"
             android:layout_margin="4dp"
-            android:background="@drawable/cell_nonactive"
+            android:background="@{cellData.calendar}"
+            app:month="@{month}"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground">
@@ -28,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="4dp"
-                android:text="30"
+                app:day="@{cellData.calendar}"
                 android:textSize="10dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +45,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="3dp"
-                android:text="@{Integer.toString(stepLog.step)}"
+                android:text="@{Integer.toString(cellData.stepCountLog.step)}"
+                android:visibility="@{cellData.stepCountLog!=null ? View.VISIBLE : View.GONE}"
                 android:textColor="#0B0A0A"
                 android:textSize="8dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +60,7 @@
                 android:elevation="0dp"
                 android:text="@string/label_step"
                 android:textSize="8dp"
-                android:visibility="@{stepLog!=null ? View.VISIBLE : View.GONE}"
+                android:visibility="@{cellData.stepCountLog!=null ? View.VISIBLE : View.GONE}"
                 app:layout_constraintBottom_toBottomOf="@+id/stepTextView"
                 app:layout_constraintStart_toEndOf="@+id/stepTextView"
                 app:layout_constraintTop_toTopOf="@+id/stepTextView" />
@@ -64,8 +70,7 @@
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_marginStart="2dp"
-                android:src="@{stepLog.weather}"
-                android:visibility="@{stepLog!=null ? View.VISIBLE : View.GONE}"
+                android:src="@{cellData.stepCountLog.weather}"
                 app:layout_constraintBottom_toBottomOf="@+id/dayTextView"
                 app:layout_constraintStart_toEndOf="@+id/dayTextView"
                 app:layout_constraintTop_toTopOf="@+id/dayTextView"
@@ -76,8 +81,7 @@
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_marginEnd="3dp"
-                android:src="@{stepLog.level}"
-                android:visibility="@{stepLog!=null ? View.VISIBLE : View.GONE}"
+                android:src="@{cellData.stepCountLog.level}"
                 app:layout_constraintBottom_toBottomOf="@+id/stepTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/suffixTextView"

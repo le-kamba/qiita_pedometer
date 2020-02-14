@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
+import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
@@ -54,20 +55,22 @@ class MonthlyPageFragment : Fragment(),
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
 
+        val yearMonth = arguments!!.getString(KEY_DATE_YEAR_MONTH)!!
+
         // RecyclerViewの初期化
         binding.logList.layoutManager = GridLayoutManager(context, 7)
-        adapter = LogRecyclerAdapter(this)
+        adapter = LogRecyclerAdapter(this, Integer.valueOf(yearMonth.split('/')[1]))
         binding.logList.adapter = adapter
 
-        viewModel.setYearMonth(arguments!!.getString(KEY_DATE_YEAR_MONTH)!!)
+        viewModel.setYearMonth(yearMonth)
 
         return binding.root
     }
 
-    override fun onItemClick(data: StepCountLog?) {
+    override fun onItemClick(data: CalendarCellData) {
         val intent = Intent(context, LogItemActivity::class.java)
-        data?.let {
-            intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data)
+        data.stepCountLog?.let {
+            intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, it)
         }
         activity?.startActivityForResult(
             intent,
@@ -87,14 +90,14 @@ class MonthlyPageFragment : Fragment(),
     }
 }
 
-class LogRecyclerAdapter(private val listener: OnItemClickListener) :
+class LogRecyclerAdapter(private val listener: OnItemClickListener, val month: Int) :
     RecyclerView.Adapter<LogRecyclerAdapter.LogViewHolder>() {
 
     interface OnItemClickListener {
-        fun onItemClick(data: StepCountLog?)
+        fun onItemClick(data: CalendarCellData)
     }
 
-    private var list: List<StepCountLog?> = emptyList()
+    private var list: List<CalendarCellData> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val binding: ItemCellBinding = DataBindingUtil.inflate(
@@ -106,7 +109,7 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
         )
     }
 
-    fun setList(newList: List<StepCountLog?>) {
+    fun setList(newList: List<CalendarCellData>) {
         list = newList
         notifyDataSetChanged()
     }
@@ -116,7 +119,8 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener) :
     override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
         if (position >= list.size) return
         val data = list[position]
-        holder.binding.stepLog = data
+        holder.binding.cellData = data
+        holder.binding.month = month
         holder.binding.logItemLayout.setOnClickListener {
             listener.onItemClick(data)
         }

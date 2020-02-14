@@ -1,5 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -7,6 +8,8 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
+import jp.les.kasa.sample.mykotlinapp.getMonth
+import java.util.*
 
 
 /**
@@ -15,20 +18,29 @@ import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
  **/
 
 @BindingAdapter("android:src")
-fun setImageLevel(view: ImageView, level: LEVEL) {
+fun setImageLevel(view: ImageView, level: LEVEL?) {
+    if (level == null) {
+        view.visibility = View.GONE
+        return
+    }
     val res =
         when (level) {
             LEVEL.GOOD -> R.drawable.ic_sentiment_very_satisfied_pink_24dp
             LEVEL.BAD -> R.drawable.ic_sentiment_dissatisfied_black_24dp
             else -> R.drawable.ic_sentiment_neutral_green_24dp
         }
+    view.visibility = View.VISIBLE
     view.setImageResource(res)
 }
 
 @BindingAdapter("android:src")
-fun setImageWeather(view: ImageView, level: WEATHER) {
+fun setImageWeather(view: ImageView, weather: WEATHER?) {
+    if (weather == null) {
+        view.visibility = View.GONE
+        return
+    }
     val res =
-        when (level) {
+        when (weather) {
             WEATHER.RAIN -> R.drawable.ic_iconmonstr_umbrella_1
             WEATHER.CLOUD -> R.drawable.ic_cloud_gley_24dp
             WEATHER.SNOW -> R.drawable.ic_grain_gley_24dp
@@ -36,11 +48,12 @@ fun setImageWeather(view: ImageView, level: WEATHER) {
             WEATHER.HOT -> R.drawable.ic_flare_red_24dp
             else -> R.drawable.ic_wb_sunny_yellow_24dp
         }
+    view.visibility = View.VISIBLE
     view.setImageResource(res)
 }
 
 @BindingAdapter("items")
-fun setLogItems(view: RecyclerView, logs: List<StepCountLog>?) {
+fun setLogItems(view: RecyclerView, logs: List<CalendarCellData>?) {
     val adapter = view.adapter as LogRecyclerAdapter? ?: return
 
     logs?.let {
@@ -59,4 +72,19 @@ fun setDataYearMonth(view: TextView, yearMonth: String?) {
     val date = yearMonth.split('/')
     val str = view.context.getString(R.string.year_month_label, date[0], Integer.valueOf(date[1]))
     view.text = str
+}
+
+@BindingAdapter("day")
+fun setDayLabel(view: TextView, calendar: Calendar) {
+    view.text = calendar.get(Calendar.DATE).toString()
+}
+
+@BindingAdapter(value = ["android:background", "month"], requireAll = true)
+fun setCellBackground(view: View, cellDate: Calendar, month: Int) {
+    val m = cellDate.getMonth()
+    if (m + 1 == month) {
+        view.setBackgroundResource(R.drawable.cell_nonactive)
+    } else {
+        view.setBackgroundResource(R.drawable.cell_nonactive_grey)
+    }
 }

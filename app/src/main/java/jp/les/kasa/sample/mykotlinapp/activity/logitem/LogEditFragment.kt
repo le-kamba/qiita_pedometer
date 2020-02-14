@@ -61,8 +61,7 @@ class LogEditFragment : Fragment() {
 
         binding.buttonUpdate.setOnClickListener {
             validation()?.let {
-                val fgm = fragmentManager ?: return@setOnClickListener
-                ErrorDialog.Builder().message(it).create().show(fgm, null)
+                ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
             val dateText = text_date.text.toString()
@@ -102,8 +101,7 @@ class LogEditFragment : Fragment() {
     private fun onShareSnsSelected() {
         // 変更値を収集する
         validation()?.let {
-            val fgm = fragmentManager ?: return
-            ErrorDialog.Builder().message(it).create().show(fgm, null)
+            ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
             return
         }
         val dateText = text_date.text.toString()
