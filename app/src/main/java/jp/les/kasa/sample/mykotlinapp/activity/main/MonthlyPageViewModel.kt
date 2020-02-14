@@ -77,12 +77,19 @@ class MonthlyPageViewModel(
         return Pair(from, to)
     }
 
-    fun createCellData(from: Calendar, stepCountList: List<StepCountLog>): List<CalendarCellData> {
+    fun createCellData(from: Calendar, logs: List<StepCountLog>): List<CalendarCellData> {
 
         val cal = from.clone() as Calendar
         val list = mutableListOf<CalendarCellData>()
+        var index = 0
         for (i in 1..42) {
-            list.add(CalendarCellData(cal.clone() as Calendar, null))
+            val log =
+                if (index < logs.size && logs[index].date == cal.getDateStringYMD()) {
+                    logs[index++]
+                } else {
+                    null
+                }
+            list.add(CalendarCellData(cal.clone() as Calendar, log))
             cal.add(Calendar.DATE, 1)
         }
 
