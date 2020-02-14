@@ -1,6 +1,5 @@
 package jp.les.kasa.sample.mykotlinapp.activity.main
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,19 +11,20 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
-import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
-import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
+import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 /**
  * 月ページFragment
  */
 class MonthlyPageFragment : Fragment(),
-    LogRecyclerAdapter.OnItemClickListener
-    , ConfirmDialog.ConfirmEventListener {
+    LogRecyclerAdapter.OnItemClickListener {
 
     companion object {
         const val KEY_DATE_YEAR_MONTH = "dateYearMonth"
@@ -36,12 +36,12 @@ class MonthlyPageFragment : Fragment(),
             }
             return f
         }
-
-        const val DIALOG_BUNDLE_KEY_DATA = "data"
     }
 
     val viewModel by viewModel<MonthlyPageViewModel>()
     lateinit var adapter: LogRecyclerAdapter
+
+    val calendarProvider: CalendarProviderI by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,8 +69,14 @@ class MonthlyPageFragment : Fragment(),
 
     override fun onItemClick(data: CalendarCellData) {
         val intent = Intent(context, LogItemActivity::class.java)
-        data.stepCountLog?.let {
-            intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, it)
+        if (data.stepCountLog != null) {
+            intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data.stepCountLog)
+        } else {
+            if (canGoInput(data.calendar)) {
+                intent.putExtra(LogItemActivity.EXTRA_KEY_INITIAL_DATE, data.calendar)
+            } else {
+                return
+            }
         }
         activity?.startActivityForResult(
             intent,
@@ -78,16 +84,8 @@ class MonthlyPageFragment : Fragment(),
         )
     }
 
-    override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
-        when (which) {
-            DialogInterface.BUTTON_POSITIVE -> {
-                // 削除を実行
-                val stepCountLog =
-                    bundle?.getSerializable(DIALOG_BUNDLE_KEY_DATA) as StepCountLog?
-                viewModel.deleteStepCount(stepCountLog!!)
-            }
-        }
-    }
+    private fun canGoInput(date: Calendar): Boolean =
+        (date.getDateStringYMD() == calendarProvider.now.getDateStringYMD())
 }
 
 class LogRecyclerAdapter(private val listener: OnItemClickListener, val month: Int) :
@@ -128,3 +126,4 @@ class LogRecyclerAdapter(private val listener: OnItemClickListener, val month: I
 
     class LogViewHolder(val binding: ItemCellBinding) : RecyclerView.ViewHolder(binding.root)
 }
+

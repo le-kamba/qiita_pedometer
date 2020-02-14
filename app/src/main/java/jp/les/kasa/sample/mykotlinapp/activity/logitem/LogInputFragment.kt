@@ -21,14 +21,20 @@ class LogInputFragment : Fragment() {
     companion object {
         const val TAG = "LogInputFragment"
         const val DATE_SELECT_TAG = "date_select"
+        const val KEY_INITIAL_DATE = "initial_date"
 
-        fun newInstance(): LogInputFragment {
+        fun newInstance(date: Calendar): LogInputFragment {
             val f = LogInputFragment()
+            f.arguments = Bundle().apply {
+                putSerializable(KEY_INITIAL_DATE, date)
+            }
             return f
         }
     }
 
-    private val today = Calendar.getInstance().clearTime()
+    private val today: Calendar by lazy {
+        arguments!!.getSerializable(KEY_INITIAL_DATE) as Calendar
+    }
     val viewModel by sharedViewModel<LogItemViewModel>()
 
     override fun onCreateView(
@@ -77,7 +83,7 @@ class LogInputFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         // 日付の選択を監視
-        viewModel.selectDate.observe(this, Observer {
+        viewModel.selectDate.observe(viewLifecycleOwner, Observer {
             text_date.text = it.getDateStringYMD()
         })
 

@@ -12,6 +12,7 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.activity_log_item.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 
 class LogItemActivity : AppCompatActivity() {
@@ -19,6 +20,7 @@ class LogItemActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_KEY_DATA = "data"
         const val EXTRA_KEY_SHARE_STATUS = "share"
+        const val EXTRA_KEY_INITIAL_DATE = "initial_date"
     }
 
     val viewModel by viewModel<LogItemViewModel>()
@@ -38,8 +40,13 @@ class LogItemActivity : AppCompatActivity() {
                     .replace(R.id.logitem_container, LogEditFragment.newInstance(logData), LogEditFragment.TAG)
                     .commitNow()
             } else {
+                val initialDate = intent.getSerializableExtra(EXTRA_KEY_INITIAL_DATE) as Calendar
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.logitem_container, LogInputFragment.newInstance(), LogInputFragment.TAG)
+                    .replace(
+                        R.id.logitem_container,
+                        LogInputFragment.newInstance(initialDate),
+                        LogInputFragment.TAG
+                    )
                     .commitNow()
             }
         }

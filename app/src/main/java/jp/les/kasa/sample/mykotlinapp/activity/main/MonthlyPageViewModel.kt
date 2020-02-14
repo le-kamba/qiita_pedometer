@@ -1,16 +1,16 @@
 package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import jp.les.kasa.sample.mykotlinapp.addDay
 import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,8 +20,7 @@ import java.util.*
  **/
 class MonthlyPageViewModel(
     app: Application,
-    val repository: LogRepository,
-    val calendarProvider: CalendarProviderI
+    val repository: LogRepository
 ) : AndroidViewModel(app) {
 
     // 表示する年月
@@ -48,10 +47,6 @@ class MonthlyPageViewModel(
 
     fun setYearMonth(yearMonth: String) {
         _dataYearMonth.postValue(yearMonth)
-    }
-
-    fun deleteStepCount(stepLog: StepCountLog) = viewModelScope.launch(Dispatchers.IO) {
-        repository.delete(stepLog)
     }
 
     /**
