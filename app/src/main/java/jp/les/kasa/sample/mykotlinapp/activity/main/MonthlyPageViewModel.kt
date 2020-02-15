@@ -1,6 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Application
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -54,6 +55,7 @@ class MonthlyPageViewModel(
      * @param yyyyMM `yyyy/MM`の形の日付
      * @return <yyyy/MM/01, yyyy/(MM+1)/01>のPair
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun getFromToYMD(yyyyMM: String): Pair<Calendar, Calendar> {
         val formatter = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
         val from = Calendar.getInstance()
@@ -72,6 +74,7 @@ class MonthlyPageViewModel(
         return Pair(from, to)
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun createCellData(from: Calendar, logs: List<StepCountLog>): List<CalendarCellData> {
 
         val cal = from.clone() as Calendar

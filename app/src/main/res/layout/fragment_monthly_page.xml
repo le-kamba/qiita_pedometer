@@ -46,67 +46,32 @@
                 app:layout_constraintTop_toBottomOf="@id/textViewYM">
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/sunday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/sunday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/monday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/monday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/tuesday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/tuesday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/wednesday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/wednesday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/thursday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/thursday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/friday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/friday" />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal"
-                    android:text="@string/saturday"
-                    android:textColor="#E0F2F1"
-                    android:textStyle="bold" />
+                    style="@style/DayOfWeekLabelStyle"
+                    android:text="@string/saturday" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

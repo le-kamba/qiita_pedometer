@@ -22,10 +22,10 @@
             android:layout_height="65dp"
             android:layout_margin="4dp"
             android:background="@{cellData.calendar}"
-            app:month="@{month}"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:foreground="?android:attr/selectableItemBackground"
+            app:month="@{month}">
 
         <TextView
                 android:id="@+id/dayTextView"
@@ -33,9 +33,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="4dp"
-                app:day="@{cellData.calendar}"
                 android:textSize="10dp"
                 android:textStyle="bold"
+                app:day="@{cellData.calendar}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,9 +46,9 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="3dp"
                 android:text="@{Integer.toString(cellData.stepCountLog.step)}"
-                android:visibility="@{cellData.stepCountLog!=null ? View.VISIBLE : View.GONE}"
                 android:textColor="#0B0A0A"
                 android:textSize="8dp"
+                android:visibility="@{cellData.stepCountLog!=null ? View.VISIBLE : View.GONE}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dayTextView"
                 tools:text="88888" />
@@ -87,30 +87,6 @@
                 app:layout_constraintStart_toEndOf="@+id/suffixTextView"
                 app:layout_constraintTop_toTopOf="@+id/suffixTextView"
                 tools:src="@drawable/ic_sentiment_neutral_green_24dp" />
-
-        <TextView
-                android:id="@+id/weightTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:textColor="#0B0A0A"
-                android:textSize="8dp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stepTextView"
-                tools:text="888.8kg" />
-
-        <TextView
-                android:id="@+id/bodyFatTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#0B0A0A"
-                android:textSize="8dp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@+id/weightTextView"
-                app:layout_constraintTop_toBottomOf="@+id/weightTextView"
-                tools:text="88.8%" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

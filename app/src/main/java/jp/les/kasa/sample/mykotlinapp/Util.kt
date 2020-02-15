@@ -65,6 +65,14 @@ fun Calendar.equalsYMD(other: Calendar): Boolean {
             this.getDay() == other.getDay())
 }
 
+fun Calendar.equalsYMD(dateStr: String): Boolean {
+    val fmt = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
+    val cal = Calendar.getInstance()
+    val time = fmt.parse(dateStr)
+    cal.time = time
+    return this.equalsYMD(cal)
+}
+
 fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
     return when (checkedRadioButtonId) {
         R.id.radio_good -> LEVEL.GOOD
