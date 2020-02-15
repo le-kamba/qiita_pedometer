@@ -2,8 +2,6 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -39,26 +37,6 @@ class MainActivity : AppCompatActivity() {
                 viewPager.setCurrentItem(it.size - 1, false)
             }
         })
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        item?.let {
-            return when (it.itemId) {
-                R.id.add_record -> {
-                    val intent = Intent(this, LogItemActivity::class.java)
-                    startActivityForResult(intent, REQUEST_CODE_LOGITEM)
-                    true
-                }
-                else -> false
-            }
-        }
-        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

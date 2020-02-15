@@ -15,7 +15,6 @@ import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
-import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -72,7 +71,7 @@ class MonthlyPageFragment : Fragment(),
         if (data.stepCountLog != null) {
             intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data.stepCountLog)
         } else {
-            if (canGoInput(data.calendar)) {
+            if (canGoInput(data.calendar, calendarProvider.now)) {
                 intent.putExtra(LogItemActivity.EXTRA_KEY_INITIAL_DATE, data.calendar)
             } else {
                 return
@@ -84,8 +83,7 @@ class MonthlyPageFragment : Fragment(),
         )
     }
 
-    private fun canGoInput(date: Calendar): Boolean =
-        (date.getDateStringYMD() == calendarProvider.now.getDateStringYMD())
+    private fun canGoInput(date: Calendar, today: Calendar): Boolean = !date.after(today)
 }
 
 class LogRecyclerAdapter(private val listener: OnItemClickListener, val month: Int) :

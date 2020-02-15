@@ -59,6 +59,12 @@ fun Calendar.addDay(addDayNum: Int): Calendar {
     return newCal
 }
 
+fun Calendar.equalsYMD(other: Calendar): Boolean {
+    return (this.getYear() == other.getYear() &&
+            this.getMonth() == other.getMonth() &&
+            this.getDay() == other.getDay())
+}
+
 fun levelFromRadioId(checkedRadioButtonId: Int): LEVEL {
     return when (checkedRadioButtonId) {
         R.id.radio_good -> LEVEL.GOOD

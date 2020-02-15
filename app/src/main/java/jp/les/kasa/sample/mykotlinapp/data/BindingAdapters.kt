@@ -8,6 +8,9 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
+import jp.les.kasa.sample.mykotlinapp.di.byKoinInject
+import jp.les.kasa.sample.mykotlinapp.equalsYMD
 import jp.les.kasa.sample.mykotlinapp.getMonth
 import java.util.*
 
@@ -81,10 +84,19 @@ fun setDayLabel(view: TextView, calendar: Calendar) {
 
 @BindingAdapter(value = ["android:background", "month"], requireAll = true)
 fun setCellBackground(view: View, cellDate: Calendar, month: Int) {
+    val calendarProvider: CalendarProviderI = byKoinInject()
+    val now = calendarProvider.now
     val m = cellDate.getMonth()
-    if (m + 1 == month) {
-        view.setBackgroundResource(R.drawable.cell_nonactive)
-    } else {
-        view.setBackgroundResource(R.drawable.cell_nonactive_grey)
+    when {
+        cellDate.equalsYMD(now) -> {
+            view.setBackgroundResource(R.drawable.cell_active)
+        }
+        m + 1 == month -> {
+            view.setBackgroundResource(R.drawable.cell_nonactive)
+        }
+        else -> {
+            view.setBackgroundResource(R.drawable.cell_nonactive_grey)
+        }
     }
 }
+
