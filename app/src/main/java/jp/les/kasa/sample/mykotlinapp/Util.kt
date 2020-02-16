@@ -66,7 +66,7 @@ fun Calendar.equalsYMD(other: Calendar): Boolean {
 }
 
 fun Calendar.equalsYMD(dateStr: String): Boolean {
-    val fmt = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
+    val fmt = SimpleDateFormat("yyyy/MM/dd", Locale.JAPAN)
     val cal = Calendar.getInstance()
     val time = fmt.parse(dateStr)
     cal.time = time

@@ -3,10 +3,8 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.*
@@ -62,7 +60,7 @@ class MonthlyPageFragmentTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun showList() {
+    fun showPage() {
 
         // repositoryに直接追加
         runBlocking {
@@ -80,31 +78,111 @@ class MonthlyPageFragmentTest : AutoCloseKoinTest() {
         }
         launchFragmentInContainer<MonthlyPageFragment>(fragmentArgs)
 
-        // リストの表示確認
-        onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(2)))
+        // グリッドの表示確認
+        onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
 
-        // リスト項目の確認
-        var index = 1
+        // 項目の確認
+        // 全セルをテストするのは多すぎるので、ログがある日の表示が他の日付のセルに繰り返されたりしていないか、
+        // 前後のチェックをしています。
+        var index = 0
 
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText("26"), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+            // @formatter:on
+
+        checkCellNull(1, "27")
+        checkCellNull(2, "28")
+        checkCellNull(3, "29")
+        index = 4
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .check(matches(atPositionOnView(index, withText("612"), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText("30"), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_neutral_green_24dp),R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                        withDrawable(R.drawable.ic_cloud_gley_24dp),R.id.weatherImageView)))
+        // @formatter:on
+        checkCellNull(5, "31")
+        checkCellNull(6, "1")
+
+        checkCellNull(17, "12")
+        index = 18
+        onView(withId(R.id.log_list))
+            // @formatter:off
             .check(matches(atPositionOnView(index, withText("12345"), R.id.stepTextView)))
-            .check(matches(atPositionOnView(index, withText("2019/06/13"), R.id.dateTextView)))
-            .check(matches(atPositionOnView(index, withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText("13"), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp),R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
                         withDrawable(R.drawable.ic_wb_sunny_yellow_24dp),R.id.weatherImageView)))
-            // @formatter:on
-        index = 0
+        // @formatter:on
+        checkCellNull(19, "14")
+
+        checkCellNull(23, "18")
+        index = 24
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
-            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dateTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.VISIBLE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText("19"), R.id.dayTextView)))
             .check(matches(atPositionOnView(index,
                 withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp),R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
                         withDrawable(R.drawable.ic_iconmonstr_umbrella_1),R.id.weatherImageView)))
         // @formatter:on
+        checkCellNull(25, "20")
+        checkCellNull(36, "1")
+        checkCellNull(41, "6")
+    }
+
+    private fun checkCellNull(index: Int, day: String) {
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText(day), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+        // @formatter:on
+    }
+
+    @Test
+    fun cellBackground_active() {
+        // 「今日」のセルの背景が変わっているのを確認
+    }
+
+    @Test
+    fun cellBackground_grey() {
+        // 前月、翌月のセルの背景が変わっているのを確認
+    }
+
+    @Test
+    fun cellBackground_nonactive() {
+        // 「今日」以外のセルの背景の確認
     }
 }

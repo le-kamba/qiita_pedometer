@@ -36,7 +36,8 @@ class MonthlyPageViewModel(
             repository.searchRange(ymd.first.getDateStringYMD(), ymd.second.getDateStringYMD())
         }
 
-    private lateinit var firstDayInPage: Calendar
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    lateinit var firstDayInPage: Calendar
 
     // カレンダーのセルデータは、データリストが取れてからにする
     val cellData: LiveData<List<CalendarCellData>> = Transformations.switchMap(stepCountList) {

@@ -60,7 +60,7 @@ class UtilTest {
     }
 
     @Test
-    fun getYear() {
+    fun calendar_getYear() {
         val cal = Calendar.getInstance()
         cal.set(Calendar.YEAR, 2020)
         cal.set(Calendar.MONTH, 9)
@@ -70,7 +70,7 @@ class UtilTest {
     }
 
     @Test
-    fun getMonth() {
+    fun calendar_getMonth() {
         val cal = Calendar.getInstance()
         cal.set(Calendar.YEAR, 2020)
         cal.set(Calendar.MONTH, 9)
@@ -80,7 +80,7 @@ class UtilTest {
     }
 
     @Test
-    fun getDay() {
+    fun calendar_getDay() {
         val cal = Calendar.getInstance()
         cal.set(Calendar.YEAR, 2020)
         cal.set(Calendar.MONTH, 9)
@@ -90,7 +90,7 @@ class UtilTest {
     }
 
     @Test
-    fun addDay() {
+    fun calendar_addDay() {
         val cal = Calendar.getInstance()
         cal.set(Calendar.YEAR, 2020)
         cal.set(Calendar.MONTH, 9)
@@ -101,6 +101,31 @@ class UtilTest {
 
         assertThat(next.getDateStringYMD()).isEqualTo("2020/10/11")
         assertThat(prev.getDateStringYMD()).isEqualTo("2020/10/09")
+    }
+
+    @Test
+    fun calendar_equalsYMD() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        val other = Calendar.getInstance()
+        other.set(Calendar.YEAR, 2020)
+        other.set(Calendar.MONTH, 9)
+        other.set(Calendar.DAY_OF_MONTH, 10)
+
+        assertThat(cal.equalsYMD(other)).isTrue()
+    }
+
+    @Test
+    fun calendar_equalsYMD_withString() {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, 2020)
+        cal.set(Calendar.MONTH, 9)
+        cal.set(Calendar.DAY_OF_MONTH, 10)
+
+        assertThat(cal.equalsYMD("2020/10/10")).isTrue()
     }
 
     @Test
