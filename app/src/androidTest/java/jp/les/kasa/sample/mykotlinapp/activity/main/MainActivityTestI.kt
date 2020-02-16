@@ -486,4 +486,19 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         idleWatcher.unregister()
     }
+
+    @Test
+    fun cellBackground_active() {
+        // 「今日」のセルの背景が変わっているのを確認
+    }
+
+    @Test
+    fun cellBackground_grey() {
+        // 前月、翌月のセルの背景が変わっているのを確認
+    }
+
+    @Test
+    fun cellBackground_nonactive() {
+        // 「今日」以外のセルの背景の確認
+    }
 }
