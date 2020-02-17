@@ -38,7 +38,7 @@ interface LogDao {
 const val DATABASE_NAME = "log_database"
 
 
-@Database(entities = [StepCountLog::class], version = 1)
+@Database(entities = [StepCountLog::class], version = 1, exportSchema = false)
 abstract class LogRoomDatabase : RoomDatabase() {
     abstract fun logDao(): LogDao
 }

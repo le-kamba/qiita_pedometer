@@ -173,6 +173,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().addMonitor(monitor)
 
         onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
+        getInstrumentation().waitForIdleSync()
 
         // 編集画面を起動
         val index = 24
