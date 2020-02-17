@@ -40,11 +40,8 @@ class MonthlyPageViewModel(
     lateinit var firstDayInPage: Calendar
 
     // カレンダーのセルデータは、データリストが取れてからにする
-    val cellData: LiveData<List<CalendarCellData>> = Transformations.switchMap(stepCountList) {
-        val liveData = MutableLiveData<List<CalendarCellData>>()
-        val list = createCellData(firstDayInPage, it)
-        liveData.value = list
-        return@switchMap liveData
+    val cellData: LiveData<List<CalendarCellData>> = Transformations.map(stepCountList) {
+        createCellData(firstDayInPage, it)
     }
 
     fun setYearMonth(yearMonth: String) {

@@ -2,7 +2,6 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import jp.les.kasa.sample.mykotlinapp.clearTime
@@ -30,10 +29,8 @@ class MainViewModel(
     private val oldestDate = repository.getOldestDate()
 
     // ページ
-    val pages = Transformations.switchMap(oldestDate) {
-        val liveData = MutableLiveData<List<String>>()
-        liveData.value = makePageList(it, calendarProvider.now)
-        return@switchMap liveData
+    val pages = Transformations.map(oldestDate) {
+        makePageList(it, calendarProvider.now)
     }
 
     fun addStepCount(stepLog: StepCountLog) = viewModelScope.launch(Dispatchers.IO) {
