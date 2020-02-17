@@ -170,4 +170,69 @@ class MonthlyPageFragmentTest : AutoCloseKoinTest() {
                 withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
         // @formatter:on
     }
+
+    @Test
+    fun cellBackground_active() {
+        // 「今日」のセルの背景が変わっているのを確認
+        val index = 24 // mock calendarProviderが返すのは"2019/06/19"なのでそのindex
+
+        val fragmentArgs = Bundle().apply {
+            putString(MonthlyPageFragment.KEY_DATE_YEAR_MONTH, "2019/06")
+        }
+        launchFragmentInContainer<MonthlyPageFragment>(fragmentArgs)
+
+        // @formatter:off
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(index,
+                withDrawable(R.drawable.cell_active), R.id.logItemLayout)))
+        // @formatter:on
+    }
+
+    @Test
+    fun cellBackground_grey() {
+        // 前月、翌月のセルの背景が変わっているのを確認
+        val fragmentArgs = Bundle().apply {
+            putString(MonthlyPageFragment.KEY_DATE_YEAR_MONTH, "2019/06")
+        }
+        launchFragmentInContainer<MonthlyPageFragment>(fragmentArgs)
+
+        // @formatter:off
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(0,
+                withDrawable(R.drawable.cell_nonactive_grey), R.id.logItemLayout)))
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(5,
+                withDrawable(R.drawable.cell_nonactive_grey), R.id.logItemLayout)))
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(36,
+                withDrawable(R.drawable.cell_nonactive_grey), R.id.logItemLayout)))
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(41,
+                withDrawable(R.drawable.cell_nonactive_grey), R.id.logItemLayout)))
+        // @formatter:on
+    }
+
+    @Test
+    fun cellBackground_nonactive() {
+        // 「今日」以外のセルの背景の確認
+        val fragmentArgs = Bundle().apply {
+            putString(MonthlyPageFragment.KEY_DATE_YEAR_MONTH, "2019/06")
+        }
+        launchFragmentInContainer<MonthlyPageFragment>(fragmentArgs)
+
+        // 一日と、月末日と、任意の中間日でチェック
+        // @formatter:off
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(6,
+                withDrawable(R.drawable.cell_nonactive), R.id.logItemLayout)))
+
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(15,
+                withDrawable(R.drawable.cell_nonactive), R.id.logItemLayout)))
+
+        onView(withId(R.id.log_list))
+            .check(matches(atPositionOnView(35,
+                withDrawable(R.drawable.cell_nonactive), R.id.logItemLayout)))
+        // @formatter:on
+    }
 }

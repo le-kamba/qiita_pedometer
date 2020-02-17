@@ -18,14 +18,17 @@ import jp.les.kasa.sample.mykotlinapp.activity.main.MainActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.*
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
+import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.data.Offset
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 import org.koin.core.inject
 import org.koin.test.AutoCloseKoinTest
 import java.util.*
@@ -38,18 +41,32 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     lateinit var activity: LogItemActivity
     private val settingRepository: SettingRepository by inject()
 
+    private val calendarProvider: CalendarProviderI by inject()
+
+    lateinit var defaultIntent: Intent
+
+    @Before
+    fun setUp() {
+        loadKoinModules(testMockModule)
+
+        // モジュールを差し替えた後じゃないとモック化されたCalendarProviderIを使えない
+        defaultIntent = Intent().apply {
+            putExtra(LogItemActivity.EXTRA_KEY_INITIAL_DATE, calendarProvider.now)
+        }
+    }
+
     /**
      *   起動直後の表示のテスト<br>
      *   LogInputFragmentの初期表示をチェックする
      */
     @Test
     fun logInputFragment() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 日時ラベル
         onView(withText(R.string.label_date)).check(matches(isDisplayed()))
         // 日付
-        val today = Calendar.getInstance().getDateStringYMD()
+        val today = calendarProvider.now.getDateStringYMD()
         onView(withText(today)).check(matches(isDisplayed()))
         // 日付選択ボタン
         onView(withText(R.string.label_select_date)).check(matches(isDisplayed()))
@@ -93,7 +110,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     @Test
     fun shareStatus_default() {
         // 初期状態
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // シェアスイッチ
         onView(withText(R.string.share_sns)).check(matches(isNotChecked()))
@@ -108,7 +125,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     @Test
     fun shareStatus_change_saved() {
         // 初期状態
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 変更
         onView(withText(R.string.share_sns)).perform(click())
@@ -135,7 +152,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
             )
         )
 
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // シェアスイッチ
         onView(withText(R.string.share_sns)).check(matches(isChecked()))
@@ -149,9 +166,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun selectDate() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
-        val today = Calendar.getInstance()
+        val today = calendarProvider.now
 
         // 日付選択ボタン
         onView(withText(R.string.label_select_date)).perform(click())
@@ -160,10 +177,11 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
         // 内容の確認は難しい(表示されているはずの文字列で見つけられない。もしかしたら文字列じゃ無く画像なのかも)
         // なので、直接SupportFragmentManagerから今持っているFragmentでTAGを条件にDialogFragmentを探しだし、
         // そこからCalendarViewのインスタンスを得ている
-        val fragment = activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
-                as DateSelectDialogFragment
+        val fragment =
+            activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
+                    as DateSelectDialogFragment
         // 初期選択時間が、起動前に取得した時間と僅差であることの確認
-        assertThat(fragment.calendarView.date).isCloseTo(today.timeInMillis, Offset.offset(1000L))
+        assertThat(fragment.calendarView.date).isEqualTo(today.timeInMillis)
     }
 
     /**
@@ -171,9 +189,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun selectDate_cancel() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
-        val today = Calendar.getInstance()
+        val today = calendarProvider.now
 
         // 日付選択ボタン
         onView(withText(R.string.label_select_date)).perform(click())
@@ -184,8 +202,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
         // 内容の確認は難しい
         // なので、直接SupportFragmentManagerから今持っているFragmentでTAGを条件にDialogFragmentを探しだし、
         // そこからCalendarViewのインスタンスを得ている
-        val fragment = activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
-                as DateSelectDialogFragment
+        val fragment =
+            activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
+                    as DateSelectDialogFragment
         val newDate = today.clone() as Calendar
         newDate.add(Calendar.DAY_OF_MONTH, -1) // 未来はNGなので一つ前に
         // 日付を選んだ動作も書けないので、クリックされるときに変わるはずのselectDateを無理矢理上書き。
@@ -206,9 +225,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun selectDate_ok() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
-        val today = Calendar.getInstance()
+        val today = calendarProvider.now
 
         // 日付選択ボタン
         onView(withText(R.string.label_select_date)).perform(click())
@@ -219,8 +238,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
         // 内容の確認は難しい
         // なので、直接SupportFragmentManagerから今持っているFragmentでTAGを条件にDialogFragmentを探しだし、
         // そこからCalendarViewのインスタンスを得ている
-        val fragment = activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
-                as DateSelectDialogFragment
+        val fragment =
+            activity.supportFragmentManager.findFragmentByTag(LogInputFragment.DATE_SELECT_TAG)
+                    as DateSelectDialogFragment
         val newDate = today.clone() as Calendar
         newDate.add(Calendar.DAY_OF_MONTH, -1) // 未来はNGなので一つ前に
         // 日付を選んだ動作も書けないので、クリックされるときに変わるはずのselectDateを無理矢理上書き。
@@ -239,7 +259,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun editCount() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         onView(withId(R.id.edit_count)).check(matches(isDisplayed()))
             .perform(replaceText("12345"))
@@ -258,7 +278,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun levelRadioGroup() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 初期選択状態
         onView(withId(R.id.radio_normal)).check(matches(isDisplayed()))
@@ -274,7 +294,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun levelRadioButtonGood() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         onView(withId(R.id.radio_good)).perform(click())
 
@@ -292,7 +312,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun levelRadioButtonBad() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         onView(withId(R.id.radio_bad)).perform(click())
 
@@ -310,7 +330,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun weatherSpinner() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 初期表示
         onView(withText("晴れ")).check(matches(isDisplayed()))
@@ -337,7 +357,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun resistButton_success() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         val today = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2019)
@@ -361,7 +381,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         assertThat(activityRule.activityResult.resultCode).isEqualTo(Activity.RESULT_OK)
         assertThat(activityRule.activityResult.resultData).isNotNull()
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
         assertThat(data).isNotNull()
         assertThat(data is StepCountLog).isTrue()
         val expectItem = StepCountLog("2019/06/20", 12345, LEVEL.GOOD, WEATHER.CLOUD)
@@ -374,9 +395,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun resistButton_error_futureDate() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
-        val next = Calendar.getInstance().addDay(1)
+        val next = calendarProvider.now.addDay(1)
         activity.runOnUiThread {
             activity.viewModel.dateSelected(next)
         }
@@ -396,9 +417,9 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
      */
     @Test
     fun resistButton_error_emptyCount() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
-        val today = Calendar.getInstance()
+        val today = calendarProvider.now
         activity.runOnUiThread {
             activity.viewModel.dateSelected(today)
         }
@@ -417,7 +438,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEditFragment() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -471,7 +495,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEdit_levelRadioButtonGood() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -493,7 +520,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEdit_levelRadioButtonNormal() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -516,7 +546,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEdit_weatherSpinner() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -547,7 +580,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun updateButton_success() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -563,7 +599,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         assertThat(activityRule.activityResult.resultCode).isEqualTo(Activity.RESULT_OK)
         assertThat(activityRule.activityResult.resultData).isNotNull()
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
         assertThat(data).isNotNull()
         assertThat(data is StepCountLog).isTrue()
         val expectItem = StepCountLog("2019/06/22", 12345, LEVEL.GOOD, WEATHER.CLOUD)
@@ -577,7 +614,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun updateButton_error_emptyCount() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -590,13 +630,16 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     }
 
     /**
-     * 編集画面：削除ボタン押下のテスト:カウント未入力エラー
+     * 編集画面：削除ボタン押下のテスト
      */
     @Test
     fun deleteButton() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -606,7 +649,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
         // 削除を戻すIntentの確認
         assertThat(activityRule.activityResult.resultCode).isEqualTo(MainActivity.RESULT_CODE_DELETE)
         assertThat(activityRule.activityResult.resultData).isNotNull()
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA)
         assertThat(data).isNotNull()
         assertThat(data is StepCountLog).isTrue()
         val expectItem = StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
@@ -615,7 +659,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun shareTwitterResult() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 変更
         onView(withText(R.string.share_sns)).perform(click())
@@ -625,7 +669,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.button_update)).perform(click())
 
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
         assertThat(data).isNotNull()
         assertThat(data is ShareStatus).isTrue()
         assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, true, false))
@@ -633,7 +678,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun shareInstagramResult() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 変更
         onView(withText(R.string.share_sns)).perform(click())
@@ -643,7 +688,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.button_update)).perform(click())
 
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
         assertThat(data).isNotNull()
         assertThat(data is ShareStatus).isTrue()
         assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, false, true))
@@ -651,7 +697,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun shareAllResult() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 変更
         onView(withText(R.string.share_sns)).perform(click())
@@ -662,7 +708,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.button_update)).perform(click())
 
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
         assertThat(data).isNotNull()
         assertThat(data is ShareStatus).isTrue()
         assertThat(data).isEqualToComparingFieldByField(ShareStatus(true, true, true))
@@ -670,7 +717,7 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun shareNoneResult() {
-        activity = activityRule.launchActivity(null)
+        activity = activityRule.launchActivity(defaultIntent)
 
         // 変更
         onView(withText(R.string.label_twitter)).perform(click())
@@ -679,7 +726,8 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.button_update)).perform(click())
 
-        val data = activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
+        val data =
+            activityRule.activityResult.resultData.getSerializableExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS)
         assertThat(data).isNotNull()
         assertThat(data is ShareStatus).isTrue()
         assertThat(data).isEqualToComparingFieldByField(ShareStatus(false, true, false))
@@ -689,7 +737,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEditShareMenuClick() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -713,7 +764,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEditShare_Twitter() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 
@@ -743,7 +797,10 @@ class LogItemActivityTestI : AutoCloseKoinTest() {
     fun logEditShare_Instagram() {
         // データをセットしてから起動
         val intent = Intent().apply {
-            putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+            putExtra(
+                LogItemActivity.EXTRA_KEY_DATA,
+                StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)
+            )
         }
         activity = activityRule.launchActivity(intent)
 

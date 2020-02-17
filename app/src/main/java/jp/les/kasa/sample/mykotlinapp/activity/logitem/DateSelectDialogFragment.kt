@@ -6,8 +6,9 @@ import android.widget.CalendarView
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import java.util.*
 
 /**
  * 日付選択ダイアログ
@@ -15,9 +16,11 @@ import java.util.*
  **/
 class DateSelectDialogFragment : DialogFragment() {
 
+    private val calendarProvider: CalendarProviderI by inject()
+
     // CalendarViewで選択している日付の保存
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val selectDate = Calendar.getInstance()!!
+    val selectDate = calendarProvider.now
 
     // CalendarView
     lateinit var calendarView: CalendarView

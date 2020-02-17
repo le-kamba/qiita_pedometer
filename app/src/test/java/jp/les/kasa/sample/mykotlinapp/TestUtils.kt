@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +18,7 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.annotation.RealObject
@@ -58,22 +58,24 @@ class DrawableMatcher(private val expectedId: Int) : TypeSafeMatcher<View>(View:
             if (expectedId < 0) {
                 return target.drawable == null
             }
-            val resources = target.getContext().resources
-            val expectedDrawable = resources.getDrawable(expectedId, null)
-            resourceName = resources.getResourceEntryName(expectedId)
-
-            if (expectedDrawable == null) {
-                return false
-            }
 
             var drawable = target.drawable
             if (drawable is StateListDrawable) {
                 drawable = drawable.getCurrent()
             }
 
-            val bitmap = drawable.toBitmap()
-            val otherBitmap = expectedDrawable.toBitmap()
-            return bitmap.sameAs(otherBitmap)
+            return shadowOf(drawable).createdFromResId == expectedId
+        } else {
+            if (expectedId < 0) {
+                return target.background == null
+            }
+
+            var drawable = target.background
+            if (drawable is StateListDrawable) {
+                drawable = drawable.getCurrent()
+            }
+
+            return shadowOf(drawable).createdFromResId == expectedId
         }
         return false
     }
@@ -230,7 +232,10 @@ class ShadowAlertController {
         private set
 
     val adapter: Adapter?
-        get() = ReflectionHelpers.callInstanceMethod<ListView>(realAlertController, "getListView").adapter
+        get() = ReflectionHelpers.callInstanceMethod<ListView>(
+            realAlertController,
+            "getListView"
+        ).adapter
 
     @Implementation
     @Throws(InvocationTargetException::class, IllegalAccessException::class)
@@ -272,7 +277,8 @@ class ShadowAlertController {
 
     @Implementation(minSdk = LOLLIPOP)
     fun setView(resourceId: Int) {
-        view = LayoutInflater.from(ApplicationProvider.getApplicationContext()).inflate(resourceId, null)
+        view = LayoutInflater.from(ApplicationProvider.getApplicationContext())
+            .inflate(resourceId, null)
     }
 
     @Implementation

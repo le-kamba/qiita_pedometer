@@ -17,15 +17,12 @@ import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
-import jp.les.kasa.sample.mykotlinapp.data.LEVEL
-import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
-import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 
 
 /**
@@ -43,10 +41,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    private val repository: LogRepository by inject()
+
     @Before
     fun setUp() {
         loadKoinModules(testMockModule)
-        activityRule.launchActivity(Intent())
     }
 
     @After
@@ -56,6 +55,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_Add() {
+        activityRule.launchActivity(Intent())
 
         val resultData = Intent().apply {
             // @formatter:off
@@ -69,25 +69,28 @@ class MainActivityTestI : AutoCloseKoinTest() {
         )
         getInstrumentation().addMonitor(monitor)
 
+        val index = 24
+
         // 登録画面を起動
-        onView(
-            Matchers.allOf(withContentDescription("記録を追加")) // FIXME
-        ).perform(click())
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
         resultActivity.setResult(Activity.RESULT_OK, resultData)
         resultActivity.finish()
 
         getInstrumentation().waitForIdleSync()
+        val all = activityRule.activity.viewModel.repository.allLogs()
+        assertThat(all.size).isEqualTo(1)
+        getInstrumentation().waitForIdleSync()
 
         // 反映を確認
-        val index = 24
-
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .check(matches(atPositionOnView(index, withText("666"), R.id.stepTextView)))
-            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index, withText("19"), R.id.dayTextView)))
             .check(matches(atPositionOnView(index,
                 withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
@@ -98,14 +101,12 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_Edit() {
         // 最初にデータ投入
-        val mainActivity = activityRule.activity
-
-        mainActivity.runOnUiThread {
-            // @formatter:off
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
-            // @formatter:on
+        runBlocking {
+            repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            repository.insert(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
+        activityRule.launchActivity(Intent())
+
         getInstrumentation().waitForIdleSync()
 
         val resultData = Intent().apply {
@@ -124,8 +125,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
         val index = 24
 
         onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
         getInstrumentation().waitForIdleSync()
@@ -136,12 +135,15 @@ class MainActivityTestI : AutoCloseKoinTest() {
         resultActivity.finish()
         getInstrumentation().waitForIdleSync()
 
+        val all = activityRule.activity.viewModel.repository.allLogs()
+        assertThat(all.size).isEqualTo(2)
+        getInstrumentation().waitForIdleSync()
+
         // 反映を確認
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .check(matches(atPositionOnView(index, withText("5000"), R.id.stepTextView)))
-            .check(matches(atPositionOnView(index, withText("2019/06/19"), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index, withText("19"), R.id.dayTextView)))
             .check(matches(atPositionOnView(index,
                 withDrawable(R.drawable.ic_sentiment_neutral_green_24dp), R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
@@ -152,14 +154,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onActivityResult_Delete() {
         // 最初にデータ投入
-        val mainActivity = activityRule.activity
-
-        mainActivity.runOnUiThread {
-            // @formatter:off
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
-            // @formatter:on
+        runBlocking {
+            repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            repository.insert(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
+        activityRule.launchActivity(Intent())
         getInstrumentation().waitForIdleSync()
 
         val resultData = Intent().apply {
@@ -180,7 +179,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
         getInstrumentation().waitForIdleSync()
@@ -193,21 +191,18 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
 
+        val all = activityRule.activity.viewModel.repository.allLogs()
+        assertThat(all.size).isEqualTo(1)
+        getInstrumentation().waitForIdleSync()
+
         // 反映を確認
-        onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
-            .check(matches(atPositionOnView(index, withText("12345"), R.id.stepTextView)))
-            .check(matches(atPositionOnView(index, withText("2019/06/13"), R.id.dayTextView)))
-            .check(matches(atPositionOnView(index,
-                withDrawable(R.drawable.ic_sentiment_very_satisfied_pink_24dp), R.id.levelImageView)))
-            .check(matches(atPositionOnView(index,
-                        withDrawable(R.drawable.ic_wb_sunny_yellow_24dp),R.id.weatherImageView)))
-            // @formatter:on
+        checkCellNull(index, "19")
     }
 
     @Test
     fun onActivityResult_TwitterShare() {
+        activityRule.launchActivity(Intent())
+
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
@@ -221,9 +216,12 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().addMonitor(monitor)
 
         // 登録画面を起動
-        onView(
-            Matchers.allOf(withContentDescription("記録を追加")) // FIXME
-        ).perform(click())
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
+        getInstrumentation().waitForIdleSync()
 
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
 
@@ -248,6 +246,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_InstagramShare() {
+        activityRule.launchActivity(Intent())
+
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
@@ -261,9 +261,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().addMonitor(monitor)
 
         // 登録画面を起動
-        onView(
-            Matchers.allOf(withContentDescription("記録を追加")) // FIXME
-        ).perform(click())
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
 
@@ -288,6 +290,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_NoneShare() {
+        activityRule.launchActivity(Intent())
+
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
@@ -301,9 +305,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().addMonitor(monitor)
 
         // 登録画面を起動
-        onView(
-            Matchers.allOf(withContentDescription("記録を追加")) // FIXME
-        ).perform(click())
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
 
@@ -334,6 +340,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_ShareAll() {
+        activityRule.launchActivity(Intent())
+
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
@@ -347,9 +355,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().addMonitor(monitor)
 
         // 登録画面を起動
-        onView(
-            Matchers.allOf(withContentDescription("記録を追加")) // FIXME
-        ).perform(click())
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
 
@@ -391,14 +401,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun onClickListItem() {
         // 最初にデータ投入
-        val mainActivity = activityRule.activity
-
-        mainActivity.runOnUiThread {
-            // @formatter:off
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
-            // @formatter:on
+        runBlocking {
+            repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            repository.insert(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
+        activityRule.launchActivity(Intent())
         getInstrumentation().waitForIdleSync()
 
         // 監視モニター
@@ -412,7 +419,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         onView(withId(R.id.log_list))
             // @formatter:off
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(index))
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
         getInstrumentation().waitForIdleSync()
@@ -433,15 +439,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun pages() {
-        // 最初にデータ投入
-        val mainActivity = activityRule.activity
-
-        mainActivity.runOnUiThread {
-            // @formatter:off
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-            mainActivity.viewModel.addStepCount(StepCountLog("2018/12/19", 666, LEVEL.BAD, WEATHER.RAIN))
-            // @formatter:on
+        runBlocking {
+            repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            repository.insert(StepCountLog("2018/12/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
+        activityRule.launchActivity(Intent())
         getInstrumentation().waitForIdleSync()
 
         // ページ数が正しいかのテスト(2018/12〜2019/06までの7ページあるはず)
@@ -457,14 +459,11 @@ class MainActivityTestI : AutoCloseKoinTest() {
     @Test
     fun swipe() {
         // 最初にデータ投入
-        val mainActivity = activityRule.activity
-
-        mainActivity.runOnUiThread {
-            // @formatter:off
-            mainActivity.viewModel.addStepCount(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
-            mainActivity.viewModel.addStepCount(StepCountLog("2018/12/19", 666, LEVEL.BAD, WEATHER.RAIN))
-            // @formatter:on
+        runBlocking {
+            repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
+            repository.insert(StepCountLog("2018/12/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
+        val mainActivity = activityRule.launchActivity(Intent())
         getInstrumentation().waitForIdleSync()
 
         // currentPageのチェック
@@ -487,18 +486,18 @@ class MainActivityTestI : AutoCloseKoinTest() {
         idleWatcher.unregister()
     }
 
-    @Test
-    fun cellBackground_active() {
-        // 「今日」のセルの背景が変わっているのを確認
-    }
-
-    @Test
-    fun cellBackground_grey() {
-        // 前月、翌月のセルの背景が変わっているのを確認
-    }
-
-    @Test
-    fun cellBackground_nonactive() {
-        // 「今日」以外のセルの背景の確認
+    private fun checkCellNull(index: Int, day: String) {
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.stepTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.suffixTextView)))
+            .check(matches(atPositionOnView(index, withText(day), R.id.dayTextView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+            .check(matches(atPositionOnView(index,
+                withEffectiveVisibility(Visibility.GONE), R.id.levelImageView)))
+        // @formatter:on
     }
 }
