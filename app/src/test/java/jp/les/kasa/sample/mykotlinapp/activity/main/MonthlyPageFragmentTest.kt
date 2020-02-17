@@ -174,7 +174,7 @@ class MonthlyPageFragmentTest : AutoCloseKoinTest() {
     @Test
     fun cellBackground_active() {
         // 「今日」のセルの背景が変わっているのを確認
-        val index = 24 // mock calendarProviderが返すのは"2019/06/19"なのでそのindex
+        val index = 33 // mock calendarProviderが返すのは"2019/06/28"なのでそのindex
 
         val fragmentArgs = Bundle().apply {
             putString(MonthlyPageFragment.KEY_DATE_YEAR_MONTH, "2019/06")

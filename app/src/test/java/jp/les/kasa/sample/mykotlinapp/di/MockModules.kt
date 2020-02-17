@@ -28,7 +28,7 @@ class MockCalendarProvider : CalendarProviderI {
             val cal = Calendar.getInstance().clearTime()
             cal.set(Calendar.YEAR, 2019)
             cal.set(Calendar.MONTH, 6 - 1) // 月は0 based index
-            cal.set(Calendar.DATE, 19)
+            cal.set(Calendar.DATE, 28)
             return cal
         }
 }
