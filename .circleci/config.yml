@@ -6,9 +6,6 @@ orbs:
 jobs:
   build:
     executor: android/android
-    branches:
-        only:
-            - feature/qiita_10_c
 
     steps:
       - checkout
@@ -16,3 +13,13 @@ jobs:
           command: ./gradlew assembleDebug
       - run:
           command: ./gradlew testDebugUnitTest
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: feature/qiita_10_c 
+
