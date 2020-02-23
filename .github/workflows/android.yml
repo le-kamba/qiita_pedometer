@@ -26,7 +26,7 @@ jobs:
       run: ./gradlew lint testDebugUnitTest
       
     - name: Android Emulator Runner
-      if: success()    
+      if: always()
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 28
@@ -45,11 +45,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: debugApk
-        path: app/build/outputs/apk/debug/*.apk
-
-    - name: Archive Release Apk
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: releaseApk
-        path: app/build/outputs/apk/release/*.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
