@@ -29,7 +29,8 @@ jobs:
       if: success()    
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 29
+        api-level: 28
+        profile: Pixel 2
         script: ./gradlew connectedCheck
         
     - name: Archive results
