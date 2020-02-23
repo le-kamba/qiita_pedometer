@@ -29,13 +29,18 @@ jobs:
       if: success()    
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 28
-        profile: Pixel
-        script: ./gradlew connectedCheck
+        script: $ANDROID_HOME/tools/bin/avdmanager list
         
     - name: Archive results
       if: always()
       uses: actions/upload-artifact@v1
       with:
         name: test-reports
+        path: app/build/reports
+
+    - name: Archive Apk
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: outputs
         path: app/build/reports
