@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -17,14 +17,24 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+        
     - name: Build with Gradle
       run: ./gradlew assembleDebug
+      
     - name: Check
       if: success()
       run: ./gradlew lint testDebugUnitTest
+      
+    - name: Android Emulator Runner
+      if: success()    
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        script: ./gradlew connectedCheck
+        
     - name: Archive results
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: code-coverage-report
+        name: test-reports
         path: app/build/reports
