@@ -29,7 +29,9 @@ jobs:
       if: success()    
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        script: $ANDROID_HOME/tools/bin/avdmanager list
+        api-level: 28
+        profile: Nexus 6
+        script: ./gradlew connectedCheck
         
     - name: Archive results
       if: always()
@@ -38,9 +40,16 @@ jobs:
         name: test-reports
         path: app/build/reports
 
-    - name: Archive Apk
+    - name: Archive Debug Apk
       if: always()
       uses: actions/upload-artifact@v1
       with:
-        name: outputs
-        path: app/build/reports
+        name: debugApk
+        path: app/build/outputs/apk/debug/*.apk
+
+    - name: Archive Release Apk
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: releaseApk
+        path: app/build/outputs/apk/release/*.apk
