@@ -19,7 +19,7 @@ jobs:
       - store_test_results:
           path: app/build/test-results
       - store_artifacts:
-          path: app/build/outputs/apk/build/release/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           destination: app-debug.apk
           
 workflows:
