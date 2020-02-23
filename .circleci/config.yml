@@ -1,0 +1,18 @@
+version: 2.1
+
+orbs:
+ android: circleci/android@0.2.0
+
+jobs:
+  build:
+    branches:
+        only:
+            - feature/qiita_10_c
+    executor: android/android
+        
+    steps:
+      - checkout
+      - run:
+          command: ./gradlew assembleDebug
+      - run:
+          command: ./gradlew testDebugUnitTest
