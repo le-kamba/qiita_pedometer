@@ -1,3 +1,5 @@
+![Android CI](https://github.com/le-kamba/qiita_pedometer/workflows/Android%20CI/badge.svg?branch=feature%2Fqiita_10)
+
 # Pedometer
 歩数計記録アプリQiita記事用
 
