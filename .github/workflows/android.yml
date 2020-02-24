@@ -21,6 +21,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleDebug
       
+    - name: Archive Debug Apk
+      if: success()
+      uses: actions/upload-artifact@v1
+      with:
+        name: debugApk
+        path: app/build/outputs/apk/debug/app-debug.apk
+
     - name: Check
       if: success()
       run: ./gradlew lint testDebugUnitTest
@@ -40,9 +47,3 @@ jobs:
         name: test-reports
         path: app/build/reports
 
-    - name: Archive Debug Apk
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: debugApk
-        path: app/build/outputs/apk/debug/app-debug.apk
