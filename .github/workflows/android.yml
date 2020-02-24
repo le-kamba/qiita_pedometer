@@ -47,9 +47,8 @@ jobs:
         name: test-reports
         path: app/build/reports
 
-    - name: Notify Slack
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2.0.0
       env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      uses: pullreminders/slack-action@v1
-      with:
-        args: '{\"channel\":\"CUFQKSER5\",\"text\":\"Github Actionsのワークフローが完了しました。\"}'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_TITLE: Github Actionsワークフロー完了通知
