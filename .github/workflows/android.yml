@@ -47,3 +47,9 @@ jobs:
         name: test-reports
         path: app/build/reports
 
+    - name: Notify Slack
+      uses: pullreminders/slack-action@v1
+        with:
+            env:
+                SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            args: '{\"channel\":\"CUFQKSER5\",\"text\":\"Github Actionsのワークフローが完了しました。\"}'
