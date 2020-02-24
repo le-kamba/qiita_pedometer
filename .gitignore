@@ -2,6 +2,8 @@
 *.apk
 *.ap_
 output.json
+release.jks
+keystore.properties
 
 # Files for the ART/Dalvik VM
 *.dex

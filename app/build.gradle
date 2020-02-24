@@ -6,6 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -18,16 +22,32 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
         testApplicationId "jp.les.kasa.sample.mykotlinapp.test"
     }
+    signingConfigs {
+        debug {
+            storeFile file('debug.jks')
+            storePassword 'android'
+            keyAlias = 'androiddebugkey'
+            keyPassword 'android'
+        }
+        release{
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     buildTypes {
-        debug{
+        debug {
             resValue "string", "app_name", "(d)歩数計記録アプリ"
             applicationIdSuffix ".debug"
             minifyEnabled false
+            signingConfig signingConfigs.debug
         }
         release {
             resValue "string", "app_name", "歩数計記録アプリ"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     testOptions {
