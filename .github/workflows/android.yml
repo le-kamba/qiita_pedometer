@@ -47,8 +47,10 @@ jobs:
         name: test-reports
         path: app/build/reports
 
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2.0.0
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TITLE: Github Actionsワークフロー完了通知
+    - name: Slack notification
+      uses: homoluctus/slatify@master
+      with:
+        type: ${{ job.status }}
+        job_name: '*Build and DebugCheck*'
+        channel: '#general'
+        url: ${{ secrets.SLACK_WEBHOOK_URL }}
