@@ -5,14 +5,28 @@ orbs:
 
 jobs:
   build:
-    branches:
-        only:
-            - feature/qiita_10_c
     executor: android/android
-        
+
     steps:
       - checkout
       - run:
           command: ./gradlew assembleDebug
       - run:
           command: ./gradlew testDebugUnitTest
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/test-results
+      - store_artifacts:
+          path: app/build/outputs/apk/debug/app-debug.apk
+          destination: app-debug.apk
+          
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: feature/qiita_10_c 
