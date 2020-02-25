@@ -9,8 +9,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2.0.0
+    - name: Slack notification
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TITLE: Github Actionsワークフロー完了通知
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: general # Optional. (defaults to webhook)
+      uses: Ilshidur/action-slack@master
+      with:
+        args: 'Github Actionsのワークフローが完了しました。' 
+    
+    
