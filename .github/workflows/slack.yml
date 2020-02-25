@@ -10,11 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Slack notification
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_CHANNEL: general # Optional. (defaults to webhook)
-      uses: bryan-nice/slack-notification@master
+      uses: homoluctus/slatify@master
       with:
-        args: 'Github Actionsのワークフローが完了しました。' 
-    
-    
+        type: ${{ job.status }}
+        job_name: '*Build and DebugCheckk*'
+        channel: '#general'
+        url: ${{ secrets.SLACK_WEBHOOK_URL }}
