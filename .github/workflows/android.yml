@@ -29,7 +29,7 @@ jobs:
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Sign Release Apk
-      if: always()
+      if: success()
       uses: r0adkll/sign-android-release@v1
       with:
         releaseDirectory: /app/build/outputs/apk/release
@@ -58,6 +58,7 @@ jobs:
 #         path: app/build/reports
 
     - name: Slack notification
+      if: always()
       uses: homoluctus/slatify@master
       with:
         type: ${{ job.status }}
