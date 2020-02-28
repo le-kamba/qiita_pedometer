@@ -44,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: releaseApk
-        path: steps.archive-release-apk.outputs.signedReleaseFile
+        path: ${{ steps.archive-release-apk.outputs.signedReleaseFile }}
 
 #     - name: Check
 #       if: success()
