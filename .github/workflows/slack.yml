@@ -1,0 +1,30 @@
+name: SlackCI
+
+on: 
+  push:
+    branches:
+      - feature/qiita_10_sub/multi_jobs_os_change
+
+jobs:
+  build:
+
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run a one-line script
+      run: echo Hello, world!
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
+        
+  slackNotification:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Slack Notify
+      uses: rtCamp/action-slack-notify@v2.0.0
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

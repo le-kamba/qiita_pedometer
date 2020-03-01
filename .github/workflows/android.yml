@@ -4,7 +4,7 @@ on:
   push:
     branches-ignore:
       - 'master'
-      - 'feature/qiita_10_**'
+      - 'feature/qiita_10_sub/**'
 
 jobs:
   build:
@@ -20,29 +20,4 @@ jobs:
         
     - name: Build with Gradle
       run: ./gradlew assembleDebug
-      
-    - name: Check
-      if: success()
-      run: ./gradlew lint testDebugUnitTest
-      
-    - name: Android Emulator Runner
-      if: always()
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 28
-        profile: Nexus 6
-        script: ./gradlew connectedCheck
-        
-    - name: Archive results
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: test-reports
-        path: app/build/reports
 
-    - name: Archive Debug Apk
-      if: always()
-      uses: actions/upload-artifact@v1
-      with:
-        name: debugApk
-        path: app/build/outputs/apk/debug/app-debug.apk
