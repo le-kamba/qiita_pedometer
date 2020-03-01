@@ -1,6 +1,9 @@
 name: SlackCI
 
-on: [push]
+on: 
+  push:
+    branches:
+      - qiita_10/sub/multi_jobs_os_change
 
 jobs:
   build:
