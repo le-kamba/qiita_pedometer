@@ -3,7 +3,7 @@ name: SlackCI
 on: 
   push:
     branches:
-      - qiita_10/sub/multi_jobs_os_change
+      - feature/qiita_10_sub/multi_jobs_os_change
 
 jobs:
   build:
