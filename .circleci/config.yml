@@ -29,4 +29,4 @@ workflows:
       - build:
           filters:
             branches:
-              only: feature/qiita_10_sub/circleci 
+              only: feature/qiita_10_sub/circleci
