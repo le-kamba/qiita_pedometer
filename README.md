@@ -1,2 +1,4 @@
 # qiita_pedometer
 Qiita記事で公開している歩数計記録アプリのプロジェクト
+
+GithubActionsでのマルチジョブでOSを変えるサンプル
