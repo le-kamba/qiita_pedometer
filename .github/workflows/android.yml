@@ -3,7 +3,7 @@ name: Android CI
 on:
   push:
     paths-ignore:
-      - README.md
+      - '**.md'
     branches-ignore:
       - master
       - 'feature/qiita_10_sub/**'
