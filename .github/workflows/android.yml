@@ -30,23 +30,23 @@ jobs:
         name: debugApk
         path: app/build/outputs/apk/debug/app-debug.apk
 
-    - name: Sign Release Apk
-      if: success()
-      uses: r0adkll/sign-android-release@v1
-      with:
-        releaseDirectory: app/build/outputs/apk/release
-        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-        alias: ${{ secrets.ALIAS }}
-        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
-      id: sign-apk 
-  
-    - name: Archive Release Apk
-      if: success()
-      uses: actions/upload-artifact@v1
-      with:
-        name: releaseApk
-        path: ${{ steps.sign-apk.outputs.signedReleaseFile }}
+#     - name: Sign Release Apk
+#       if: success()
+#       uses: r0adkll/sign-android-release@v1
+#       with:
+#         releaseDirectory: app/build/outputs/apk/release
+#         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+#         alias: ${{ secrets.ALIAS }}
+#         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+#         keyPassword: ${{ secrets.KEY_PASSWORD }}
+#       id: sign-apk 
+#   
+#     - name: Archive Release Apk
+#       if: success()
+#       uses: actions/upload-artifact@v1
+#       with:
+#         name: releaseApk
+#         path: ${{ steps.sign-apk.outputs.signedReleaseFile }}
 
     - name: Check
       if: success()
