@@ -2,11 +2,11 @@ name: Android CI
 
 on:
   push:
-    branches-ignore:
-      - 'master'
-      - 'feature/qiita_10_sub/**'
     paths-ignore:
-      - 'README.md'
+      - README.md
+    branches-ignore:
+      - master
+      - 'feature/qiita_10_sub/**'
 
 jobs:
   build:
