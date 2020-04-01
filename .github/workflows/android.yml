@@ -81,4 +81,5 @@ jobs:
         job_name: '*Build and DebugCheck*'
         channel: '#qiitapedometersample'
         commit: true
+        token: ${{ secrets.GITHUB_TOKEN }}
         url: ${{ secrets.SLACK_WEBHOOK_URL }}
