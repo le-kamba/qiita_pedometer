@@ -80,4 +80,5 @@ jobs:
         type: ${{ job.status }}
         job_name: '*Build and DebugCheck*'
         channel: '#qiitapedometersample'
+        commit: true
         url: ${{ secrets.SLACK_WEBHOOK_URL }}
