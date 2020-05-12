@@ -13,7 +13,8 @@ class SettingRepository constructor(private val applicationContext: Context) {
 
     fun saveShareStatus(shareStatus: ShareStatus) {
         // 設定に保存
-        val pref = applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
         pref.edit().putBoolean("postSns", shareStatus.doPost)
             .putBoolean("postTwitter", shareStatus.postTwitter)
             .putBoolean("postInstagram", shareStatus.postInstagram)
@@ -21,7 +22,8 @@ class SettingRepository constructor(private val applicationContext: Context) {
     }
 
     fun readShareStatus(): ShareStatus {
-        val pref = applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
         val doPost = pref.getBoolean("postSns", false)
         val postTwitter = pref.getBoolean("postTwitter", false)
         val postInstagram = pref.getBoolean("postInstagram", false)
@@ -29,7 +31,24 @@ class SettingRepository constructor(private val applicationContext: Context) {
     }
 
     fun clear() {
-        val pref = applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
         pref.edit().clear().apply()
+    }
+
+    fun readPetDog(): Boolean? {
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        return if (pref.contains("hasDog")) {
+            return pref.getBoolean("hasDog", false)
+        } else {
+            null
+        }
+    }
+
+    fun savePetDog(hasDog: Boolean) {
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        pref.edit().putBoolean("hasDog", hasDog).apply()
     }
 }

@@ -8,6 +8,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.utils.Analytics
+import org.koin.android.ext.android.inject
 
 /**
  * 確認メッセージを表示するダイアログ<br>
@@ -25,6 +27,8 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
          */
         fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int)
     }
+
+    private val analytics: Analytics by inject()
 
     class Builder() {
         private var message: String? = null
@@ -84,6 +88,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         const val KEY_MESSAGE = "message"
         const val KEY_RESOURCE_ID = "res_id"
         const val KEY_DATA = "data"
+        const val SCREEN_NAME = "確認ダイアログ"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -105,6 +110,11 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
             .setNegativeButton(android.R.string.no, this)
             .setPositiveButton(android.R.string.yes, this)
         return builder.create()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.let { analytics.sendScreenName(it, SCREEN_NAME) }
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {

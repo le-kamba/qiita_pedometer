@@ -3,14 +3,14 @@ package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
-import jp.les.kasa.sample.mykotlinapp.getDay
-import jp.les.kasa.sample.mykotlinapp.getMonth
-import jp.les.kasa.sample.mykotlinapp.getYear
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.getDay
+import jp.les.kasa.sample.mykotlinapp.utils.getMonth
+import jp.les.kasa.sample.mykotlinapp.utils.getYear
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

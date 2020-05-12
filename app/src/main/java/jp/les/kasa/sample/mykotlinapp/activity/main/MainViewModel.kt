@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
-import jp.les.kasa.sample.mykotlinapp.getDateStringYM
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat

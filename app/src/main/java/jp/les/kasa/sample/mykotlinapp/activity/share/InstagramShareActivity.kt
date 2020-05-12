@@ -10,11 +10,11 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityInstagramShareBinding
 import kotlinx.android.synthetic.main.activity_instagram_share.*
@@ -27,9 +27,11 @@ import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 @RuntimePermissions
-class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
+class InstagramShareActivity : BaseActivity(), CoroutineScope {
     companion object {
         const val KEY_STEP_COUNT_DATA = "data"
+
+        const val SCREEN_NAME = "Instagramシェア画面"
     }
 
     lateinit var binding: ActivityInstagramShareBinding
@@ -38,6 +40,10 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
     lateinit var job: Job
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
+
+    // 画面報告名
+    override val screenName: String
+        get() = SCREEN_NAME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +76,7 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
             share.type = "image/*"
             share.putExtra(Intent.EXTRA_STREAM, imageFileUri)
             startActivity(Intent.createChooser(share, "Share to"))
+            analytics.sendShareEvent("Instagram")
         })
     }
 
@@ -125,7 +132,11 @@ class InstagramShareActivity : AppCompatActivity(), CoroutineScope {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         // NOTE: delegate the permission handling to generated function
         onRequestPermissionsResult(requestCode, grantResults)

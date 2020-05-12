@@ -1,8 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp.activity.logitem
 
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.addDay
-import jp.les.kasa.sample.mykotlinapp.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.addDay
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.*

@@ -1,8 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
 import androidx.room.Room
-import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import java.util.*

@@ -15,6 +15,8 @@ import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
+import jp.les.kasa.sample.mykotlinapp.utils.Analytics
+import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYMD
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -42,6 +44,8 @@ class MonthlyPageFragment : Fragment(),
 
     val calendarProvider: CalendarProviderI by inject()
 
+    val analytics: Analytics by inject()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,6 +71,8 @@ class MonthlyPageFragment : Fragment(),
     }
 
     override fun onItemClick(data: CalendarCellData) {
+        analytics.sendCalendarCellEvent(data.calendar.getDateStringYMD())
+
         val intent = Intent(context, LogItemActivity::class.java)
         if (data.stepCountLog != null) {
             intent.putExtra(LogItemActivity.EXTRA_KEY_DATA, data.stepCountLog)

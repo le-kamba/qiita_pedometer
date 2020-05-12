@@ -10,8 +10,8 @@ import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.main.LogRecyclerAdapter
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.di.byKoinInject
-import jp.les.kasa.sample.mykotlinapp.equalsYMD
-import jp.les.kasa.sample.mykotlinapp.getMonth
+import jp.les.kasa.sample.mykotlinapp.utils.equalsYMD
+import jp.les.kasa.sample.mykotlinapp.utils.getMonth
 import java.util.*
 
 

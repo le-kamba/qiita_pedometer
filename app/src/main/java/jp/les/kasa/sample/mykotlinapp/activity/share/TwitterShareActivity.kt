@@ -5,19 +5,25 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.openPlayStore
+import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.utils.openPlayStore
 import kotlinx.android.synthetic.main.activity_twitter_share.*
 import kotlinx.android.synthetic.main.content_twitter_share.*
 
 
-class TwitterShareActivity : AppCompatActivity() {
+class TwitterShareActivity : BaseActivity() {
 
     companion object {
         const val KEY_TEXT = "text"
+
+        const val SCREEN_NAME = "Twitterシェア画面"
     }
+
+    // 画面報告名
+    override val screenName: String
+        get() = SCREEN_NAME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +46,7 @@ class TwitterShareActivity : AppCompatActivity() {
         intent.data = Uri.parse("twitter://post?message=$encoded")
         try {
             startActivity(intent)
+            analytics.sendShareEvent("Twitter")
         } catch (e: ActivityNotFoundException) {
             Snackbar.make(view_root, R.string.error_no_twitter_app, Snackbar.LENGTH_LONG)
                 .setAction(R.string.install) {

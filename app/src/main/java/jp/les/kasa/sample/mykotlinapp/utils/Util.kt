@@ -1,9 +1,11 @@
-package jp.les.kasa.sample.mykotlinapp
+package jp.les.kasa.sample.mykotlinapp.utils
 
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import jp.les.kasa.sample.mykotlinapp.BuildConfig
+import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import java.text.SimpleDateFormat
@@ -16,9 +18,11 @@ import java.util.*
 
 class Util {
     companion object {
-        fun getVersionCode() = BuildConfig.VERSION_CODE
+        fun getVersionCode() =
+            BuildConfig.VERSION_CODE
 
-        fun getVersionName() = BuildConfig.VERSION_NAME
+        fun getVersionName() =
+            BuildConfig.VERSION_NAME
     }
 }
 
@@ -33,7 +37,7 @@ fun Calendar.getDateStringYM(): String {
 }
 
 fun Calendar.clearTime(): Calendar {
-    set(Calendar.HOUR, 0)
+    set(Calendar.HOUR_OF_DAY, 0)
     set(Calendar.MINUTE, 0)
     set(Calendar.SECOND, 0)
     set(Calendar.MILLISECOND, 0)

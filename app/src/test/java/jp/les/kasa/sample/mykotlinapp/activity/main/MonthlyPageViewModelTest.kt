@@ -3,11 +3,11 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.les.kasa.sample.mykotlinapp.TestObserver
-import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
-import jp.les.kasa.sample.mykotlinapp.equalsYMD
 import jp.les.kasa.sample.mykotlinapp.observeForTesting
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.equalsYMD
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before

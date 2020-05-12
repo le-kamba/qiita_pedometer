@@ -2,7 +2,6 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -10,22 +9,34 @@ import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
+import jp.les.kasa.sample.mykotlinapp.alert.SelectPetDialog
+import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 
     companion object {
         const val REQUEST_CODE_LOGITEM = 100
         const val REQUEST_CODE_SHARE_TWITTER = 101
 
         const val RESULT_CODE_DELETE = 10
+
+        const val SCREEN_NAME = "トップ画面"
     }
 
+    // VieModel inject by Koin
     val viewModel by viewModel<MainViewModel>()
+    val settingRepository: SettingRepository by inject()
+
+    // 画面報告名
+    override val screenName: String
+        get() = SCREEN_NAME
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +48,14 @@ class MainActivity : AppCompatActivity() {
                 viewPager.setCurrentItem(it.size - 1, false)
             }
         })
+
+        val hasPet = settingRepository.readPetDog()
+        if (hasPet == null) {
+            val dialog = SelectPetDialog()
+            dialog.show(supportFragmentManager, null)
+        }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
@@ -96,6 +114,14 @@ class MainActivity : AppCompatActivity() {
                 viewModel.deleteStepCount(log)
             }
         }
+    }
+
+    /**
+     * 犬を飼っているかの選択肢を送信
+     */
+    override fun onSelected(hasDog: Boolean) {
+        analytics.setPetDogProperty(hasDog)
+        settingRepository.savePetDog(hasDog)
     }
 }
 

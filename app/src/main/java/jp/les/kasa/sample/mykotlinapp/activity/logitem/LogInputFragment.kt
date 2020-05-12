@@ -5,18 +5,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import jp.les.kasa.sample.mykotlinapp.*
+import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
+import jp.les.kasa.sample.mykotlinapp.base.BaseFragment
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYMD
+import jp.les.kasa.sample.mykotlinapp.utils.levelFromRadioId
+import jp.les.kasa.sample.mykotlinapp.utils.weatherFromSpinner
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
-class LogInputFragment : Fragment() {
+class LogInputFragment : BaseFragment() {
 
     companion object {
         const val TAG = "LogInputFragment"
@@ -30,7 +34,13 @@ class LogInputFragment : Fragment() {
             }
             return f
         }
+
+        const val SCREEN_NAME = "ログ編集画面"
     }
+
+    // 画面報告名
+    override val screenName: String
+        get() = SCREEN_NAME
 
     private val today: Calendar by lazy {
         arguments!!.getSerializable(KEY_INITIAL_DATE) as Calendar
@@ -46,6 +56,7 @@ class LogInputFragment : Fragment() {
 
         contentView.radio_group.check(R.id.radio_normal)
 
+        today.clearTime()
         contentView.text_date.text = today.getDateStringYMD()
 
         contentView.button_update.setOnClickListener {
@@ -53,11 +64,16 @@ class LogInputFragment : Fragment() {
                 ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
+            analytics.sendButtonEvent("登録ボタン")
 
             val dateText = text_date.text.toString()
             val stepCount = edit_count.text.toString().toInt()
-            val level = levelFromRadioId(radio_group.checkedRadioButtonId)
-            val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
+            val level =
+                levelFromRadioId(radio_group.checkedRadioButtonId)
+            val weather =
+                weatherFromSpinner(
+                    spinner_weather.selectedItemPosition
+                )
             val stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 
             val postSns = switch_share.isChecked
@@ -73,6 +89,7 @@ class LogInputFragment : Fragment() {
 
         // 日付を選ぶボタンで日付選択ダイアログを表示
         contentView.button_date.setOnClickListener {
+            analytics.sendButtonEvent("日付選択ボタン")
             DateSelectDialogFragment().show(parentFragmentManager, DATE_SELECT_TAG)
         }
 

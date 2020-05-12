@@ -6,12 +6,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import jp.les.kasa.sample.mykotlinapp.addDay
-import jp.les.kasa.sample.mykotlinapp.clearTime
 import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import jp.les.kasa.sample.mykotlinapp.getDateStringYMD
+import jp.les.kasa.sample.mykotlinapp.utils.addDay
+import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYMD
 import java.text.SimpleDateFormat
 import java.util.*
 

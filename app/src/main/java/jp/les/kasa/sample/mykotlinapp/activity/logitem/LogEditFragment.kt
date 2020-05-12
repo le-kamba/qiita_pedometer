@@ -6,15 +6,15 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
+import jp.les.kasa.sample.mykotlinapp.base.BaseFragment
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentLogEditBinding
-import jp.les.kasa.sample.mykotlinapp.levelFromRadioId
-import jp.les.kasa.sample.mykotlinapp.weatherFromSpinner
+import jp.les.kasa.sample.mykotlinapp.utils.levelFromRadioId
+import jp.les.kasa.sample.mykotlinapp.utils.weatherFromSpinner
 import kotlinx.android.synthetic.main.fragment_log_input.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -22,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
  * 編集画面
  * @date 2019-08-29
  **/
-class LogEditFragment : Fragment() {
+class LogEditFragment : BaseFragment() {
 
     companion object {
         const val TAG = "LogEditFragment"
@@ -35,7 +35,13 @@ class LogEditFragment : Fragment() {
             }
             return f
         }
+
+        const val SCREEN_NAME = "ログ編集画面"
     }
+
+    // 画面報告名
+    override val screenName: String
+        get() = SCREEN_NAME
 
     val viewModel by sharedViewModel<LogItemViewModel>()
 
@@ -64,15 +70,21 @@ class LogEditFragment : Fragment() {
                 ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
+            analytics.sendButtonEvent("更新ボタン")
+
             val dateText = text_date.text.toString()
             val stepCount = edit_count.text.toString().toInt()
-            val level = levelFromRadioId(radio_group.checkedRadioButtonId)
-            val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
+            val level =
+                levelFromRadioId(radio_group.checkedRadioButtonId)
+            val weather =
+                weatherFromSpinner(
+                    spinner_weather.selectedItemPosition
+                )
             val newLog = StepCountLog(dateText, stepCount, level, weather)
             viewModel.changeLog(newLog, ShareStatus())
         }
         binding.buttonDelete.setOnClickListener {
-
+            analytics.sendButtonEvent("削除ボタン")
             viewModel.deleteLog(stepCountLog)
         }
 
@@ -104,10 +116,15 @@ class LogEditFragment : Fragment() {
             ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
             return
         }
+        analytics.sendButtonEvent("シェアボタン")
+
         val dateText = text_date.text.toString()
         val stepCount = edit_count.text.toString().toInt()
-        val level = levelFromRadioId(radio_group.checkedRadioButtonId)
-        val weather = weatherFromSpinner(spinner_weather.selectedItemPosition)
+        val level =
+            levelFromRadioId(radio_group.checkedRadioButtonId)
+        val weather = weatherFromSpinner(
+            spinner_weather.selectedItemPosition
+        )
         stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 
         val dialog = SnsChooseDialog()

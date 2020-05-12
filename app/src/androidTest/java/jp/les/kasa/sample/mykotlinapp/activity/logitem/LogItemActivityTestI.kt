@@ -13,7 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import jp.les.kasa.sample.mykotlinapp.*
+import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.main.MainActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
@@ -21,6 +21,7 @@ import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
+import jp.les.kasa.sample.mykotlinapp.utils.*
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.not
