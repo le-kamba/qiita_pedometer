@@ -121,6 +121,10 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
      */
     override fun onSelected(hasDog: Boolean) {
         analytics.setPetDogProperty(hasDog)
+        if (!hasDog) {
+            // Crashlyticsに送るサンプル用
+            throw RuntimeException("Test Crash")
+        }
         settingRepository.savePetDog(hasDog)
     }
 }

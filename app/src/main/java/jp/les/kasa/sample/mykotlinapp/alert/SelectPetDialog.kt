@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.utils.Analytics
 import org.koin.android.ext.android.inject
 
@@ -46,16 +47,18 @@ class SelectPetDialog : DialogFragment(), DialogInterface.OnClickListener {
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {
-
-        if (activity is SelectPetEventListener) {
+        // 例外の原因を追いやすくするためどちらを選んだかユーザー操作をCrashlyticsに記録する
+        FirebaseCrashlytics.getInstance().log("select_pet_dog = $which")
+        try {
             val listener = activity as SelectPetEventListener
             listener.onSelected(which == DialogInterface.BUTTON_POSITIVE)
-            return
+        } catch (e: ClassCastException) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            Log.e(
+                "SelectPetDialog",
+                "Activity should implement ConfirmEventListener!!"
+            )
         }
-        Log.e(
-            "SelectPetDialog",
-            "Activity should implement ConfirmEventListener!!"
-        )
     }
 
 }
