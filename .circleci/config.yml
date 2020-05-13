@@ -29,4 +29,6 @@ workflows:
       - build:
           filters:
             branches:
-              only: feature/qiita_10_sub/circleci 
+              only: 
+                - feature/qiita_10_sub/circleci
+                - feature/^qiita_1[1-9]
