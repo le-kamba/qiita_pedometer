@@ -12,7 +12,7 @@ jobs:
       - run: 
           command: | 
             echo $GOOGLE_SERVICES_JSON
-            echo $GOOGLE_SERVICES_JSON | base64 --decode > ./app/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
       - run:
           command: ./gradlew assembleDebug
       - run:
