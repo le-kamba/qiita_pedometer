@@ -6,6 +6,9 @@ orbs:
 jobs:
   build:
     executor: android/android
+    environment:
+        JAVA_OPTS: -Xmx1536m
+        GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1536m -XX:+HeapDumpOnOutOfMemoryError"'
 
     steps:
       - checkout
