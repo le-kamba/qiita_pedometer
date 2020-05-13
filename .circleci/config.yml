@@ -9,9 +9,8 @@ jobs:
 
     steps:
       - checkout
-      - run:
-        env:
-          run: echo $GOOGLE_SERVICES_JSON | base64 --decode --ignore-garbage > ./app/google-services.json
+      - run: 
+          command: echo $GOOGLE_SERVICES_JSON | base64 --decode --ignore-garbage > ./app/google-services.json
       - run:
           command: ./gradlew assembleDebug
       - run:

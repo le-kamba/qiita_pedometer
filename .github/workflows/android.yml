@@ -28,7 +28,7 @@ jobs:
     - name: copy google-service
       env:
           GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICES_JSON }}
-          run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./app/google-services.json
+      run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > ./app/google-services.json
     - name: Build with Gradle
       run: ./gradlew assemble
       
