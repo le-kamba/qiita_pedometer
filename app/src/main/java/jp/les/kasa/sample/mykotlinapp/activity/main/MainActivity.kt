@@ -49,13 +49,14 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
             }
         })
 
-
-        val hasPet = settingRepository.readPetDog()
-        if (hasPet == null) {
-            val dialog = SelectPetDialog()
-            dialog.show(supportFragmentManager, null)
-        }
-
+// テストに影響あるのでコメントアウト
+//        val hasPet = settingRepository.readPetDog()
+//        if (hasPet == null) {
+//            val dialog = SelectPetDialog()
+//            dialog.show(supportFragmentManager, null)
+//        }
+// こちらは上記を実行する場合にはコメントアウトして下さい。
+        onSelected(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
