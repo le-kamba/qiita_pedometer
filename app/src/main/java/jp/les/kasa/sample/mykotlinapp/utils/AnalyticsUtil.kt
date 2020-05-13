@@ -3,6 +3,7 @@ package jp.les.kasa.sample.mykotlinapp.utils
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
@@ -10,7 +11,11 @@ import com.google.firebase.analytics.FirebaseAnalytics
  */
 class AnalyticsUtil(app: Application) {
 
-    private val firebaseAnalytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(app)
+    private val firebaseAnalytics by lazy { FirebaseAnalytics.getInstance(app) }
+
+    init {
+        FirebaseApp.initializeApp(app)
+    }
 
     /**
      * 画面名報告
