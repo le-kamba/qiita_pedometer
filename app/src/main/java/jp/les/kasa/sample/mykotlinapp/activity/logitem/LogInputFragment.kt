@@ -64,7 +64,7 @@ class LogInputFragment : BaseFragment() {
                 ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
-            analytics.sendButtonEvent("登録ボタン")
+            analyticsUtil.sendButtonEvent("登録ボタン")
 
             val dateText = text_date.text.toString()
             val stepCount = edit_count.text.toString().toInt()
@@ -89,7 +89,7 @@ class LogInputFragment : BaseFragment() {
 
         // 日付を選ぶボタンで日付選択ダイアログを表示
         contentView.button_date.setOnClickListener {
-            analytics.sendButtonEvent("日付選択ボタン")
+            analyticsUtil.sendButtonEvent("日付選択ボタン")
             DateSelectDialogFragment().show(parentFragmentManager, DATE_SELECT_TAG)
         }
 

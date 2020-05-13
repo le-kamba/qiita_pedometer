@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import jp.les.kasa.sample.mykotlinapp.utils.Analytics
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
 import org.koin.android.ext.android.inject
 
 class SelectPetDialog : DialogFragment(), DialogInterface.OnClickListener {
@@ -20,7 +20,7 @@ class SelectPetDialog : DialogFragment(), DialogInterface.OnClickListener {
         fun onSelected(hasDog: Boolean)
     }
 
-    private val analytics: Analytics by inject()
+    private val analyticsUtil: AnalyticsUtil by inject()
 
     companion object {
         const val SCREEN_NAME = "ペット飼育選択ダイアログ"
@@ -43,7 +43,7 @@ class SelectPetDialog : DialogFragment(), DialogInterface.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        activity?.let { analytics.sendScreenName(it, SCREEN_NAME) }
+        activity?.let { analyticsUtil.sendScreenName(it, SCREEN_NAME) }
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {

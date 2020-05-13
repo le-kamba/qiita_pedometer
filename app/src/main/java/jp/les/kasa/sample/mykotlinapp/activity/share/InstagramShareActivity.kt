@@ -76,7 +76,7 @@ class InstagramShareActivity : BaseActivity(), CoroutineScope {
             share.type = "image/*"
             share.putExtra(Intent.EXTRA_STREAM, imageFileUri)
             startActivity(Intent.createChooser(share, "Share to"))
-            analytics.sendShareEvent("Instagram")
+            analyticsUtil.sendShareEvent("Instagram")
         })
     }
 

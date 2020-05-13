@@ -8,6 +8,7 @@ import jp.les.kasa.sample.mykotlinapp.BuildConfig
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import org.hashids.Hashids
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -101,4 +102,14 @@ fun Context.openPlayStore(packageName: String) {
     } catch (e: ActivityNotFoundException) {
     }
 
+}
+
+/**
+ * 9文字のUserIdを作成する
+ * SaltにはrandomUUIDを利用
+ * ハッシュするソース元の数値は現在時刻を利用(ms)
+ */
+fun uniqueUserId(): String {
+    val hashids = Hashids(UUID.randomUUID().toString(), 9)
+    return hashids.encode(System.currentTimeMillis())
 }

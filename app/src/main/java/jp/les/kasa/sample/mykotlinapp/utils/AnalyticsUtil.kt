@@ -8,7 +8,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Firebase Analytics送信用のラッパークラス
  */
-class Analytics(app: Application) {
+class AnalyticsUtil(app: Application) {
 
     private val firebaseAnalytics: FirebaseAnalytics = FirebaseAnalytics.getInstance(app)
 
@@ -49,5 +49,12 @@ class Analytics(app: Application) {
      */
     fun setPetDogProperty(hasDog: Boolean) {
         firebaseAnalytics.setUserProperty("pet_dog", hasDog.toString())
+    }
+
+    /**
+     * ユーザーIDのセット
+     */
+    fun setUserId(userId: String?) {
+        firebaseAnalytics.setUserId(userId)
     }
 }

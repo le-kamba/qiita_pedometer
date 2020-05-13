@@ -49,13 +49,14 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
             }
         })
 
+
         val hasPet = settingRepository.readPetDog()
         if (hasPet == null) {
             val dialog = SelectPetDialog()
             dialog.show(supportFragmentManager, null)
         }
-    }
 
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
@@ -120,7 +121,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
      * 犬を飼っているかの選択肢を送信
      */
     override fun onSelected(hasDog: Boolean) {
-        analytics.setPetDogProperty(hasDog)
+        analyticsUtil.setPetDogProperty(hasDog)
         if (!hasDog) {
             // Crashlyticsに送るサンプル用
             throw RuntimeException("Test Crash")

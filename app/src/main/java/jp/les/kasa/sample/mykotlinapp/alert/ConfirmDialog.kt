@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.utils.Analytics
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
 import org.koin.android.ext.android.inject
 
 /**
@@ -28,7 +28,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int)
     }
 
-    private val analytics: Analytics by inject()
+    private val analyticsUtil: AnalyticsUtil by inject()
 
     class Builder() {
         private var message: String? = null
@@ -114,7 +114,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        activity?.let { analytics.sendScreenName(it, SCREEN_NAME) }
+        activity?.let { analyticsUtil.sendScreenName(it, SCREEN_NAME) }
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {

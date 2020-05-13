@@ -70,7 +70,7 @@ class LogEditFragment : BaseFragment() {
                 ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
-            analytics.sendButtonEvent("更新ボタン")
+            analyticsUtil.sendButtonEvent("更新ボタン")
 
             val dateText = text_date.text.toString()
             val stepCount = edit_count.text.toString().toInt()
@@ -84,7 +84,7 @@ class LogEditFragment : BaseFragment() {
             viewModel.changeLog(newLog, ShareStatus())
         }
         binding.buttonDelete.setOnClickListener {
-            analytics.sendButtonEvent("削除ボタン")
+            analyticsUtil.sendButtonEvent("削除ボタン")
             viewModel.deleteLog(stepCountLog)
         }
 
@@ -116,7 +116,7 @@ class LogEditFragment : BaseFragment() {
             ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
             return
         }
-        analytics.sendButtonEvent("シェアボタン")
+        analyticsUtil.sendButtonEvent("シェアボタン")
 
         val dateText = text_date.text.toString()
         val stepCount = edit_count.text.toString().toInt()

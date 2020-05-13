@@ -46,7 +46,7 @@ class TwitterShareActivity : BaseActivity() {
         intent.data = Uri.parse("twitter://post?message=$encoded")
         try {
             startActivity(intent)
-            analytics.sendShareEvent("Twitter")
+            analyticsUtil.sendShareEvent("Twitter")
         } catch (e: ActivityNotFoundException) {
             Snackbar.make(view_root, R.string.error_no_twitter_app, Snackbar.LENGTH_LONG)
                 .setAction(R.string.install) {

@@ -9,7 +9,7 @@ import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
-import jp.les.kasa.sample.mykotlinapp.utils.Analytics
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
 import jp.les.kasa.sample.mykotlinapp.utils.clearTime
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -49,7 +49,7 @@ val providerModule = module {
 
 // FirebaseService
 val firebaseModule = module {
-    single { Analytics(androidApplication()) }
+    single { AnalyticsUtil(androidApplication()) }
 }
 
 // モジュール群
