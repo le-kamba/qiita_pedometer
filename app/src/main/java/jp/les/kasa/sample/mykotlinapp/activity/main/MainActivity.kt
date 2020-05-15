@@ -2,6 +2,8 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -9,6 +11,7 @@ import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
+import jp.les.kasa.sample.mykotlinapp.activity.signin.SignInActivity
 import jp.les.kasa.sample.mykotlinapp.alert.SelectPetDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
@@ -24,6 +27,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
     companion object {
         const val REQUEST_CODE_LOGITEM = 100
         const val REQUEST_CODE_SHARE_TWITTER = 101
+        const val REQUEST_CODE_SIGN_IN = 201
 
         const val RESULT_CODE_DELETE = 10
 
@@ -32,7 +36,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 
     // VieModel inject by Koin
     val viewModel by viewModel<MainViewModel>()
-    val settingRepository: SettingRepository by inject()
+    private val settingRepository: SettingRepository by inject()
 
     // 画面報告名
     override val screenName: String
@@ -128,6 +132,27 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 //            throw RuntimeException("Test Crash")
         }
         settingRepository.savePetDog(hasDog)
+    }
+
+    // メニュー追加
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.let {
+            return when (it.itemId) {
+                R.id.login -> {
+                    val intent = Intent(this, SignInActivity::class.java)
+                    startActivityForResult(intent, REQUEST_CODE_SIGN_IN)
+                    true
+                }
+                else -> false
+            }
+        }
+        return false
     }
 }
 

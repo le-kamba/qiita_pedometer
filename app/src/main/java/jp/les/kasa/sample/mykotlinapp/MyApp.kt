@@ -1,6 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp
 
-import android.app.Application
+import androidx.multidex.MultiDexApplication
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
 import jp.les.kasa.sample.mykotlinapp.di.appModules
@@ -13,7 +13,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.EmptyLogger
 import org.koin.core.logger.Level
 
-class MyApp : Application() {
+class MyApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 

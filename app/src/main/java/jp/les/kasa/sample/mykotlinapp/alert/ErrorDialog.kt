@@ -58,6 +58,8 @@ class ErrorDialog : DialogFragment() {
             }
         // AlertDialogのセットアップ
         builder.setMessage(message)
+            .setTitle(R.string.error)
+            .setIcon(android.R.drawable.ic_dialog_alert)
             .setNeutralButton(R.string.close, null)
         return builder.create()
 

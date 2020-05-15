@@ -14,6 +14,7 @@
     <string name="label_log_suffix">歩 歩きました</string>
 
     <string name="title_activity_log_item">今日は何歩歩いた？</string>
+    <string name="title_activity_sign_in">サインイン</string>
 
     <string name="level_normal">普通</string>
     <string name="level_good">頑張った</string>
@@ -51,4 +52,32 @@
     <string name="thursday">木</string>
     <string name="friday">金</string>
     <string name="saturday">土</string>
+
+    <string name="facebook_application_id" translatable="false">546393189356758</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb546393189356758</string>
+
+    <string name="menu_label_login">サインイン</string>
+    <string name="menu_label_logout">サインアウト</string>
+    <string name="label_sign_in">サインインしてクラウドに保存する</string>
+
+    <string name="text_sign_in_description">サインインをすると、データをクラウドに保存できるようになります。\n
+        クラウドに保存すると、他のデバイスとデータを自動的に同期することが出来るようになります。\n
+        \n
+        サインイン後、データをアップロードすることで、これまでに入力したデータをそのまま引き継ぐことが出来ます。\n
+        \n
+        サインアウトをすると、端末からデータは削除されます。その場合でも、もう一度同じアカウントでサインインすればクラウドに保存されたデータを自動的にダウンロードします。\n
+    この処理には時間がかかる場合があります。\n
+    \n
+    アプリはサインインをしなくても、ローカルにデータを保存したまま、お使い頂けます。ただし、アプリをアンインストールしたりデータの削除を行うと、データを復元することは二度と出来ません。\n
+       また、他のデバイスにデータを引き継ぐことも出来ません。 \n
+        \n
+    データを安全にバックアップし、復元するには、サインインをしてクラウドに保存することを推奨します</string>
+    <string name="error_email_mismacth">メールアドレスかパスワードが間違っています</string>
+    <string name="error_id_provider">認証プロバイダーでエラーが起こりました。時間をおいてもう一度お試し頂くか、認証プロバイダーにお問い合わせ下さい。</string>
+    <string name="error_user_disabled">ユーザーが無効になっています</string>
+    <string name="error_no_netowork">ネットワークに接続できませんでした。通信環境を確認の上、もう一度お試し下さい</string>
+    <string name="error_service_update_canceled">必要なGooglePlayサービスの更新をユーザーがキャンセルしたため、処理を続行できません。アップデートを完了し、もう一度お試し下さい</string>
+    <string name="error_unknown">認証できませんでした。繰り返しこのメッセージが表示される場合は、以下に表示されているエラーコードと共にお問い合わせ下さい</string>
+    <string name="label_error_code">エラーコード = [%1$d]</string>
 </resources>

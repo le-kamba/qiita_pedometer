@@ -25,7 +25,7 @@ class AnalyticsUtil(app: Application) {
     }
 
     /**
-     * ボタンクタップイベント送信
+     * ボタンタップイベント送信
      */
     fun sendButtonEvent(buttonName: String) {
         val bundle = Bundle().apply { putString("buttonName", buttonName) }
@@ -46,7 +46,7 @@ class AnalyticsUtil(app: Application) {
      */
     fun sendCalendarCellEvent(date: String) {
         val bundle = Bundle().apply { putString("date", date) }
-        firebaseAnalytics.logEvent("calendar_cell", bundle)
+        firebaseAnalytics.logEvent("CalendarCell", bundle)
     }
 
     /**
@@ -61,5 +61,27 @@ class AnalyticsUtil(app: Application) {
      */
     fun setUserId(userId: String?) {
         firebaseAnalytics.setUserId(userId)
+    }
+
+    /**
+     * サインイン開始ボタンイベント送信
+     */
+    fun sendSignInStartEvent() {
+        firebaseAnalytics.logEvent("StartSignIn", null)
+    }
+
+    /**
+     * サインイン開始ボタンイベント送信
+     */
+    fun sendSignInErrorEvent(errorCode: Int) {
+        val bundle = Bundle().apply { putInt("errorCode", errorCode) }
+        firebaseAnalytics.logEvent("ErrorSignIn", bundle)
+    }
+
+    /**
+     * サインイン開始ボタンイベント送信
+     */
+    fun sendSignInEvent() {
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
     }
 }
