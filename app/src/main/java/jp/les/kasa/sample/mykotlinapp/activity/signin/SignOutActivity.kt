@@ -7,15 +7,14 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
-import jp.les.kasa.sample.mykotlinapp.data.LoginUserData
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySignOutBinding
+import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import kotlinx.android.synthetic.main.activity_sign_out.*
 import kotlinx.android.synthetic.main.activity_signin.toolbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.android.ext.android.inject
 
 class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
     companion object {
@@ -32,7 +31,8 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
     private val authUI = AuthUI.getInstance()
 
     lateinit var binding: ActivitySignOutBinding
-    val viewModel by viewModel<SignOutViewModel>()
+
+    private val authProvider: AuthProviderI by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +43,7 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val user = FirebaseAuth.getInstance().currentUser
-        val userData = LoginUserData(
-            user?.displayName ?: getString(R.string.label_you),
-            user?.email ?: getString(R.string.label_no_email)
-        )
-
-        binding.userData = userData
+        binding.userData = authProvider.userData
 
 
         // サインアウトボタン

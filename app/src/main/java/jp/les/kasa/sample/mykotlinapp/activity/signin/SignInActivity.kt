@@ -9,12 +9,13 @@ import androidx.annotation.StringRes
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes.*
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import kotlinx.android.synthetic.main.activity_signin.*
+import org.koin.android.ext.android.inject
 
 class SignInActivity : BaseActivity() {
     companion object {
@@ -28,6 +29,7 @@ class SignInActivity : BaseActivity() {
         get() = SCREEN_NAME
 
     private val authUI = AuthUI.getInstance()
+    private val authProvider: AuthProviderI by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +80,7 @@ class SignInActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         // ログイン中だったら画面を変える
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
+        if (authProvider.user != null) {
             startActivity(Intent(this, SignOutActivity::class.java))
             finish()
         }
