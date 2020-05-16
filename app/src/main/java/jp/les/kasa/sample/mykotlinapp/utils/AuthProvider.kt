@@ -22,7 +22,6 @@ abstract class AuthProviderI(app: Application) {
 
     abstract val userData: LoginUserData
 
-
     abstract fun createSignInIntent(context: Context): Intent
     abstract fun signOut(context: Context): Task<Void?>
     abstract fun delete(context: Context): Task<Void?>
@@ -75,5 +74,4 @@ class AuthProvider(app: Application) : AuthProviderI(app) {
     override fun delete(context: Context): Task<Void?> {
         return authUI.delete(context)
     }
-
 }

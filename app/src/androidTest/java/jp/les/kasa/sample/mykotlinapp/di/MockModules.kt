@@ -67,6 +67,8 @@ class TestAuthProvider(app: Application) : AuthProviderI(app) {
             )
         }
 
+    var mockFirebaseUser = false
+
     override fun createSignInIntent(context: Context): Intent {
         return Intent(context, MockAuthUIActivity::class.java)
     }
@@ -78,8 +80,6 @@ class TestAuthProvider(app: Application) : AuthProviderI(app) {
     override fun delete(context: Context): Task<Void?> {
         return Tasks.forResult(null)
     }
-
-    var mockFirebaseUser = false
 }
 
 // FirebaseUserモック
