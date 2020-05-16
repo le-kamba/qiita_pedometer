@@ -26,10 +26,13 @@
         </provider>
 
         <activity
+                android:name=".activity.signin.SignOutActivity"
+                android:label="@string/title_activity_sign_out"
+                android:theme="@style/AppTheme.NoActionBar" />
+        <activity
                 android:name=".activity.signin.SignInActivity"
                 android:label="@string/title_activity_sign_in"
                 android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
                 android:name=".activity.share.InstagramShareActivity"
                 android:label="@string/title_activity_instagram_share"

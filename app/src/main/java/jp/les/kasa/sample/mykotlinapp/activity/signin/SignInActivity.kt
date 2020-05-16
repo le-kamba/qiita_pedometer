@@ -3,6 +3,8 @@ package jp.les.kasa.sample.mykotlinapp.activity.signin
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import androidx.annotation.StringRes
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes.*
@@ -25,9 +27,14 @@ class SignInActivity : BaseActivity() {
     override val screenName: String
         get() = SCREEN_NAME
 
+    private val authUI = AuthUI.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signin)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         buttonSignIn.setOnClickListener {
             analyticsUtil.sendSignInStartEvent()
@@ -36,22 +43,56 @@ class SignInActivity : BaseActivity() {
             val providers = arrayListOf(
                 AuthUI.IdpConfig.EmailBuilder().build(),
                 AuthUI.IdpConfig.GoogleBuilder().build(),
-                AuthUI.IdpConfig.FacebookBuilder().build(),
+                AuthUI.IdpConfig.FacebookBuilder().setPermissions(listOf("email")).build(),
                 AuthUI.IdpConfig.TwitterBuilder().build(),
                 AuthUI.IdpConfig.GitHubBuilder().build()
             )
 
             FirebaseCrashlytics.getInstance().log("FirebaseUI Auth called.")
 
+            // 完全にレイアウトをカスタムしたい場合のサンプル
+//            val authLayout = AuthMethodPickerLayout.Builder(R.layout.layout_auth)
+//                .setEmailButtonId(R.id.email_button)
+//                .setFacebookButtonId(R.id.facebook_button)
+//                .setTwitterButtonId(R.id.twitter_button)
+//                .setGoogleButtonId(R.id.google_button)
+//                .setGithubButtonId(R.id.github_button)
+//                .build()
+
             // Create and launch sign-in intent
             startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
+                authUI.createSignInIntentBuilder()
                     .setAvailableProviders(providers)
+                    .setLogo(R.mipmap.ic_launcher)
+                    .setTheme(R.style.SinUpTheme)
+                    .setTosAndPrivacyPolicyUrls(
+                        "https://qiitapedometersample.web.app/policy.html",
+                        "https://qiitapedometersample.web.app/policy.html"
+                    )
                     .build(),
                 REQUEST_CODE_AUTH
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // ログイン中だったら画面を変える
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            startActivity(Intent(this, SignOutActivity::class.java))
+            finish()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -64,13 +105,15 @@ class SignInActivity : BaseActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
+                Log.d("AUTH", "Auth Completed.")
                 // Successfully signed in
-                val user = FirebaseAuth.getInstance().currentUser
-
                 analyticsUtil.sendSignInEvent()
                 // TODO Roomのデータをコンバートしてアップロード
+                // or Firestoreからデータをダウンロード
+
             } else response?.error?.errorCode?.let { errorCode ->
                 analyticsUtil.sendSignInErrorEvent(errorCode)
+                Log.d("AUTH", "Auth Error.")
 
                 FirebaseCrashlytics.getInstance()
                     .log("FirebaseUI Auth finished. error code = [$errorCode]")

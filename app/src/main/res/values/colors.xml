@@ -3,4 +3,9 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="colorPrimarySignIn">#5C6BC0</color>
+    <color name="colorPrimaryDarkSignIn">#303F9F</color>
+    <color name="colorAccentSignIn">#FF6D00</color>
+    <color name="colorBackgroundSinIn">#B2EBF2</color>
 </resources>

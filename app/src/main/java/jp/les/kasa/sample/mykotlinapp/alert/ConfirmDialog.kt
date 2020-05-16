@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
 import org.koin.android.ext.android.inject
@@ -107,8 +108,8 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         builder.setMessage(message)
             .setTitle(R.string.confirm)
             .setIcon(android.R.drawable.ic_dialog_info)
-            .setNegativeButton(android.R.string.no, this)
-            .setPositiveButton(android.R.string.yes, this)
+            .setNegativeButton(R.string.label_no, this)
+            .setPositiveButton(R.string.label_yes, this)
         return builder.create()
     }
 
@@ -118,6 +119,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {
+        FirebaseCrashlytics.getInstance().log("ConfirmDialog selected:$which")
         val data = arguments!!.getBundle(KEY_DATA)
         if (targetFragment is ConfirmEventListener) {
             val listener = targetFragment as ConfirmEventListener
@@ -128,7 +130,10 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
             listener.onConfirmResult(which, data, targetRequestCode)
             return
         }
-        Log.e("ConfirmDialog", "Target Fragment or Activity should implement ConfirmEventListener!!")
+        Log.e(
+            "ConfirmDialog",
+            "Target Fragment or Activity should implement ConfirmEventListener!!"
+        )
     }
 
 }

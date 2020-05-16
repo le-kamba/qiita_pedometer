@@ -15,6 +15,9 @@
 
     <string name="title_activity_log_item">今日は何歩歩いた？</string>
     <string name="title_activity_sign_in">サインイン</string>
+    <string name="title_activity_sign_out">サインアウト</string>
+    <string name="label_yes">はい</string>
+    <string name="label_no">いいえ</string>
 
     <string name="level_normal">普通</string>
     <string name="level_good">頑張った</string>
@@ -60,14 +63,15 @@
     <string name="menu_label_login">サインイン</string>
     <string name="menu_label_logout">サインアウト</string>
     <string name="label_sign_in">サインインしてクラウドに保存する</string>
+    <string name="label_sign_out">サインアウト</string>
+
+    <string name="label_convert_to_local">ローカルデータに変更する</string>
+    <string name="label_account_delete">アカウント削除</string>
 
     <string name="text_sign_in_description">サインインをすると、データをクラウドに保存できるようになります。\n
         クラウドに保存すると、他のデバイスとデータを自動的に同期することが出来るようになります。\n
         \n
         サインイン後、データをアップロードすることで、これまでに入力したデータをそのまま引き継ぐことが出来ます。\n
-        \n
-        サインアウトをすると、端末からデータは削除されます。その場合でも、もう一度同じアカウントでサインインすればクラウドに保存されたデータを自動的にダウンロードします。\n
-    この処理には時間がかかる場合があります。\n
     \n
     アプリはサインインをしなくても、ローカルにデータを保存したまま、お使い頂けます。ただし、アプリをアンインストールしたりデータの削除を行うと、データを復元することは二度と出来ません。\n
        また、他のデバイスにデータを引き継ぐことも出来ません。 \n
@@ -80,4 +84,16 @@
     <string name="error_service_update_canceled">必要なGooglePlayサービスの更新をユーザーがキャンセルしたため、処理を続行できません。アップデートを完了し、もう一度お試し下さい</string>
     <string name="error_unknown">認証できませんでした。繰り返しこのメッセージが表示される場合は、以下に表示されているエラーコードと共にお問い合わせ下さい</string>
     <string name="label_error_code">エラーコード = [%1$d]</string>
+    <string name="text_sign_in_now">あなたはいま、サインイン中です</string>
+    <string name="text_sign_out_description">サインアウトをすると、端末からデータは削除されます。その場合でも、もう一度同じアカウントでサインインすればクラウドに保存されたデータを自動的にダウンロードします。\n
+    この処理には時間がかかる場合があります。\n
+    \n
+    アカウントの削除を行うと、クラウドに保存されたデータはすべて削除されます。\n
+        削除を行う前に、データをローカルデータに変更しておくと、今後もオフラインで使用を続けることが出来ます。\n
+        ローカルデータに変更を行わずにアカウントを削除すると、すべてのデータが削除され、復元が出来なくなります。</string>
+    <string name="confirm_account_delete_1">データをローカルデータに変更しましたか？</string>
+    <string name="confirm_account_delete_2">データをローカルデータに変更せずにアカウントを削除すると、すべてのデータが失われます。本当にこのまま削除しますか？</string>
+
+    <string name="label_you">あなた</string>
+    <string name="label_no_email">ー</string>
 </resources>

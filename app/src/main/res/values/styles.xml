@@ -7,12 +7,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="DayOfWeekLabelStyle" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">wrap_content</item>
@@ -22,4 +25,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#E0F2F1</item>
     </style>
+
+    <!-- ログイン画面用の別テーマ -->
+    <style name="SinUpTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimarySignIn</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkSignIn</item>
+        <item name="colorAccent">@color/colorAccentSignIn</item>
+        <item name="android:windowBackground">@color/colorBackgroundSinIn</item>
+    </style>
+
 </resources>

@@ -79,9 +79,30 @@ class AnalyticsUtil(app: Application) {
     }
 
     /**
-     * サインイン開始ボタンイベント送信
+     * サインイン完了イベント送信
      */
     fun sendSignInEvent() {
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN, null)
+    }
+
+    /**
+     * サインアウト開始ボタンイベント送信
+     */
+    fun sendSignOutStartEvent() {
+        firebaseAnalytics.logEvent("StartSignOut", null)
+    }
+
+    /**
+     * サインアウト完了イベント送信
+     */
+    fun sendSignOutEvent() {
+        firebaseAnalytics.logEvent("logout", null)
+    }
+
+    /**
+     * アカウント削除イベント送信
+     */
+    fun sendDeleteAccountEvent() {
+        firebaseAnalytics.logEvent("delete_account", null)
     }
 }
