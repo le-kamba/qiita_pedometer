@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.annotation.VisibleForTesting
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes.*
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -28,7 +27,6 @@ class SignInActivity : BaseActivity() {
     override val screenName: String
         get() = SCREEN_NAME
 
-    private val authUI = AuthUI.getInstance()
     private val authProvider: AuthProviderI by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,15 +38,6 @@ class SignInActivity : BaseActivity() {
 
         buttonSignIn.setOnClickListener {
             analyticsUtil.sendSignInStartEvent()
-
-            // Choose authentication providers
-            val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build(),
-                AuthUI.IdpConfig.FacebookBuilder().setPermissions(listOf("email")).build(),
-                AuthUI.IdpConfig.TwitterBuilder().build(),
-                AuthUI.IdpConfig.GitHubBuilder().build()
-            )
 
             FirebaseCrashlytics.getInstance().log("FirebaseUI Auth called.")
 
@@ -63,15 +52,7 @@ class SignInActivity : BaseActivity() {
 
             // Create and launch sign-in intent
             startActivityForResult(
-                authUI.createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .setLogo(R.mipmap.ic_launcher)
-                    .setTheme(R.style.SinUpTheme)
-                    .setTosAndPrivacyPolicyUrls(
-                        "https://qiitapedometersample.web.app/policy.html",
-                        "https://qiitapedometersample.web.app/policy.html"
-                    )
-                    .build(),
+                authProvider.createSignInIntent(this),
                 REQUEST_CODE_AUTH
             )
         }

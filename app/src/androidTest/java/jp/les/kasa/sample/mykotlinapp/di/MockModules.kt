@@ -1,10 +1,15 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Parcel
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import com.google.android.gms.internal.firebase_auth.zzff
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
@@ -61,6 +66,18 @@ class TestAuthProvider(app: Application) : AuthProviderI(app) {
                 "foo@bar.com"
             )
         }
+
+    override fun createSignInIntent(context: Context): Intent {
+        return Intent(context, MockAuthUIActivity::class.java)
+    }
+
+    override fun signOut(context: Context): Task<Void?> {
+        return Tasks.forResult(null)
+    }
+
+    override fun delete(context: Context): Task<Void?> {
+        return Tasks.forResult(null)
+    }
 
     var mockFirebaseUser = false
 }
@@ -155,3 +172,5 @@ class MockFirebaseUser : FirebaseUser() {
         TODO("Not yet implemented")
     }
 }
+
+class MockAuthUIActivity : AppCompatActivity()

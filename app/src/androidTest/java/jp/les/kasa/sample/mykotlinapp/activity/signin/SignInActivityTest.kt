@@ -14,6 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.firebase.ui.auth.ErrorCodes
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.di.MockAuthUIActivity
 import jp.les.kasa.sample.mykotlinapp.di.TestAuthProvider
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
@@ -62,6 +63,23 @@ class SignInActivityTest : AutoCloseKoinTest() {
             .check(matches(ViewMatchers.isDisplayed()))
     }
 
+    @Test
+    fun signIn() {
+        activity = activityRule.launchActivity(null)
+
+        // ResultActivityの起動を監視
+        val monitor = Instrumentation.ActivityMonitor(
+            MockAuthUIActivity::class.java.canonicalName, null, false
+        )
+        InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
+
+        onView(withText(R.string.label_sign_in)).perform(click())
+
+        // ResultActivityが起動したか確認
+        InstrumentationRegistry.getInstrumentation().waitForMonitorWithTimeout(monitor, 1000L)
+        assertThat(monitor.hits).isEqualTo(1)
+    }
+
     /**
      *   ログイン中の場合にサインアウト画面がでるかのテスト
      */
@@ -85,7 +103,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_EMAIL_MISMATCH_ERROR() {
+    fun showError_EMAIL_MISMATCH_ERROR() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.EMAIL_MISMATCH_ERROR)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -112,7 +130,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_ERROR_GENERIC_IDP_RECOVERABLE_ERROR() {
+    fun showError_ERROR_GENERIC_IDP_RECOVERABLE_ERROR() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.ERROR_GENERIC_IDP_RECOVERABLE_ERROR)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -133,7 +151,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_PROVIDER_ERROR() {
+    fun showError_PROVIDER_ERROR() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.PROVIDER_ERROR)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -154,7 +172,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_ERROR_USER_DISABLED() {
+    fun showError_ERROR_USER_DISABLED() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.ERROR_USER_DISABLED)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -175,7 +193,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_NO_NETWORK() {
+    fun showError_NO_NETWORK() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.NO_NETWORK)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -196,7 +214,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_PLAY_SERVICES_UPDATE_CANCELLED() {
+    fun showError_PLAY_SERVICES_UPDATE_CANCELLED() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.PLAY_SERVICES_UPDATE_CANCELLED)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
@@ -217,7 +235,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onActivityResult_UNKNOWN() {
+    fun showError_UNKNOWN() {
         activity = activityRule.launchActivity(null)
         activity.showError(ErrorCodes.UNKNOWN_ERROR)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()

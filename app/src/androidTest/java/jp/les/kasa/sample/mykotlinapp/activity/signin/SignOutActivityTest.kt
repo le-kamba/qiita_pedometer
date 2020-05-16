@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.di.TestAuthProvider
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import org.assertj.core.api.Assertions
@@ -70,9 +69,6 @@ class SignOutActivityTest : AutoCloseKoinTest() {
 
     @Test
     fun signOut() {
-        // モックを作成
-        (authProvider as TestAuthProvider).mockFirebaseUser = true
-
         activity = activityRule.launchActivity(null)
 
         // ResultActivityの起動を監視

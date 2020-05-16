@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
-import com.firebase.ui.auth.AuthUI
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
@@ -28,8 +27,6 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
     override val screenName: String
         get() = SCREEN_NAME
 
-    private val authUI = AuthUI.getInstance()
-
     lateinit var binding: ActivitySignoutBinding
 
     private val authProvider: AuthProviderI by inject()
@@ -49,7 +46,7 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
         // サインアウトボタン
         buttonSignOut.setOnClickListener {
             analyticsUtil.sendSignOutStartEvent()
-            authUI.signOut(this)
+            authProvider.signOut(this)
                 .addOnCompleteListener {
                     analyticsUtil.sendSignOutEvent()
                     Log.d("AUTH", "User logout completed.")
@@ -79,7 +76,7 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
     }
 
     private fun doDeleteAccount() {
-        authUI.delete(this)
+        authProvider.delete(this)
             .addOnCompleteListener {
                 Log.d("AUTH", "Account delete completed.")
                 analyticsUtil.sendDeleteAccountEvent()
