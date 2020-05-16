@@ -10,10 +10,10 @@ import com.firebase.ui.auth.AuthUI
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
-import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySignOutBinding
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySignoutBinding
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
-import kotlinx.android.synthetic.main.activity_sign_out.*
 import kotlinx.android.synthetic.main.activity_signin.toolbar
+import kotlinx.android.synthetic.main.activity_signout.*
 import org.koin.android.ext.android.inject
 
 class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
@@ -30,14 +30,14 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
 
     private val authUI = AuthUI.getInstance()
 
-    lateinit var binding: ActivitySignOutBinding
+    lateinit var binding: ActivitySignoutBinding
 
     private val authProvider: AuthProviderI by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_sign_out)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_signout)
 
         setSupportActionBar(toolbar)
 
