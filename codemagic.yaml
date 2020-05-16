@@ -18,12 +18,12 @@ workflows:
           source: true
     scripts:
 #       - flutter emulators --launch emulator
+      - emulator -list-avds
       - echo $FCI_KEYSTORE_FILE | base64 --decode > app/debug.jks
       - echo $PLAY_SERVICE_JSON | base64 --decode > app/google-services.json
       - ./gradlew assembleDebug
       - ./gradlew testDebugUnitTest
 #       - ./gradlew connectedCheck
-      - cp  -r app/build/reports $FCI_EXPORT_DIR/reports
     artifacts:
       - app/build/**/outputs/**/*.apk
       - app/build/**/outputs/**/*.aab
