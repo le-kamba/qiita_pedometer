@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes.*
 import com.firebase.ui.auth.IdpResponse
@@ -123,32 +123,36 @@ class SignInActivity : BaseActivity() {
                 // response.getError().getErrorCode() and handle the error.
                 // ...
 
-                when (errorCode) {
-                    EMAIL_MISMATCH_ERROR -> {
-                        // メールアドレス不一致
-                        showError(R.string.error_email_mismacth, errorCode)
-                    }
-                    ERROR_GENERIC_IDP_RECOVERABLE_ERROR, PROVIDER_ERROR -> {
-                        showError(R.string.error_id_provider, errorCode)
-                    }
-                    ERROR_USER_DISABLED -> {
-                        showError(R.string.error_user_disabled, errorCode)
-                    }
-                    NO_NETWORK -> {
-                        showError(R.string.error_no_netowork, errorCode)
-                    }
-                    PLAY_SERVICES_UPDATE_CANCELLED -> {
-                        showError(R.string.error_service_update_canceled, errorCode)
-                    }
-                    else -> {
-                        showError(R.string.error_unknown, errorCode)
-                    }
-                }
+                showError(errorCode)
             }
         }
     }
 
-    private fun showError(@StringRes messageId: Int, errorCode: Int) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun showError(errorCode: Int) {
+        val messageId =
+            when (errorCode) {
+                EMAIL_MISMATCH_ERROR -> {
+                    // メールアドレス不一致
+                    R.string.error_email_mismacth
+                }
+                ERROR_GENERIC_IDP_RECOVERABLE_ERROR, PROVIDER_ERROR -> {
+                    R.string.error_id_provider
+                }
+                ERROR_USER_DISABLED -> {
+                    R.string.error_user_disabled
+                }
+                NO_NETWORK -> {
+                    R.string.error_no_netowork
+                }
+                PLAY_SERVICES_UPDATE_CANCELLED -> {
+                    R.string.error_service_update_canceled
+                }
+                else -> {
+                    R.string.error_unknown
+                }
+            }
+
         val error = getString(R.string.label_error_code, errorCode)
         val message = "${getString(messageId)}\n\n$error"
         val dialog = ErrorDialog.Builder().message(message).create()

@@ -5,7 +5,6 @@ import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.main.MonthlyPageViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareViewModel
-import jp.les.kasa.sample.mykotlinapp.activity.signin.SignOutViewModel
 import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
@@ -29,7 +28,6 @@ val viewModelModule = module {
     viewModel { MonthlyPageViewModel(androidApplication(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
     viewModel { InstagramShareViewModel() }
-    viewModel { SignOutViewModel(androidApplication()) }
 }
 
 // database,dao

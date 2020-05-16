@@ -63,7 +63,7 @@
     <string name="menu_label_login">サインイン</string>
     <string name="menu_label_logout">サインアウト</string>
     <string name="label_sign_in">サインインしてクラウドに保存する</string>
-    <string name="label_sign_out">サインアウト</string>
+    <string name="label_sign_out">サインアウトする</string>
 
     <string name="label_convert_to_local">ローカルデータに変更する</string>
     <string name="label_account_delete">アカウント削除</string>

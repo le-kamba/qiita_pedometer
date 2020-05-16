@@ -18,8 +18,8 @@ import org.koin.android.ext.android.inject
 
 class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
     companion object {
-        const val TAG_CONFIGM_1 = "confirm"
-        const val TAG_CONFIGM_2 = "confirm_again"
+        const val TAG_CONFIRM_1 = "confirm"
+        const val TAG_CONFIRM_2 = "confirm_again"
 
         const val SCREEN_NAME = "サインアウト画面"
     }
@@ -70,11 +70,11 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
             analyticsUtil.sendButtonEvent("delete_account")
             // 確認フローを開始する
             val dialog = ConfirmDialog.Builder().data(Bundle().apply {
-                putString("tag", TAG_CONFIGM_1)
+                putString("tag", TAG_CONFIRM_1)
             })
                 .message(R.string.confirm_account_delete_1)
                 .create()
-            dialog.show(supportFragmentManager, TAG_CONFIGM_1)
+            dialog.show(supportFragmentManager, TAG_CONFIRM_1)
         }
     }
 
@@ -101,21 +101,21 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
 
     override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
         when (bundle?.get("tag")) {
-            TAG_CONFIGM_1 -> {
+            TAG_CONFIRM_1 -> {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
                     // データ削除した、なので削除決行
                     doDeleteAccount()
                 } else {
                     // データ削除しなくてよいかもう一度確認
                     val dialog = ConfirmDialog.Builder().data(Bundle().apply {
-                        putString("tag", TAG_CONFIGM_2)
+                        putString("tag", TAG_CONFIRM_2)
                     })
                         .message(R.string.confirm_account_delete_2)
                         .create()
-                    dialog.show(supportFragmentManager, TAG_CONFIGM_2)
+                    dialog.show(supportFragmentManager, TAG_CONFIRM_2)
                 }
             }
-            TAG_CONFIGM_2 -> {
+            TAG_CONFIRM_2 -> {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
                     // アカウント削除してよい、なので削除決行
                     doDeleteAccount()
