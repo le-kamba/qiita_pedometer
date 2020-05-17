@@ -20,8 +20,8 @@ workflows:
 #       - flutter emulators --launch emulator
 #       - echo $ANDROID_HOME
 #       - which emulator
-      - ${ANDROID_HOME}/emulator/emulator -list-avds
-      - ${ANDROID_HOME}/emulator/emulator -avd emulator
+#       - ${ANDROID_HOME}/emulator/emulator -list-avds
+      - ${ANDROID_HOME}/emulator/emulator -avd nc-emulator
       - adb wait-for-device
       - |
         # set up key.properties
