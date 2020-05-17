@@ -18,11 +18,9 @@ workflows:
           source: true
     scripts:
 #       - flutter emulators --launch emulator
-      - which emulator
-      - |
-        # launch emulator
-        emulator -avd emulator
-        adb wait-for-device
+      - sdkmanager --list
+      - emulator -avd emulator
+      - adb wait-for-device
       - |
         # set up key.properties
         echo $FCI_KEYSTORE_FILE | base64 --decode > app/debug.jks
