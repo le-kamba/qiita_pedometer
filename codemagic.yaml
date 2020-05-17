@@ -20,6 +20,7 @@ workflows:
 #       - flutter emulators --launch emulator
       - |
         # launch emulator
+        where emulator
         emulator -avd emulator
         adb wait-for-device
       - |
