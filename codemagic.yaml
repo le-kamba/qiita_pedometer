@@ -20,7 +20,7 @@ workflows:
 #       - flutter emulators --launch emulator
 #       - echo $ANDROID_HOME
 #       - which emulator
-#       - emulator -list-avds
+      - ${ANDROID_HOME}/emulator/emulator -list-avds
       - ${ANDROID_HOME}/emulator/emulator -avd emulator
       - adb wait-for-device
       - |
