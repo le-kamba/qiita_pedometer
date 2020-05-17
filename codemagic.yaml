@@ -18,9 +18,9 @@ workflows:
           source: true
     scripts:
 #       - flutter emulators --launch emulator
+      - where emulator
       - |
         # launch emulator
-        where emulator
         emulator -avd emulator
         adb wait-for-device
       - |
