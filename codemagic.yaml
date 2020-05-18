@@ -22,14 +22,14 @@ workflows:
 #       - which emulator
 #       - ${ANDROID_HOME}/emulator/emulator -list-avds
 #       - ${ANDROID_HOME}/emulator/emulator -avd nc-emulator
-      - flutter emulators --launch emulator
-      - adb wait-for-device
       - |
         # set up key.properties
         echo $FCI_KEYSTORE_FILE | base64 --decode > app/debug.jks
         echo $PLAY_SERVICE_JSON | base64 --decode > app/google-services.json
       - ./gradlew assembleDebug
       - ./gradlew testDebugUnitTest
+      - flutter emulators --launch emulator
+      - adb wait-for-device
       - ./gradlew connectedCheck
     artifacts:
       - app/build/**/outputs/**/*.apk
