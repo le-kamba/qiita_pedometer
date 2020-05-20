@@ -96,4 +96,6 @@
 
     <string name="label_you">あなた</string>
     <string name="label_no_email">ー</string>
+
+    <string name="user_has_pet">ペット情報リスト</string>
 </resources>

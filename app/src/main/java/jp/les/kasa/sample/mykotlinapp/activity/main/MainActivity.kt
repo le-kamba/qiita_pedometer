@@ -2,11 +2,14 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
@@ -42,6 +45,9 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
     override val screenName: String
         get() = SCREEN_NAME
 
+    // Access a Cloud Firestore instance from your Activity
+    val db = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,13 +60,28 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
         })
 
 // テストに影響あるのでコメントアウト
-//        val hasPet = settingRepository.readPetDog()
-//        if (hasPet == null) {
-//            val dialog = SelectPetDialog()
-//            dialog.show(supportFragmentManager, null)
-//        }
+        val hasPet = settingRepository.readPetDog()
+        if (hasPet == null) {
+            val dialog = SelectPetDialog()
+            dialog.show(supportFragmentManager, null)
+        } else {
+            db.collection("pets")
+                .get()
+                .addOnSuccessListener { result: QuerySnapshot ->
+                    val list = arrayListOf<HasPet>()
+                    for (document in result) {
+                        Log.d("FIRESTORE", "${document.id} => ${document.data}")
+                        list.add(HasPet(document.data))
+                    }
+                    val dialog = ListDialogFragment.Builder(list).create()
+                    dialog.show(supportFragmentManager, null)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("FIRESTORE", "Error getting documents.", exception)
+                }
+        }
 // こちらは上記を実行する場合にはコメントアウトして下さい。
-        onSelected(false)
+//        onSelected(false)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -132,6 +153,31 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 //            throw RuntimeException("Test Crash")
         }
         settingRepository.savePetDog(hasDog)
+
+        // Firestoreお試し用
+        val pet =
+            if (hasDog) {
+                hashMapOf(
+                    "petDog" to hasDog,
+                    "message" to "Test",
+                    "petName" to "Pochi",
+                    "born" to 2018
+                )
+            } else {
+                hashMapOf(
+                    "petDog" to hasDog,
+                    "message" to "Test"
+                )
+            }
+        // Add a new document with a generated ID
+        db.collection("pets")
+            .add(pet)
+            .addOnSuccessListener { documentReference ->
+                Log.d("FIRESTORE", "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIRESTORE", "Error adding document", e)
+            }
     }
 
     // メニュー追加
