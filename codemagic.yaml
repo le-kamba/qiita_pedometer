@@ -17,6 +17,8 @@ workflows:
           include: true
           source: true
     scripts:
+      - ${ANDROID_HOME}/emulator/emulator -avd emulator &
+      - adb wait-for-device
 #       - flutter emulators --launch emulator
 #       - echo $ANDROID_HOME
 #       - which emulator
