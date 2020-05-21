@@ -32,8 +32,6 @@ workflows:
         echo $PLAY_SERVICE_JSON | base64 --decode > app/google-services.json
       - ./gradlew assembleDebug
       - ./gradlew testDebugUnitTest
-      - flutter emulators --launch emulator
-      - adb wait-for-device
       - ./gradlew connectedCheck
     artifacts:
       - app/build/**/outputs/**/*.apk
