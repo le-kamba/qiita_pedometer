@@ -52,6 +52,18 @@ class SettingRepository constructor(private val applicationContext: Context) {
         pref.edit().putBoolean("hasDog", hasDog).apply()
     }
 
+    fun saveDocReferenceId(refId: String) {
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        pref.edit().putString("docRefId", refId).apply()
+    }
+
+    fun getDocReferenceId(): String? {
+        val pref =
+            applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)
+        return pref.getString("docRefId", null)
+    }
+
     fun readUserId(): String? {
         val pref =
             applicationContext.getSharedPreferences(PREF_FILE_NAME, AppCompatActivity.MODE_PRIVATE)

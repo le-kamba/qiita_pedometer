@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import jp.les.kasa.sample.mykotlinapp.R
@@ -48,6 +49,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 
     // Access a Cloud Firestore instance from your Activity
     val db = FirebaseFirestore.getInstance()
+    var petsDocumentReference: DocumentReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +64,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 
 // テストに影響あるのでコメントアウト
         val hasPet = settingRepository.readPetDog()
-        if (hasPet == null) {
+        if (hasPet != true) {
             val dialog = SelectPetDialog()
             dialog.show(supportFragmentManager, null)
         } else {
@@ -154,9 +156,10 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 //            throw RuntimeException("Test Crash")
         }
         settingRepository.savePetDog(hasDog)
+        val savedDocReferenceId = settingRepository.getDocReferenceId()
 
         // Firestoreお試し用
-        val pet =
+        val pet: HashMap<String, Any> =
             if (hasDog) {
                 hashMapOf(
                     "petDog" to hasDog,
@@ -170,15 +173,29 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
                     "message" to "Test"
                 )
             }
-        // Add a new document with a generated ID
-        db.collection("pets")
-            .add(pet)
-            .addOnSuccessListener { documentReference ->
-                Log.d("FIRESTORE", "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIRESTORE", "Error adding document", e)
-            }
+        if (savedDocReferenceId == null) {
+            // 新規登録
+            db.collection("pets")
+                .add(pet)
+                .addOnSuccessListener { documentReference ->
+                    // document reference idを保存
+                    settingRepository.saveDocReferenceId(documentReference.id)
+                    Log.d("FIRESTORE", "DocumentSnapshot added with ID: ${documentReference.id}")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIRESTORE", "Error adding document", e)
+                }
+        } else {
+            val docRef = db.collection("pets").document(savedDocReferenceId)
+            // 上書き更新
+            docRef.update(pet)
+                .addOnSuccessListener {
+                    Log.d("FIRESTORE", "DocumentSnapshot Updated.")
+                }
+                .addOnFailureListener { e ->
+                    Log.w("FIRESTORE", "Error updating document", e)
+                }
+        }
     }
 
     // メニュー追加
