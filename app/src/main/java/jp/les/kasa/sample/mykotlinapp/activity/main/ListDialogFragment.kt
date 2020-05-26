@@ -2,18 +2,16 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 
 import android.app.Dialog
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.data.HasPet
 import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import org.koin.android.ext.android.inject
 
-@Parcelize
-data class HasPet(val map: @RawValue Map<String, Any>) : Parcelable
-
+/**
+ * Firestoreのデータをリスト表示するサンプルのダイアログ
+ */
 class ListDialogFragment : DialogFragment() {
     private val analyticsUtil: AnalyticsUtil by inject()
 
@@ -37,7 +35,8 @@ class ListDialogFragment : DialogFragment() {
         val builder = AlertDialog.Builder(requireContext())
 
         // メッセージの決定
-        val list = arguments!!.getParcelableArrayList<HasPet>(KEY_LIST)!!.map { t -> t.toString() }
+        val list =
+            arguments!!.getParcelableArrayList<HasPet>(KEY_LIST)!!.map { t -> t.titleString() }
 
         // AlertDialogのセットアップ
         builder.setItems(list.toTypedArray(), null)
