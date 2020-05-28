@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import jp.les.kasa.sample.mykotlinapp.R
@@ -50,7 +49,6 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 
     // Access a Cloud Firestore instance from your Activity
     val db = FirebaseFirestore.getInstance()
-    var petsDocumentReference: DocumentReference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,13 +62,13 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
         })
 
 // テストに影響あるのでコメントアウト
-        val hasPet = settingRepository.readPetDog()
-        if (hasPet != true) {
-            val dialog = SelectPetDialog()
-            dialog.show(supportFragmentManager, null)
-        } else {
-            showPetListDialog()
-        }
+//        val hasPet = settingRepository.readPetDog()
+//        if (hasPet != true) {
+//            val dialog = SelectPetDialog()
+//            dialog.show(supportFragmentManager, null)
+//        } else {
+//            showPetListDialog()
+//        }
 // こちらは上記を実行する場合にはコメントアウトして下さい。
 //        onSelected(false)
     }
