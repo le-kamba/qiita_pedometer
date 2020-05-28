@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -68,20 +69,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
             val dialog = SelectPetDialog()
             dialog.show(supportFragmentManager, null)
         } else {
-            db.collection("pets")
-                .get()
-                .addOnSuccessListener { result: QuerySnapshot ->
-                    val list = arrayListOf<HasPet>()
-                    for (document in result) {
-                        Log.d("FIRESTORE", "${document.id} => ${document.data}")
-                        list.add(HasPet(document.data))
-                    }
-                    val dialog = ListDialogFragment.Builder(list).create()
-                    dialog.show(supportFragmentManager, null)
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("FIRESTORE", "Error getting documents.", exception)
-                }
+            showPetListDialog()
         }
 // こちらは上記を実行する場合にはコメントアウトして下さい。
 //        onSelected(false)
@@ -146,6 +134,26 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
         }
     }
 
+    private fun showPetListDialog() {
+        db.collection("pets")
+//                .whereEqualTo("petDog", true)
+//                .whereGreaterThan("born", 2000)
+            .get()
+            .addOnSuccessListener { result: QuerySnapshot ->
+                val list = arrayListOf<HasPet>()
+                for (document in result) {
+                    Log.d("FIRESTORE", "${document.id} => ${document.data}")
+                    list.add(HasPet(document.data))
+                }
+                val dialog = ListDialogFragment.Builder(list).create()
+                dialog.show(supportFragmentManager, null)
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(this, "データを読み込めませんでした。", Toast.LENGTH_SHORT).show()
+                Log.w("FIRESTORE", "Error getting documents.", exception)
+            }
+    }
+
     /**
      * 犬を飼っているかの選択肢を送信
      */
@@ -161,12 +169,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
         // Firestoreお試し用
         val pet: HashMap<String, Any> =
             if (hasDog) {
-                hashMapOf(
-                    "petDog" to hasDog,
-                    "message" to "Test",
-                    "petName" to "Pochi",
-                    "born" to 2018
-                )
+                HasPet.randomPet()
             } else {
                 hashMapOf(
                     "petDog" to hasDog,
@@ -183,6 +186,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
                     Log.d("FIRESTORE", "DocumentSnapshot added with ID: ${documentReference.id}")
                 }
                 .addOnFailureListener { e ->
+                    Toast.makeText(this, "登録できませんでした。", Toast.LENGTH_SHORT).show()
                     Log.w("FIRESTORE", "Error adding document", e)
                 }
         } else {
@@ -193,9 +197,12 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
                     Log.d("FIRESTORE", "DocumentSnapshot Updated.")
                 }
                 .addOnFailureListener { e ->
+                    Toast.makeText(this, "更新できませんでした。", Toast.LENGTH_SHORT).show()
                     Log.w("FIRESTORE", "Error updating document", e)
                 }
         }
+
+        showPetListDialog()
     }
 
     // メニュー追加
