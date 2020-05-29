@@ -131,7 +131,9 @@ dependencies {
     def room_version = "2.2.3"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-    androidTestImplementation "androidx.room:room-testing:$room_version"
+    androidTestImplementation ("androidx.room:room-testing:$room_version"){
+        exclude group: 'com.google.code.gson'
+    }
     testImplementation "androidx.room:room-testing:$room_version"
 
     // Coroutines
