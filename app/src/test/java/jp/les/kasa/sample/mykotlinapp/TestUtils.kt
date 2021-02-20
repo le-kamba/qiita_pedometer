@@ -18,6 +18,7 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
+import org.mockito.Mockito
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
@@ -347,4 +348,8 @@ object RecyclerViewMatchers {
             }
         }
     }
+}
+
+fun <T> any(clazz: Class<T>): T {
+    return Mockito.any(clazz)
 }

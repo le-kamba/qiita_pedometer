@@ -1,5 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
+import android.os.Environment
 import androidx.room.Room
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
@@ -27,7 +28,7 @@ val viewModelModule = module {
     viewModel { MainViewModel(androidApplication(), get(), get()) }
     viewModel { MonthlyPageViewModel(androidApplication(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
-    viewModel { InstagramShareViewModel() }
+    viewModel { InstagramShareViewModel(androidApplication(), get()) }
 }
 
 // database,dao
@@ -47,6 +48,7 @@ val repositoryModule = module {
 
 val providerModule = module {
     factory { CalendarProvider() as CalendarProviderI }
+    factory { EnvironmentProvider() as EnvironmentProviderI }
 }
 
 // FirebaseService
@@ -73,4 +75,15 @@ interface CalendarProviderI {
 class CalendarProvider : CalendarProviderI {
     override val now: Calendar
         get() = Calendar.getInstance().clearTime()
+}
+
+// Environmentチェックを提供するプロバイダ
+interface EnvironmentProviderI {
+    fun isExternalStorageMounted() : Boolean
+}
+
+class EnvironmentProvider : EnvironmentProviderI{
+    override fun isExternalStorageMounted(): Boolean {
+        return Environment.getExternalStorageState()== Environment.MEDIA_MOUNTED
+    }
 }

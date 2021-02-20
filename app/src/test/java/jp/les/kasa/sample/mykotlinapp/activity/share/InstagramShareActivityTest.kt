@@ -2,6 +2,8 @@ package jp.les.kasa.sample.mykotlinapp.activity.share
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -16,12 +18,14 @@ import jp.les.kasa.sample.mykotlinapp.TestObserver
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class InstagramShareActivityTest : AutoCloseKoinTest() {
@@ -40,6 +44,10 @@ class InstagramShareActivityTest : AutoCloseKoinTest() {
 
     lateinit var activity: InstagramShareActivity
 
+    @Before
+    fun setUp() {
+        loadKoinModules(mockModule)
+    }
 
     @Test
     fun layout() {
@@ -68,20 +76,19 @@ class InstagramShareActivityTest : AutoCloseKoinTest() {
         }
         activity = activityRule.launchActivity(intent)
 
-
         // activityに反応させないため、いったんすべての監視者を削除
-        activity.viewModel.savedBitmapFile.removeObservers(activity)
+        activity.viewModel.savedBitmapUri.removeObservers(activity)
 
         // テスト用の監視
-        val testObserver = TestObserver<File>(1)
-        activity.viewModel.savedBitmapFile.observeForever(testObserver)
+        val testObserver = TestObserver<Uri>(1)
+        activity.viewModel.savedBitmapUri.observeForever(testObserver)
 
         onView(withText(R.string.label_post)).perform(click())
 
         testObserver.await(10)
 
-        assertThat(activity.viewModel.savedBitmapFile.value).isFile()
+        assertThat(activity.viewModel.savedBitmapUri.value).isNotNull()
 
-        activity.viewModel.savedBitmapFile.removeObserver(testObserver)
+        activity.viewModel.savedBitmapUri.removeObserver(testObserver)
     }
 }

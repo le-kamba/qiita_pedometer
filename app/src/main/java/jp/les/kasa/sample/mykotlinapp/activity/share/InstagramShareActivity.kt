@@ -6,8 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.FileProvider
@@ -23,7 +23,6 @@ import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
-import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 @RuntimePermissions
@@ -58,20 +57,17 @@ class InstagramShareActivity : BaseActivity(), CoroutineScope {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.root.button_share_instagram.setOnClickListener {
-            createShareImageWithPermissionCheck()
+            if (Build.VERSION.SDK_INT < 29) {
+                createShareImageWithPermissionCheck()
+            } else {
+                createShareImage()
+            }
         }
 
-        viewModel.savedBitmapFile.observe(this, Observer { file ->
+        viewModel.savedBitmapUri.observe(this, Observer { imageFileUri ->
             // シェア用画像が出来た
 
-            // フォトアルバムなどで見えるようにするため、いったんメディアスキャンを掛ける
-            val contentUri = Uri.fromFile(file)
-            val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
-            sendBroadcast(mediaScanIntent)
-
             // シェアインテント
-            val imageFileUri = FileProvider.getUriForFile(this, "$packageName.provider", file)
-
             val share = Intent(Intent.ACTION_SEND)
             share.type = "image/*"
             share.putExtra(Intent.EXTRA_STREAM, imageFileUri)
@@ -87,17 +83,12 @@ class InstagramShareActivity : BaseActivity(), CoroutineScope {
 
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun createShareImage() {
-        val dir = File(
-            Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES
-            ), "qiita_pedometer"
-        )
         launch {
             val bitmap = withContext(Dispatchers.Default) {
                 getBitmapFromView(binding.root.layout_post_image)
             }
             withContext(Dispatchers.IO) {
-                viewModel.createShareImage(bitmap, dir)
+                viewModel.createShareImage(bitmap)
             }
         }
     }

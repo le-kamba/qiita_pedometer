@@ -2,6 +2,8 @@ package jp.les.kasa.sample.mykotlinapp.activity.share
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -15,13 +17,15 @@ import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
+import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class InstagramShareActivityTestI : AutoCloseKoinTest() {
@@ -33,10 +37,21 @@ class InstagramShareActivityTestI : AutoCloseKoinTest() {
     val rule = InstantTaskExecutorRule()
 
     @get:Rule
-    var grantPermissionRule = GrantPermissionRule.grant(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    var grantPermissionRule = if (Build.VERSION.SDK_INT > 28) {
+        GrantPermissionRule.grant(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    } else {
+        GrantPermissionRule.grant(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
+
+    @Before
+    fun setUp() {
+        loadKoinModules(testMockModule)
+    }
 
     @Test
     fun layout() {
@@ -67,18 +82,18 @@ class InstagramShareActivityTestI : AutoCloseKoinTest() {
 
 
         // activityに反応させないため、いったんすべての監視者を削除
-        activity.viewModel.savedBitmapFile.removeObservers(activity)
+        activity.viewModel.savedBitmapUri.removeObservers(activity)
 
         // テスト用の監視
-        val testObserver = TestObserver<File>(1)
-        activity.viewModel.savedBitmapFile.observeForever(testObserver)
+        val testObserver = TestObserver<Uri>(1)
+        activity.viewModel.savedBitmapUri.observeForever(testObserver)
 
         onView(withText(R.string.label_post)).perform(click())
 
         testObserver.await()
 
-        assertThat(activity.viewModel.savedBitmapFile.value).isFile()
+        assertThat(activity.viewModel.savedBitmapUri.value).isNotNull()
 
-        activity.viewModel.savedBitmapFile.removeObserver(testObserver)
+        activity.viewModel.savedBitmapUri.removeObserver(testObserver)
     }
 }

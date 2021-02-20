@@ -19,6 +19,10 @@ val mockModule = module {
     single(override = true) {
         MockCalendarProvider() as CalendarProviderI
     }
+
+    single(override = true) {
+        MockEnvironmentProvider() as EnvironmentProviderI
+    }
 }
 
 // カレンダークラスで現在日付を持つInstance取得を提供するプロバイダのテスト用
@@ -31,4 +35,9 @@ class MockCalendarProvider : CalendarProviderI {
             cal.set(Calendar.DATE, 28)
             return cal
         }
+}
+
+// EnvironmentProviderのモッククラス
+class MockEnvironmentProvider : EnvironmentProviderI {
+    override fun isExternalStorageMounted(): Boolean = true
 }
