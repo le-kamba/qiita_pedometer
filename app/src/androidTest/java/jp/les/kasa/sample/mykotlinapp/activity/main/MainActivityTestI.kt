@@ -31,6 +31,7 @@ import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -82,6 +83,9 @@ class MainActivityTestI : AutoCloseKoinTest() {
         resultActivity.finish()
 
         getInstrumentation().waitForIdleSync()
+        // テストを一括実行しているとこの処理が間に合わないことがあるらしい?
+        // GCなどの影響があるのか?
+        Thread.sleep(2*1000)
         val all = activityRule.activity.viewModel.repository.allLogs()
         assertThat(all.size).isEqualTo(1)
         getInstrumentation().waitForIdleSync()
@@ -172,6 +176,9 @@ class MainActivityTestI : AutoCloseKoinTest() {
         )
         getInstrumentation().addMonitor(monitor)
 
+        // テストを一括実行しているとここの処理が間に合っていないことが多い
+        // GCなどが走りやすいタイミングなのか？
+        Thread.sleep(2*1000)
         onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
         getInstrumentation().waitForIdleSync()
 
