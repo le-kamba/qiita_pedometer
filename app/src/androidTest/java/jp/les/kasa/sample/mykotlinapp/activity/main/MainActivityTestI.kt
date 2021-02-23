@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -85,7 +84,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         getInstrumentation().waitForIdleSync()
         // テストを一括実行しているとこの処理が間に合わないことがあるらしい?
         // GCなどの影響があるのか?
-        Thread.sleep(2*1000)
+        Thread.sleep(2 * 1000)
         val all = activityRule.activity.viewModel.repository.allLogs()
         assertThat(all.size).isEqualTo(1)
         getInstrumentation().waitForIdleSync()
@@ -128,6 +127,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         // 編集画面を起動
         val index = 24
 
+        // @formatter:off
         onView(withId(R.id.log_list))
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
@@ -178,7 +178,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
         // テストを一括実行しているとここの処理が間に合っていないことが多い
         // GCなどが走りやすいタイミングなのか？
-        Thread.sleep(2*1000)
+        Thread.sleep(5 * 1000)
         onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
         getInstrumentation().waitForIdleSync()
 
@@ -196,6 +196,10 @@ class MainActivityTestI : AutoCloseKoinTest() {
         resultActivity.setResult(MainActivity.RESULT_CODE_DELETE, resultData)
         resultActivity.finish()
         getInstrumentation().waitForIdleSync()
+
+        // テストを一括実行しているとここの処理が間に合っていないことが多い
+        // 前画面のfinish後の再描画が間に合っていない？
+        Thread.sleep(5 * 1000)
 
         onView(withId(R.id.log_list)).check(matches(RecyclerViewMatchers.hasItemCount(42)))
 
