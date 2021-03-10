@@ -67,8 +67,8 @@ android {
         }
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    dataBinding {
-        enabled true
+    buildFeatures {
+        dataBinding true
     }
     compileOptions {
         sourceCompatibility 1.8
