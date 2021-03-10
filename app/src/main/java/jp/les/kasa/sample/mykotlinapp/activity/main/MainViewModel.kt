@@ -52,7 +52,7 @@ class MainViewModel(
         }
 
         val date = Calendar.getInstance()
-        date.time = formatter.parse(from)
+        date.time = formatter.parse(from)!!
         date.clearTime()
         date.set(Calendar.DATE, 1)
 

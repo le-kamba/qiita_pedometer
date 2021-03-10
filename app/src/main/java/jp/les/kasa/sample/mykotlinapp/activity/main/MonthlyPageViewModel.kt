@@ -57,7 +57,7 @@ class MonthlyPageViewModel(
     fun getFromToYMD(yyyyMM: String): Pair<Calendar, Calendar> {
         val formatter = SimpleDateFormat("yyyy/MM", Locale.JAPAN)
         val from = Calendar.getInstance()
-        from.time = formatter.parse(yyyyMM)
+        from.time = formatter.parse(yyyyMM)!!
         from.set(Calendar.DATE, 1)
         from.clearTime()
         // 日曜日になるまで日付を遡る
