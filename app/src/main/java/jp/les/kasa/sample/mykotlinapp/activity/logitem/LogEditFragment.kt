@@ -15,7 +15,6 @@ import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentLogEditBinding
 import jp.les.kasa.sample.mykotlinapp.utils.levelFromRadioId
 import jp.les.kasa.sample.mykotlinapp.utils.weatherFromSpinner
-import kotlinx.android.synthetic.main.fragment_log_input.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 /**
@@ -47,6 +46,8 @@ class LogEditFragment : BaseFragment() {
 
     private lateinit var stepCountLog: StepCountLog
 
+    private lateinit var binding: FragmentLogEditBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -55,9 +56,9 @@ class LogEditFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val binding: FragmentLogEditBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.fragment_log_edit, container, false
         )
 
@@ -72,13 +73,13 @@ class LogEditFragment : BaseFragment() {
             }
             analyticsUtil.sendButtonEvent("更新ボタン")
 
-            val dateText = text_date.text.toString()
-            val stepCount = edit_count.text.toString().toInt()
+            val dateText = binding.textDate.text.toString()
+            val stepCount = binding.editCount.text.toString().toInt()
             val level =
-                levelFromRadioId(radio_group.checkedRadioButtonId)
+                levelFromRadioId(binding.radioGroup.checkedRadioButtonId)
             val weather =
                 weatherFromSpinner(
-                    spinner_weather.selectedItemPosition
+                    binding.spinnerWeather.selectedItemPosition
                 )
             val newLog = StepCountLog(dateText, stepCount, level, weather)
             viewModel.changeLog(newLog, ShareStatus())
@@ -92,7 +93,7 @@ class LogEditFragment : BaseFragment() {
     }
 
     private fun validation(): Int? {
-        return logEditValidation(edit_count.text.toString())
+        return logEditValidation(binding.editCount.text.toString())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -118,12 +119,12 @@ class LogEditFragment : BaseFragment() {
         }
         analyticsUtil.sendButtonEvent("シェアボタン")
 
-        val dateText = text_date.text.toString()
-        val stepCount = edit_count.text.toString().toInt()
+        val dateText = binding.textDate.text.toString()
+        val stepCount = binding.editCount.text.toString().toInt()
         val level =
-            levelFromRadioId(radio_group.checkedRadioButtonId)
+            levelFromRadioId(binding.radioGroup.checkedRadioButtonId)
         val weather = weatherFromSpinner(
-            spinner_weather.selectedItemPosition
+            binding.spinnerWeather.selectedItemPosition
         )
         stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 

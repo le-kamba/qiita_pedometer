@@ -11,8 +11,6 @@ import jp.les.kasa.sample.mykotlinapp.alert.ConfirmDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySignoutBinding
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
-import kotlinx.android.synthetic.main.activity_signin.toolbar
-import kotlinx.android.synthetic.main.activity_signout.*
 import org.koin.android.ext.android.inject
 
 class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
@@ -36,7 +34,7 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_signout)
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -44,7 +42,7 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
 
 
         // サインアウトボタン
-        buttonSignOut.setOnClickListener {
+        binding.buttonSignOut.setOnClickListener {
             analyticsUtil.sendSignOutStartEvent()
             authProvider.signOut(this)
                 .addOnCompleteListener {
@@ -57,13 +55,13 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
         }
 
         // ローカルデータに変更ボタン
-        buttonConvert.setOnClickListener {
+        binding.buttonConvert.setOnClickListener {
             analyticsUtil.sendButtonEvent("convert_to_local_data")
             // TODO FirestoreのデータをRoomに入れる
         }
 
         // アカウント削除ボタン
-        buttonAccountDelete.setOnClickListener {
+        binding.buttonAccountDelete.setOnClickListener {
             analyticsUtil.sendButtonEvent("delete_account")
             // 確認フローを開始する
             val dialog = ConfirmDialog.Builder().data(Bundle().apply {

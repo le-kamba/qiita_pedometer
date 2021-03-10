@@ -22,7 +22,7 @@ import jp.les.kasa.sample.mykotlinapp.data.HasPet
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import kotlinx.android.synthetic.main.activity_main.*
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -50,14 +50,17 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
     // Access a Cloud Firestore instance from your Activity
     val db = FirebaseFirestore.getInstance()
 
+    lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         viewModel.pages.observe(this, Observer { list ->
             list?.let {
-                viewPager.adapter = MonthlyPagerAdapter(this, it)
-                viewPager.setCurrentItem(it.size - 1, false)
+                binding.viewPager.adapter = MonthlyPagerAdapter(this, it)
+                binding.viewPager.setCurrentItem(it.size - 1, false)
             }
         })
 

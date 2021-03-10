@@ -11,12 +11,11 @@ import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseFragment
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
+import jp.les.kasa.sample.mykotlinapp.databinding.FragmentLogInputBinding
 import jp.les.kasa.sample.mykotlinapp.utils.clearTime
 import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYMD
 import jp.les.kasa.sample.mykotlinapp.utils.levelFromRadioId
 import jp.les.kasa.sample.mykotlinapp.utils.weatherFromSpinner
-import kotlinx.android.synthetic.main.fragment_log_input.*
-import kotlinx.android.synthetic.main.fragment_log_input.view.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
@@ -47,38 +46,41 @@ class LogInputFragment : BaseFragment() {
     }
     val viewModel by sharedViewModel<LogItemViewModel>()
 
+    private var _binding: FragmentLogInputBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val contentView = inflater.inflate(R.layout.fragment_log_input, container, false)
+        _binding = FragmentLogInputBinding.inflate(inflater, container, false)
 
-        contentView.radio_group.check(R.id.radio_normal)
+        binding.radioGroup.check(R.id.radio_normal)
 
         today.clearTime()
-        contentView.text_date.text = today.getDateStringYMD()
+        binding.textDate.text = today.getDateStringYMD()
 
-        contentView.button_update.setOnClickListener {
+        binding.buttonUpdate.setOnClickListener {
             validation()?.let {
                 ErrorDialog.Builder().message(it).create().show(parentFragmentManager, null)
                 return@setOnClickListener
             }
             analyticsUtil.sendButtonEvent("登録ボタン")
 
-            val dateText = text_date.text.toString()
-            val stepCount = edit_count.text.toString().toInt()
+            val dateText = binding.textDate.text.toString()
+            val stepCount = binding.editCount.text.toString().toInt()
             val level =
-                levelFromRadioId(radio_group.checkedRadioButtonId)
+                levelFromRadioId(binding.radioGroup.checkedRadioButtonId)
             val weather =
                 weatherFromSpinner(
-                    spinner_weather.selectedItemPosition
+                    binding.spinnerWeather.selectedItemPosition
                 )
             val stepCountLog = StepCountLog(dateText, stepCount, level, weather)
 
-            val postSns = switch_share.isChecked
-            val postTwitter = checkBox_twitter.isChecked
-            val postInstagram = checkBox_instagram.isChecked
+            val postSns = binding.switchShare.isChecked
+            val postTwitter = binding.checkBoxTwitter.isChecked
+            val postInstagram = binding.checkBoxInstagram.isChecked
 
             val shareStatus = ShareStatus(postSns, postTwitter, postInstagram)
             // 設定に保存
@@ -88,12 +90,17 @@ class LogInputFragment : BaseFragment() {
         }
 
         // 日付を選ぶボタンで日付選択ダイアログを表示
-        contentView.button_date.setOnClickListener {
+        binding.buttonDate.setOnClickListener {
             analyticsUtil.sendButtonEvent("日付選択ボタン")
             DateSelectDialogFragment().show(parentFragmentManager, DATE_SELECT_TAG)
         }
 
-        return contentView
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -101,19 +108,19 @@ class LogInputFragment : BaseFragment() {
 
         // 日付の選択を監視
         viewModel.selectDate.observe(viewLifecycleOwner, Observer {
-            text_date.text = it.getDateStringYMD()
+            binding.textDate.text = it.getDateStringYMD()
         })
 
         // sns投稿設定
         val shareStatus = viewModel.readShareStatus()
-        switch_share.isChecked = shareStatus.doPost
-        checkBox_twitter.isChecked = shareStatus.postTwitter
-        checkBox_instagram.isChecked = shareStatus.postInstagram
+        binding.switchShare.isChecked = shareStatus.doPost
+        binding.checkBoxTwitter.isChecked = shareStatus.postTwitter
+        binding.checkBoxInstagram.isChecked = shareStatus.postInstagram
     }
 
     private fun validation(): Int? {
         val selectDate = viewModel.selectDate.value?.clearTime()
-        return logInputValidation(today, selectDate, edit_count.text.toString())
+        return logInputValidation(today, selectDate, binding.editCount.text.toString())
     }
 }
 

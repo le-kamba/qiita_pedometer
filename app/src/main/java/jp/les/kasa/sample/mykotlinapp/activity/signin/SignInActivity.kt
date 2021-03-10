@@ -12,8 +12,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySigninBinding
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
-import kotlinx.android.synthetic.main.activity_signin.*
 import org.koin.android.ext.android.inject
 
 class SignInActivity : BaseActivity() {
@@ -28,15 +28,17 @@ class SignInActivity : BaseActivity() {
         get() = SCREEN_NAME
 
     private val authProvider: AuthProviderI by inject()
+    private lateinit var binding: ActivitySigninBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_signin)
-        setSupportActionBar(toolbar)
+        binding = ActivitySigninBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        buttonSignIn.setOnClickListener {
+        binding.buttonSignIn.setOnClickListener {
             analyticsUtil.sendSignInStartEvent()
 
             FirebaseCrashlytics.getInstance().log("FirebaseUI Auth called.")

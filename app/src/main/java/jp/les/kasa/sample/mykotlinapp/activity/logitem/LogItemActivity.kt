@@ -10,7 +10,7 @@ import jp.les.kasa.sample.mykotlinapp.activity.main.MainActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
-import kotlinx.android.synthetic.main.activity_log_item.*
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivityLogItemBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -24,11 +24,14 @@ class LogItemActivity : AppCompatActivity() {
     }
 
     val viewModel by viewModel<LogItemViewModel>()
+    private lateinit var binding: ActivityLogItemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log_item)
-        setSupportActionBar(toolbar)
+        binding = ActivityLogItemBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -37,7 +40,11 @@ class LogItemActivity : AppCompatActivity() {
             // ログデータがあれば編集画面にする
             if (logData != null) {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.logitem_container, LogEditFragment.newInstance(logData), LogEditFragment.TAG)
+                    .replace(
+                        R.id.logitem_container,
+                        LogEditFragment.newInstance(logData),
+                        LogEditFragment.TAG
+                    )
                     .commitNow()
             } else {
                 val initialDate = intent.getSerializableExtra(EXTRA_KEY_INITIAL_DATE) as Calendar

@@ -8,9 +8,8 @@ import android.view.MenuItem
 import com.google.android.material.snackbar.Snackbar
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.databinding.ActivityTwitterShareBinding
 import jp.les.kasa.sample.mykotlinapp.utils.openPlayStore
-import kotlinx.android.synthetic.main.activity_twitter_share.*
-import kotlinx.android.synthetic.main.content_twitter_share.*
 
 
 class TwitterShareActivity : BaseActivity() {
@@ -25,17 +24,20 @@ class TwitterShareActivity : BaseActivity() {
     override val screenName: String
         get() = SCREEN_NAME
 
+    private lateinit var binding: ActivityTwitterShareBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_twitter_share)
-        setSupportActionBar(toolbar)
+        binding = ActivityTwitterShareBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        editText_share_message.setText(intent.getStringExtra(KEY_TEXT))
+        binding.content.editTextShareMessage.setText(intent.getStringExtra(KEY_TEXT))
 
-        button_share_twitter.setOnClickListener {
-            val message = editText_share_message.text.toString()
+        binding.content.buttonShareTwitter.setOnClickListener {
+            val message = binding.content.editTextShareMessage.text.toString()
             post(message)
         }
     }
@@ -48,7 +50,7 @@ class TwitterShareActivity : BaseActivity() {
             startActivity(intent)
             analyticsUtil.sendShareEvent("Twitter")
         } catch (e: ActivityNotFoundException) {
-            Snackbar.make(view_root, R.string.error_no_twitter_app, Snackbar.LENGTH_LONG)
+            Snackbar.make(binding.viewRoot, R.string.error_no_twitter_app, Snackbar.LENGTH_LONG)
                 .setAction(R.string.install) {
                     openPlayStore("com.twitter.android")
                 }

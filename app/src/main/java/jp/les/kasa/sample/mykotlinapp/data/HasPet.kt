@@ -1,8 +1,8 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 import kotlin.random.Random
 
 /**

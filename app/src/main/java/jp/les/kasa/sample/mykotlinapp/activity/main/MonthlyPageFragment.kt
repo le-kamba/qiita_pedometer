@@ -46,12 +46,14 @@ class MonthlyPageFragment : Fragment(),
 
     val analyticsUtil: AnalyticsUtilI by inject()
 
+    lateinit var binding: FragmentMonthlyPageBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding: FragmentMonthlyPageBinding = DataBindingUtil.inflate(
+    ): View {
+        binding = DataBindingUtil.inflate(
             layoutInflater, R.layout.fragment_monthly_page, container, false
         )
 

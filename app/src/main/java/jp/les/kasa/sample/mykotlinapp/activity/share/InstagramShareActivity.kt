@@ -5,20 +5,16 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityInstagramShareBinding
-import kotlinx.android.synthetic.main.activity_instagram_share.*
-import kotlinx.android.synthetic.main.content_instagram_share.view.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import permissions.dispatcher.NeedsPermission
@@ -52,11 +48,11 @@ class InstagramShareActivity : BaseActivity(), CoroutineScope {
             DataBindingUtil.setContentView(this, R.layout.activity_instagram_share)
         binding.stepLog = intent.extras!!.getSerializable(KEY_STEP_COUNT_DATA) as StepCountLog
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.root.button_share_instagram.setOnClickListener {
+        binding.content.buttonShareInstagram.setOnClickListener {
             if (Build.VERSION.SDK_INT < 29) {
                 createShareImageWithPermissionCheck()
             } else {
@@ -85,7 +81,7 @@ class InstagramShareActivity : BaseActivity(), CoroutineScope {
     fun createShareImage() {
         launch {
             val bitmap = withContext(Dispatchers.Default) {
-                getBitmapFromView(binding.root.layout_post_image)
+                getBitmapFromView(binding.content.layoutPostImage)
             }
             withContext(Dispatchers.IO) {
                 viewModel.createShareImage(bitmap)

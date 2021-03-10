@@ -20,7 +20,6 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.espresso.*
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -483,7 +482,7 @@ class MainActivityTestI : AutoCloseKoinTest() {
         // 左からスワイプしてカレントページインデックスのチェック
         onView(withId(R.id.viewPager)).perform(swipePrevious())
 
-        val idleWatcher = ViewPagerIdleWatcher(mainActivity.viewPager)
+        val idleWatcher = ViewPagerIdleWatcher(mainActivity.binding.viewPager)
         idleWatcher.waitForIdle()
         onIdle()
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(5)))
