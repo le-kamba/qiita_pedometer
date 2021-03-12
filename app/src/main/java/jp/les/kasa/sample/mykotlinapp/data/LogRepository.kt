@@ -1,7 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 /**
  * ログデータリポジトリ
@@ -30,7 +30,7 @@ class LogRepository(private val logDao: LogDao) {
     }
 
     @WorkerThread
-    fun searchRange(from: String, to: String): LiveData<List<StepCountLog>> {
+    fun searchRange(from: String, to: String): Flow<List<StepCountLog>> {
         return logDao.getRangeLog(from, to)
     }
 
@@ -40,7 +40,7 @@ class LogRepository(private val logDao: LogDao) {
     }
 
     @WorkerThread
-    fun getOldestDate(): LiveData<String> {
+    fun getOldestDate(): Flow<String> {
         return logDao.getOldestDate()
     }
 }

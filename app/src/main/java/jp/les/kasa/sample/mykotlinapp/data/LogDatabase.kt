@@ -1,7 +1,7 @@
 package jp.les.kasa.sample.mykotlinapp.data
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 /**
  *
@@ -29,10 +29,10 @@ interface LogDao {
     fun getLog(srcDate: String): StepCountLog
 
     @Query("SELECT * from log_table WHERE date>= :from AND date < :to ORDER BY date")
-    fun getRangeLog(from: String, to: String): LiveData<List<StepCountLog>>
+    fun getRangeLog(from: String, to: String): Flow<List<StepCountLog>>
 
     @Query("SELECT date from log_table ORDER BY date limit 1")
-    fun getOldestDate(): LiveData<String>
+    fun getOldestDate(): Flow<String>
 }
 
 const val DATABASE_NAME = "log_database"

@@ -3,6 +3,7 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
@@ -26,7 +27,7 @@ class MainViewModel(
 ) : AndroidViewModel(app) {
 
     // 一番古いデータの年月
-    private val oldestDate = repository.getOldestDate()
+    private val oldestDate = repository.getOldestDate().asLiveData()
 
     // ページ
     val pages = Transformations.map(oldestDate) {

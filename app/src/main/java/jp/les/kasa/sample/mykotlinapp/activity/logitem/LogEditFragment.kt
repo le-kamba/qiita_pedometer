@@ -6,7 +6,7 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.activityViewModels
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
 import jp.les.kasa.sample.mykotlinapp.base.BaseFragment
@@ -145,10 +145,9 @@ fun logEditValidation(
 
 
 class SnsChooseDialog : DialogFragment() {
+    private val viewModel: LogItemViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val viewModel = ViewModelProviders.of(activity!!).get(LogItemViewModel::class.java)
-
         // AlertDialogで作成する
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(arrayOf("Twitter", "Instagram")) { _, which ->
