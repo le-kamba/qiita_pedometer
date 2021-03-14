@@ -36,8 +36,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
-import org.koin.core.inject
 import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 import org.robolectric.annotation.Config
 import java.util.*
 

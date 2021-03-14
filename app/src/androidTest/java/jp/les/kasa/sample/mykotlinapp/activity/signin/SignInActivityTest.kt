@@ -2,6 +2,7 @@ package jp.les.kasa.sample.mykotlinapp.activity.signin
 
 import android.app.Application
 import android.app.Instrumentation
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -26,13 +27,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
-import org.koin.core.inject
 import org.koin.test.AutoCloseKoinTest
+import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
 class SignInActivityTest : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(SignInActivity::class.java, false, false)
+
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
 
     lateinit var activity: SignInActivity
 
