@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
 import org.koin.android.ext.android.inject
 
 /**
@@ -29,7 +29,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int)
     }
 
-    private val analyticsUtil: AnalyticsUtil by inject()
+    private val analyticsUtil: AnalyticsUtilI by inject()
 
     class Builder() {
         private var message: String? = null
@@ -115,7 +115,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        activity?.let { analyticsUtil.sendScreenName(it, SCREEN_NAME) }
+        analyticsUtil.sendScreenName(SCREEN_NAME)
     }
 
     override fun onClick(dialog: DialogInterface?, which: Int) {

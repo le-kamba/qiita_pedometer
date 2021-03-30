@@ -15,7 +15,7 @@ import jp.les.kasa.sample.mykotlinapp.data.CalendarCellData
 import jp.les.kasa.sample.mykotlinapp.databinding.FragmentMonthlyPageBinding
 import jp.les.kasa.sample.mykotlinapp.databinding.ItemCellBinding
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
-import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
 import jp.les.kasa.sample.mykotlinapp.utils.getDateStringYMD
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -44,7 +44,7 @@ class MonthlyPageFragment : Fragment(),
 
     val calendarProvider: CalendarProviderI by inject()
 
-    val analyticsUtil: AnalyticsUtil by inject()
+    val analyticsUtil: AnalyticsUtilI by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,

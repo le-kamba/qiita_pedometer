@@ -3,7 +3,6 @@ package jp.les.kasa.sample.mykotlinapp.activity.share
 import android.Manifest
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click

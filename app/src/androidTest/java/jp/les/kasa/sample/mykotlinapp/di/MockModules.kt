@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.Parcel
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
@@ -14,6 +15,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.*
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.data.LoginUserData
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import jp.les.kasa.sample.mykotlinapp.utils.clearTime
 import org.koin.android.ext.koin.androidApplication
@@ -35,6 +37,10 @@ val testMockModule = module {
 
     single(override = true) {
         TestAuthProvider(androidApplication()) as AuthProviderI
+    }
+
+    single(override = true) {
+        TestAnalyticsUtil() as AnalyticsUtilI
     }
 }
 
@@ -174,3 +180,21 @@ class MockFirebaseUser : FirebaseUser() {
 }
 
 class MockAuthUIActivity : AppCompatActivity()
+
+// AnalyticsUtilのモッククラス
+class TestAnalyticsUtil : AnalyticsUtilI() {
+    override fun sendScreenName(
+        screenName: String,
+        classOverrideName: String?
+    ) {
+    }
+
+    override fun logEvent(eventName: String, bundle: Bundle?) {
+    }
+
+    override fun setUserProperty(propertyName: String, value: String) {
+    }
+
+    override fun setUserId(userId: String?) {
+    }
+}

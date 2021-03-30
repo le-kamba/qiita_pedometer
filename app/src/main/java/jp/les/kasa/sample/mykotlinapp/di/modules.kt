@@ -10,10 +10,7 @@ import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
-import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
-import jp.les.kasa.sample.mykotlinapp.utils.AuthProvider
-import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
-import jp.les.kasa.sample.mykotlinapp.utils.clearTime
+import jp.les.kasa.sample.mykotlinapp.utils.*
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -53,17 +50,13 @@ val providerModule = module {
 
 // FirebaseService
 val firebaseModule = module {
-    single { AnalyticsUtil(androidApplication()) }
+    single { AnalyticsUtil(androidApplication()) as AnalyticsUtilI }
     single { AuthProvider(androidApplication()) as AuthProviderI }
 }
 
 // モジュール群
 val appModules = listOf(
-    viewModelModule
-    , daoModule
-    , repositoryModule
-    , providerModule
-    , firebaseModule
+    viewModelModule, daoModule, repositoryModule, providerModule, firebaseModule
 )
 
 
@@ -79,11 +72,11 @@ class CalendarProvider : CalendarProviderI {
 
 // Environmentチェックを提供するプロバイダ
 interface EnvironmentProviderI {
-    fun isExternalStorageMounted() : Boolean
+    fun isExternalStorageMounted(): Boolean
 }
 
-class EnvironmentProvider : EnvironmentProviderI{
+class EnvironmentProvider : EnvironmentProviderI {
     override fun isExternalStorageMounted(): Boolean {
-        return Environment.getExternalStorageState()== Environment.MEDIA_MOUNTED
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 }

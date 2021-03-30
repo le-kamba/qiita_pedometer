@@ -40,7 +40,6 @@ class MonthlyPageFragmentTest : AutoCloseKoinTest() {
     fun setUp() {
         loadKoinModules(mockModule)
         get<LogRoomDatabase>().clearAllTables()
-
     }
 
     @After

@@ -4,7 +4,7 @@ import androidx.multidex.MultiDexApplication
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
 import jp.les.kasa.sample.mykotlinapp.di.appModules
-import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
 import jp.les.kasa.sample.mykotlinapp.utils.uniqueUserId
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -23,7 +23,7 @@ class MyApp : MultiDexApplication() {
             modules(appModules)
         }
 
-        val analyticsUtil: AnalyticsUtil by inject()
+        val analyticsUtil: AnalyticsUtilI by inject()
         val settingRepository: SettingRepository by inject()
         // 一度だけUserIdを作成する
         val userId = settingRepository.readUserId() ?: uniqueUserId()

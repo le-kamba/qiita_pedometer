@@ -6,14 +6,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.data.HasPet
-import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtil
+import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
 import org.koin.android.ext.android.inject
 
 /**
  * Firestoreのデータをリスト表示するサンプルのダイアログ
  */
 class ListDialogFragment : DialogFragment() {
-    private val analyticsUtil: AnalyticsUtil by inject()
+    private val analyticsUtil: AnalyticsUtilI by inject()
 
     class Builder(val list: ArrayList<HasPet>) {
         fun create(): ListDialogFragment {
@@ -47,7 +47,7 @@ class ListDialogFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        activity?.let { analyticsUtil.sendScreenName(it, SCREEN_NAME) }
+        analyticsUtil.sendScreenName(SCREEN_NAME)
     }
 
 }
