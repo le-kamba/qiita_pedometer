@@ -45,7 +45,7 @@ class InstagramShareViewModel(application: Application,
         val formatter = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH)
         val displayName = formatter.format(date) + ".jpg" // jpgにする
         val resultUri = saveBitmap(bitmap, displayName)
-        _savedBitmapUri.postValue(resultUri)
+        resultUri?.let { _savedBitmapUri.postValue(it) }
     }
 
     private fun saveBitmap(bitmap: Bitmap, displayName: String): Uri? {

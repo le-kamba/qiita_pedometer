@@ -36,7 +36,8 @@ class ListDialogFragment : DialogFragment() {
 
         // メッセージの決定
         val list =
-            arguments!!.getParcelableArrayList<HasPet>(KEY_LIST)!!.map { t -> t.titleString() }
+            requireArguments().getParcelableArrayList<HasPet>(KEY_LIST)!!
+                .map { t -> t.titleString() }
 
         // AlertDialogのセットアップ
         builder.setItems(list.toTypedArray(), null)

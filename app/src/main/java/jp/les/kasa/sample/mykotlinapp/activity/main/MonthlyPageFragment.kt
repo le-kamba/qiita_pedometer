@@ -60,7 +60,7 @@ class MonthlyPageFragment : Fragment(),
         binding.lifecycleOwner = this
         binding.viewmodel = viewModel
 
-        val yearMonth = arguments!!.getString(KEY_DATE_YEAR_MONTH)!!
+        val yearMonth = requireArguments().getString(KEY_DATE_YEAR_MONTH)!!
 
         // RecyclerViewの初期化
         binding.logList.layoutManager = GridLayoutManager(context, 7)

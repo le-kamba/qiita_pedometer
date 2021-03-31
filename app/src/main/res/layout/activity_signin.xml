@@ -37,7 +37,7 @@
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
                     android:src="@drawable/ic_cloud_upload_24dp"
-                    android:tint="@color/colorPrimary" />
+                    app:tint="@color/colorPrimary" />
 
             <TextView
                     android:id="@+id/descriptionSignIn"

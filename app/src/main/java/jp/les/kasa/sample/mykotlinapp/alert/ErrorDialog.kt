@@ -51,9 +51,11 @@ class ErrorDialog : DialogFragment() {
         // メッセージの決定
         val message =
             when {
-                arguments!!.containsKey(KEY_MESSAGE) -> arguments!!.getString(KEY_MESSAGE)
+                requireArguments().containsKey(KEY_MESSAGE) -> requireArguments().getString(
+                    KEY_MESSAGE
+                )
                 else -> requireContext().getString(
-                    arguments!!.getInt(KEY_RESOURCE_ID)
+                    requireArguments().getInt(KEY_RESOURCE_ID)
                 )
             }
         // AlertDialogのセットアップ

@@ -42,7 +42,7 @@ class LogInputFragment : BaseFragment() {
         get() = SCREEN_NAME
 
     private val today: Calendar by lazy {
-        arguments!!.getSerializable(KEY_INITIAL_DATE) as Calendar
+        requireArguments().getSerializable(KEY_INITIAL_DATE) as Calendar
     }
     val viewModel by sharedViewModel<LogItemViewModel>()
 

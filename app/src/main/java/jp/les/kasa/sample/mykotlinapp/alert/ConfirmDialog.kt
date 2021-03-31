@@ -99,9 +99,11 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         // メッセージの決定
         val message =
             when {
-                arguments!!.containsKey(KEY_MESSAGE) -> arguments!!.getString(KEY_MESSAGE)
+                requireArguments().containsKey(KEY_MESSAGE) -> requireArguments().getString(
+                    KEY_MESSAGE
+                )
                 else -> requireContext().getString(
-                    arguments!!.getInt(KEY_RESOURCE_ID)
+                    requireArguments().getInt(KEY_RESOURCE_ID)
                 )
             }
         // AlertDialogのセットアップ
@@ -120,7 +122,7 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
 
     override fun onClick(dialog: DialogInterface?, which: Int) {
         FirebaseCrashlytics.getInstance().log("ConfirmDialog selected:$which")
-        val data = arguments!!.getBundle(KEY_DATA)
+        val data = requireArguments().getBundle(KEY_DATA)
         if (targetFragment is ConfirmEventListener) {
             val listener = targetFragment as ConfirmEventListener
             listener.onConfirmResult(which, data, targetRequestCode)

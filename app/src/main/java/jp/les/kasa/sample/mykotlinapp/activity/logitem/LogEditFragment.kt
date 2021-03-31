@@ -62,7 +62,7 @@ class LogEditFragment : BaseFragment() {
             layoutInflater, R.layout.fragment_log_edit, container, false
         )
 
-        stepCountLog = arguments!!.getSerializable(ARG_DATA) as StepCountLog
+        stepCountLog = requireArguments().getSerializable(ARG_DATA) as StepCountLog
 
         binding.stepLog = stepCountLog
 
