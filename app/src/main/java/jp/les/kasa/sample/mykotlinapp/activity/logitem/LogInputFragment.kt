@@ -103,8 +103,8 @@ class LogInputFragment : BaseFragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // 日付の選択を監視
         viewModel.selectDate.observe(viewLifecycleOwner, Observer {
