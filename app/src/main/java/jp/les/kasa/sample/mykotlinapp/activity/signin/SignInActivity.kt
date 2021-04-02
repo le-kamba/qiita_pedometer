@@ -5,20 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
 import com.firebase.ui.auth.ErrorCodes.*
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.alert.ErrorDialog
-import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.base.ScopeBaseActivity
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySigninBinding
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
-import org.koin.android.ext.android.inject
 
-class SignInActivity : BaseActivity() {
+class SignInActivity : ScopeBaseActivity() {
     companion object {
-        const val REQUEST_CODE_AUTH = 210
         const val DIALOG_TAG_AUTH_ERROR = "auth_error_dialog"
         const val SCREEN_NAME = "サインイン画面"
     }
@@ -29,6 +29,12 @@ class SignInActivity : BaseActivity() {
 
     private val authProvider: AuthProviderI by inject()
     private lateinit var binding: ActivitySigninBinding
+
+    // for ActivityResult API
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), get()) {
+            onAuthProviderResult(it)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,10 +59,7 @@ class SignInActivity : BaseActivity() {
 //                .build()
 
             // Create and launch sign-in intent
-            startActivityForResult(
-                authProvider.createSignInIntent(this),
-                REQUEST_CODE_AUTH
-            )
+            activityResultLauncher.launch(authProvider.createSignInIntent(this))
         }
     }
 
@@ -79,35 +82,31 @@ class SignInActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun onAuthProviderResult(result: ActivityResult) {
+        FirebaseCrashlytics.getInstance()
+            .log("FirebaseUI Auth finished. result code = [${result.resultCode}]")
 
-        if (requestCode == REQUEST_CODE_AUTH) {
+        val response = IdpResponse.fromResultIntent(result.data)
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("AUTH", "Auth Completed.")
+            // Successfully signed in
+            analyticsUtil.sendSignInEvent()
+            // TODO Roomのデータをコンバートしてアップロード
+            // or Firestoreからデータをダウンロード
+
+        } else response?.error?.errorCode?.let { errorCode ->
+            analyticsUtil.sendSignInErrorEvent(errorCode)
+            Log.d("AUTH", "Auth Error.")
+
             FirebaseCrashlytics.getInstance()
-                .log("FirebaseUI Auth finished. result code = [$resultCode]")
+                .log("FirebaseUI Auth finished. error code = [$errorCode]")
+            // Sign in failed. If response is null the user canceled the
+            // sign-in flow using the back button. Otherwise check
+            // response.getError().getErrorCode() and handle the error.
+            // ...
 
-            val response = IdpResponse.fromResultIntent(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                Log.d("AUTH", "Auth Completed.")
-                // Successfully signed in
-                analyticsUtil.sendSignInEvent()
-                // TODO Roomのデータをコンバートしてアップロード
-                // or Firestoreからデータをダウンロード
-
-            } else response?.error?.errorCode?.let { errorCode ->
-                analyticsUtil.sendSignInErrorEvent(errorCode)
-                Log.d("AUTH", "Auth Error.")
-
-                FirebaseCrashlytics.getInstance()
-                    .log("FirebaseUI Auth finished. error code = [$errorCode]")
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
-
-                showError(errorCode)
-            }
+            showError(errorCode)
         }
     }
 

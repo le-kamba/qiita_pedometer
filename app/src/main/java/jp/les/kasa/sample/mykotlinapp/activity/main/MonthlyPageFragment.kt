@@ -85,10 +85,7 @@ class MonthlyPageFragment : Fragment(),
                 return
             }
         }
-        activity?.startActivityForResult(
-            intent,
-            MainActivity.REQUEST_CODE_LOGITEM
-        )
+        (activity as MainActivity?)?.launchLogEditActivity(intent)
     }
 
     private fun canGoInput(date: Calendar, today: Calendar): Boolean = !date.after(today)

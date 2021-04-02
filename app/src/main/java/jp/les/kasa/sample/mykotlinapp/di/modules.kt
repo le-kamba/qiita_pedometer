@@ -1,11 +1,15 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
 import android.os.Environment
+import androidx.activity.result.ActivityResultRegistry
+import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
+import jp.les.kasa.sample.mykotlinapp.activity.main.MainActivity
 import jp.les.kasa.sample.mykotlinapp.activity.main.MainViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.main.MonthlyPageViewModel
 import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareViewModel
+import jp.les.kasa.sample.mykotlinapp.activity.signin.SignInActivity
 import jp.les.kasa.sample.mykotlinapp.data.DATABASE_NAME
 import jp.les.kasa.sample.mykotlinapp.data.LogRepository
 import jp.les.kasa.sample.mykotlinapp.data.LogRoomDatabase
@@ -54,9 +58,20 @@ val firebaseModule = module {
     single { AuthProvider(androidApplication()) as AuthProviderI }
 }
 
+// scopedモジュール群
+val scopeModules = module {
+    scope<MainActivity> {
+        viewModel { MainViewModel(androidApplication(), get(), get()) }
+        scoped { get<AppCompatActivity>().activityResultRegistry as ActivityResultRegistry }
+    }
+    scope<SignInActivity> {
+        scoped { get<AppCompatActivity>().activityResultRegistry as ActivityResultRegistry }
+    }
+}
+
 // モジュール群
 val appModules = listOf(
-    viewModelModule, daoModule, repositoryModule, providerModule, firebaseModule
+    viewModelModule, daoModule, repositoryModule, providerModule, firebaseModule, scopeModules
 )
 
 

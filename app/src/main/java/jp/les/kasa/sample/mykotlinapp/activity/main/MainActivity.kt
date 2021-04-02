@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -17,23 +18,18 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.signin.SignInActivity
 import jp.les.kasa.sample.mykotlinapp.alert.SelectPetDialog
-import jp.les.kasa.sample.mykotlinapp.base.BaseActivity
+import jp.les.kasa.sample.mykotlinapp.base.ScopeBaseActivity
 import jp.les.kasa.sample.mykotlinapp.data.HasPet
 import jp.les.kasa.sample.mykotlinapp.data.SettingRepository
 import jp.les.kasa.sample.mykotlinapp.data.ShareStatus
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.databinding.ActivityMainBinding
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
+class MainActivity : ScopeBaseActivity(), SelectPetDialog.SelectPetEventListener {
 
     companion object {
-        const val REQUEST_CODE_LOGITEM = 100
-        const val REQUEST_CODE_SHARE_TWITTER = 101
-        const val REQUEST_CODE_SIGN_IN = 201
-
         const val RESULT_CODE_DELETE = 10
 
         const val SCREEN_NAME = "トップ画面"
@@ -51,6 +47,22 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
     val db = FirebaseFirestore.getInstance()
 
     lateinit var binding: ActivityMainBinding
+
+    // for ActivityResult API
+    private val logItemActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), get()) {
+            onStepCountLogChanged(it.resultCode, it.data!!)
+        }
+
+    private val twitterShareActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), get()) {
+            onTwitterShareActivityResult(it.data!!)
+        }
+
+    private val signInActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult(), get()) {
+            onSignInActivityResult(it.resultCode, it.data!!)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,27 +88,16 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
 //        onSelected(false)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    private fun onTwitterShareActivityResult(data: Intent) {
 
-        when (requestCode) {
-            REQUEST_CODE_LOGITEM -> {
-                onStepCountLogChanged(resultCode, data)
-                return
-            }
-
-            REQUEST_CODE_SHARE_TWITTER -> {
-                // 続けてInstagramにも投稿する
-                val intent = Intent(this, InstagramShareActivity::class.java).apply {
-                    val log =
-                        data!!.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
-                    putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
-                }
-                startActivity(intent)
-                return
-            }
+        // 続けてInstagramにも投稿する
+        val intent = Intent(this, InstagramShareActivity::class.java).apply {
+            val log =
+                data.getSerializableExtra(LogItemActivity.EXTRA_KEY_DATA) as StepCountLog
+            putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
         }
-
-        super.onActivityResult(requestCode, resultCode, data)
+        startActivity(intent)
+        return
     }
 
     private fun onStepCountLogChanged(resultCode: Int, data: Intent?) {
@@ -115,7 +116,7 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
                         if (shareStatus.postInstagram) {
                             intent.putExtra(InstagramShareActivity.KEY_STEP_COUNT_DATA, log)
                             // Instagramもチェックされていれば、戻った後で次に起動するため、結果を受け取る必要がある
-                            startActivityForResult(intent, REQUEST_CODE_SHARE_TWITTER)
+                            twitterShareActivityResultLauncher.launch(intent)
                         } else {
                             startActivity(intent)
                         }
@@ -133,6 +134,10 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
                 viewModel.deleteStepCount(log)
             }
         }
+    }
+
+    private fun onSignInActivityResult(resultCode: Int, data: Intent) {
+        // TODO サインイン後の処理
     }
 
     private fun showPetListDialog() {
@@ -218,13 +223,17 @@ class MainActivity : BaseActivity(), SelectPetDialog.SelectPetEventListener {
             return when (it.itemId) {
                 R.id.login -> {
                     val intent = Intent(this, SignInActivity::class.java)
-                    startActivityForResult(intent, REQUEST_CODE_SIGN_IN)
+                    signInActivityResultLauncher.launch(intent)
                     true
                 }
                 else -> false
             }
         }
         return false
+    }
+
+    fun launchLogEditActivity(intent: Intent) {
+        logItemActivityResultLauncher.launch(intent)
     }
 }
 
