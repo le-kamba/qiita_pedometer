@@ -148,7 +148,7 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
 
-    // perission dispather
+    // permission dispatcher
     implementation "org.permissionsdispatcher:permissionsdispatcher:4.6.0"
     kapt "org.permissionsdispatcher:permissionsdispatcher-processor:4.6.0"
 
