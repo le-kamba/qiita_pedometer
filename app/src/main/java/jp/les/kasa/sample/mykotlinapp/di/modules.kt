@@ -1,7 +1,6 @@
 package jp.les.kasa.sample.mykotlinapp.di
 
 import android.os.Environment
-import androidx.activity.result.ActivityResultRegistry
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import jp.les.kasa.sample.mykotlinapp.activity.logitem.LogItemViewModel
@@ -26,7 +25,6 @@ import java.util.*
 
 // ViewModel
 val viewModelModule = module {
-    viewModel { MainViewModel(androidApplication(), get(), get()) }
     viewModel { MonthlyPageViewModel(androidApplication(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
     viewModel { InstagramShareViewModel(androidApplication(), get()) }
@@ -48,24 +46,24 @@ val repositoryModule = module {
 }
 
 val providerModule = module {
-    factory { CalendarProvider() as CalendarProviderI }
-    factory { EnvironmentProvider() as EnvironmentProviderI }
+    factory<CalendarProviderI> { CalendarProvider() }
+    factory<EnvironmentProviderI> { EnvironmentProvider() }
 }
 
 // FirebaseService
 val firebaseModule = module {
-    single { AnalyticsUtil(androidApplication()) as AnalyticsUtilI }
-    single { AuthProvider(androidApplication()) as AuthProviderI }
+    single<AnalyticsUtilI> { AnalyticsUtil(androidApplication()) }
+    single<AuthProviderI> { AuthProvider(androidApplication()) }
 }
 
 // scopedモジュール群
 val scopeModules = module {
     scope<MainActivity> {
         viewModel { MainViewModel(androidApplication(), get(), get()) }
-        scoped { get<AppCompatActivity>().activityResultRegistry as ActivityResultRegistry }
+        scoped { get<AppCompatActivity>().activityResultRegistry }
     }
     scope<SignInActivity> {
-        scoped { get<AppCompatActivity>().activityResultRegistry as ActivityResultRegistry }
+        scoped { get<AppCompatActivity>().activityResultRegistry }
     }
 }
 
