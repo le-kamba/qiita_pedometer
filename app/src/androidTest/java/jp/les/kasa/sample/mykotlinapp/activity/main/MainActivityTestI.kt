@@ -101,6 +101,38 @@ class MainActivityTestI : AutoCloseKoinTest() {
     }
 
     @Test
+    fun onActivityResult_Cancel() {
+        activityRule.launchActivity(Intent())
+
+        val monitor = Instrumentation.ActivityMonitor(
+            LogItemActivity::class.java.canonicalName, null, false
+        )
+        getInstrumentation().addMonitor(monitor)
+
+        val index = 24
+
+        // 登録画面を起動
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
+
+        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
+        resultActivity.setResult(Activity.RESULT_CANCELED, null)
+        resultActivity.finish()
+
+        getInstrumentation().waitForIdleSync()
+        // テストを一括実行しているとこの処理が間に合わないことがあるらしい?
+        // GCなどの影響があるのか?
+        Thread.sleep(2 * 1000)
+        val all = activityRule.activity.viewModel.repository.allLogs()
+        assertThat(all.size).isEqualTo(0)
+        getInstrumentation().waitForIdleSync()
+
+        checkCellNull(index, "19")
+    }
+
+    @Test
     fun onActivityResult_Edit() {
         // 最初にデータ投入
         runBlocking {
