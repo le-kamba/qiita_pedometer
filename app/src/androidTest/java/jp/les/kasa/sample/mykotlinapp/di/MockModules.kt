@@ -31,16 +31,16 @@ val testMockModule = module {
         ).build()
     }
 
-    single(override = true) {
-        TestCalendarProvider() as CalendarProviderI
+    single<CalendarProviderI>(override = true) {
+        TestCalendarProvider()
     }
 
-    single(override = true) {
-        TestAuthProvider(androidApplication()) as AuthProviderI
+    single<AuthProviderI>(override = true) {
+        TestAuthProvider(androidApplication())
     }
 
-    single(override = true) {
-        TestAnalyticsUtil() as AnalyticsUtilI
+    single<AnalyticsUtilI>(override = true) {
+        TestAnalyticsUtil()
     }
 }
 

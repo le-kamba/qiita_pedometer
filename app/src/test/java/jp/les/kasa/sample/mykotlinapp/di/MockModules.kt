@@ -18,16 +18,16 @@ val mockModule = module {
         ).allowMainThreadQueries().build()
     }
 
-    single(override = true) {
-        MockCalendarProvider() as CalendarProviderI
+    single<CalendarProviderI>(override = true) {
+        MockCalendarProvider()
     }
 
-    single(override = true) {
-        MockEnvironmentProvider() as EnvironmentProviderI
+    single<EnvironmentProviderI>(override = true) {
+        MockEnvironmentProvider()
     }
 
-    single(override = true) {
-        MockAnalyticsUtil() as AnalyticsUtilI
+    single<AnalyticsUtilI>(override = true) {
+        MockAnalyticsUtil()
     }
 }
 
