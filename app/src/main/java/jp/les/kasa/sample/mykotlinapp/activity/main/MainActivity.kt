@@ -51,7 +51,7 @@ class MainActivity : ScopeBaseActivity(), SelectPetDialog.SelectPetEventListener
     // for ActivityResult API
     private val logItemActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult(), get()) {
-            onStepCountLogChanged(it.resultCode, it.data!!)
+            onStepCountLogChanged(it.resultCode, it.data)
         }
 
     private val twitterShareActivityResultLauncher =
