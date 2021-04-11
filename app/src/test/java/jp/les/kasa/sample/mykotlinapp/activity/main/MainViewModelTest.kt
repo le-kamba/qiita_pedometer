@@ -68,10 +68,9 @@ class MainViewModelTest : AutoCloseKoinTest() {
     @Test
     fun deleteStepCount() = runBlocking<Unit> {
 
-        viewModel.addStepCount(StepCountLog("2019/06/21", 123))
-        viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
-        Thread.sleep(500)
-        viewModel.deleteStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        viewModel.addStepCount(StepCountLog("2019/06/21", 123)).join()
+        viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)).join()
+        viewModel.deleteStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)).join()
 
         val list = viewModel.repository.allLogs()
         assertThat(list.size).isEqualTo(1)
