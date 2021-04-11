@@ -25,6 +25,7 @@ import java.util.*
 
 // ViewModel
 val viewModelModule = module {
+    viewModel { MainViewModel(androidApplication(), get(), get()) }
     viewModel { MonthlyPageViewModel(androidApplication(), get()) }
     viewModel { LogItemViewModel(androidApplication(), get()) }
     viewModel { InstagramShareViewModel(androidApplication(), get()) }
@@ -59,7 +60,6 @@ val firebaseModule = module {
 // scopedモジュール群
 val scopeModules = module {
     scope<MainActivity> {
-        viewModel { MainViewModel(androidApplication(), get(), get()) }
         scoped { get<AppCompatActivity>().activityResultRegistry }
     }
     scope<SignInActivity> {
