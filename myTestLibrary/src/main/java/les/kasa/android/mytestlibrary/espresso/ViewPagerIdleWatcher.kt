@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jp.les.kasa.sample.mykotlinapp.espresso
+package les.kasa.android.mytestlibrary.espresso
 
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource

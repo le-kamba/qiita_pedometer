@@ -18,7 +18,7 @@ import jp.les.kasa.sample.mykotlinapp.data.LEVEL
 import jp.les.kasa.sample.mykotlinapp.data.StepCountLog
 import jp.les.kasa.sample.mykotlinapp.data.WEATHER
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
-import jp.les.kasa.sample.mykotlinapp.espresso.TestObserver
+import les.kasa.android.mytestlibrary.livedata.TestObserver
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule

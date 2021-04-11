@@ -26,6 +26,7 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.CalendarProviderI
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
+import jp.les.kasa.sample.mykotlinapp.robolectric.withDrawable
 import jp.les.kasa.sample.mykotlinapp.utils.*
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers

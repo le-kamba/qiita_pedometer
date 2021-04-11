@@ -1,4 +1,4 @@
-package jp.les.kasa.sample.mykotlinapp.espresso
+package les.kasa.android.mytestlibrary.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer

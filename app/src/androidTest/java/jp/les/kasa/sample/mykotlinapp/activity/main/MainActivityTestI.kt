@@ -19,7 +19,10 @@ import jp.les.kasa.sample.mykotlinapp.activity.share.InstagramShareActivity
 import jp.les.kasa.sample.mykotlinapp.activity.share.TwitterShareActivity
 import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
-import jp.les.kasa.sample.mykotlinapp.espresso.*
+import jp.les.kasa.sample.mykotlinapp.espresso.RecyclerViewMatchers
+import jp.les.kasa.sample.mykotlinapp.espresso.ViewPagerMatchers
+import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
+import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -512,15 +515,16 @@ class MainActivityTestI : AutoCloseKoinTest() {
         // currentPageのチェック
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(6)))
         // 左からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(swipePrevious())
+        onView(withId(R.id.viewPager)).perform(les.kasa.android.mytestlibrary.espresso.swipePrevious())
 
-        val idleWatcher = ViewPagerIdleWatcher(mainActivity.binding.viewPager)
+        val idleWatcher =
+            les.kasa.android.mytestlibrary.espresso.ViewPagerIdleWatcher(mainActivity.binding.viewPager)
         idleWatcher.waitForIdle()
         onIdle()
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(5)))
 
         // 右からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(swipeNext())
+        onView(withId(R.id.viewPager)).perform(les.kasa.android.mytestlibrary.espresso.swipeNext())
 
         idleWatcher.waitForIdle()
         onIdle()

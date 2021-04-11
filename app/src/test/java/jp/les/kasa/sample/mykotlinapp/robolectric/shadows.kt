@@ -1,25 +1,14 @@
 package jp.les.kasa.sample.mykotlinapp
 
 import android.content.DialogInterface
-import android.graphics.drawable.StateListDrawable
 import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Adapter
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.matcher.BoundedMatcher
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
-import org.mockito.Mockito
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.annotation.RealObject
@@ -29,73 +18,6 @@ import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowListView
 import org.robolectric.util.ReflectionHelpers
 import java.lang.reflect.InvocationTargetException
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
-
-
-fun atPositionOnView(
-    position: Int, itemMatcher: Matcher<View>, targetViewId: Int
-): Matcher<View> {
-
-    return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-        override fun describeTo(description: Description) {
-            description.appendText("has view id $itemMatcher at position $position")
-        }
-
-        override fun matchesSafely(recyclerView: RecyclerView): Boolean {
-            val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
-            val targetView = viewHolder!!.itemView.findViewById<View>(targetViewId)
-            return itemMatcher.matches(targetView)
-        }
-    }
-}
-
-class DrawableMatcher(private val expectedId: Int) : TypeSafeMatcher<View>(View::class.java) {
-    private var resourceName: String? = null
-
-    override fun matchesSafely(target: View): Boolean {
-        if (target is ImageView) {
-            if (expectedId < 0) {
-                return target.drawable == null
-            }
-
-            var drawable = target.drawable
-            if (drawable is StateListDrawable) {
-                drawable = drawable.getCurrent()
-            }
-
-            return shadowOf(drawable).createdFromResId == expectedId
-        } else {
-            if (expectedId < 0) {
-                return target.background == null
-            }
-
-            var drawable = target.background
-            if (drawable is StateListDrawable) {
-                drawable = drawable.getCurrent()
-            }
-
-            return shadowOf(drawable).createdFromResId == expectedId
-        }
-        return false
-    }
-
-
-    override fun describeTo(description: Description) {
-        description.appendText("with drawable from resource id: ")
-        description.appendValue(expectedId)
-        if (resourceName != null) {
-            description.appendText("[")
-            description.appendText(resourceName)
-            description.appendText("]")
-        }
-    }
-}
-
-fun withDrawable(resourceId: Int): Matcher<View> {
-    return DrawableMatcher(resourceId)
-}
 
 
 @Suppress("unused")
@@ -296,60 +218,4 @@ class ShadowAlertController {
 
 fun shadowOfAlert(dialog: AlertDialog): ShadowAlertDialog {
     return Shadow.extract<ShadowAlertDialog>(dialog)
-}
-
-fun <T> LiveData<T>.observeForTesting(block: () -> Unit) {
-    val observer = Observer<T> { Unit }
-    try {
-        observeForever(observer)
-        block()
-    } finally {
-        removeObserver(observer)
-    }
-}
-
-class TestObserver<T>(count: Int = 1) : Observer<T> {
-
-    private val latch: CountDownLatch = CountDownLatch(count)
-
-    override fun onChanged(t: T?) {
-        latch.countDown()
-    }
-
-    fun await(timeout: Long = 6, unit: TimeUnit = TimeUnit.SECONDS) {
-        if (!latch.await(timeout, unit)) {
-            throw TimeoutException()
-        }
-    }
-}
-
-fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
-    observeForever(object : Observer<T> {
-        override fun onChanged(t: T?) {
-            observer.onChanged(t)
-            removeObserver(this)
-        }
-    })
-}
-
-object RecyclerViewMatchers {
-    @JvmStatic
-    fun hasItemCount(itemCount: Int): Matcher<View> {
-        return object : BoundedMatcher<View, RecyclerView>(
-            RecyclerView::class.java
-        ) {
-
-            override fun describeTo(description: Description) {
-                description.appendText("has $itemCount items")
-            }
-
-            override fun matchesSafely(view: RecyclerView): Boolean {
-                return view.adapter!!.itemCount == itemCount
-            }
-        }
-    }
-}
-
-fun <T> any(clazz: Class<T>): T {
-    return Mockito.any(clazz)
 }

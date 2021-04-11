@@ -7,9 +7,14 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.*
+import jp.les.kasa.sample.mykotlinapp.R
+import jp.les.kasa.sample.mykotlinapp.ShadowAlertController
+import jp.les.kasa.sample.mykotlinapp.ShadowAlertDialog
 import jp.les.kasa.sample.mykotlinapp.data.*
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
+import jp.les.kasa.sample.mykotlinapp.espresso.RecyclerViewMatchers
+import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
+import jp.les.kasa.sample.mykotlinapp.robolectric.withDrawable
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After

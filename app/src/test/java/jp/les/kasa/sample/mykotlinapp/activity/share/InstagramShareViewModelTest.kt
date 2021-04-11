@@ -8,9 +8,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.net.toUri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.les.kasa.sample.mykotlinapp.any
 import jp.les.kasa.sample.mykotlinapp.di.mockModule
 import kotlinx.coroutines.runBlocking
+import les.kasa.android.mytestlibrary.mockito.any
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule

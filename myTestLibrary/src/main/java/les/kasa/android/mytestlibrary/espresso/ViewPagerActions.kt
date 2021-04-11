@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jp.les.kasa.sample.mykotlinapp.espresso
+package les.kasa.android.mytestlibrary.espresso
 
 import android.graphics.Rect
 import android.os.SystemClock
@@ -29,8 +29,8 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.viewpager2.widget.ViewPager2
-import jp.les.kasa.sample.mykotlinapp.espresso.SwipeAction.Direction.BACKWARD
-import jp.les.kasa.sample.mykotlinapp.espresso.SwipeAction.Direction.FORWARD
+import les.kasa.android.mytestlibrary.espresso.SwipeAction.Direction.BACKWARD
+import les.kasa.android.mytestlibrary.espresso.SwipeAction.Direction.FORWARD
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.Matcher
