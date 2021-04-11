@@ -1,6 +1,5 @@
 package jp.les.kasa.sample.mykotlinapp.activity.signin
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,7 @@ import jp.les.kasa.sample.mykotlinapp.databinding.ActivitySignoutBinding
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import org.koin.android.ext.android.inject
 
-class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
+class SignOutActivity : BaseActivity() {
     companion object {
         const val TAG_CONFIRM_1 = "confirm"
         const val TAG_CONFIRM_2 = "confirm_again"
@@ -64,13 +63,38 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
         binding.buttonAccountDelete.setOnClickListener {
             analyticsUtil.sendButtonEvent("delete_account")
             // 確認フローを開始する
-            val dialog = ConfirmDialog.Builder().data(Bundle().apply {
-                putString("tag", TAG_CONFIRM_1)
-            })
-                .message(R.string.confirm_account_delete_1)
-                .create()
-            dialog.show(supportFragmentManager, TAG_CONFIRM_1)
+            showDeleteAccountConfirm()
         }
+    }
+
+    private fun showDeleteAccountConfirm() {
+        val dialog = ConfirmDialog.Builder()
+            .message(R.string.confirm_account_delete_1)
+            .create()
+        dialog.show(this,
+            onPositive = {
+                // データ削除した、なので削除決行
+                doDeleteAccount()
+            },
+            onNegative = {
+                // データ削除しなくてよいかもう一度確認
+                showDeleteAccountConfirmLast()
+            })
+    }
+
+    private fun showDeleteAccountConfirmLast() {
+        // データ削除しなくてよいかもう一度確認
+        val dialog = ConfirmDialog.Builder()
+            .message(R.string.confirm_account_delete_2)
+            .create()
+        dialog.show(this,
+            onPositive = {
+                // アカウント削除してよい、なので削除決行
+                doDeleteAccount()
+            },
+            onNegative = {
+                // いいえなので何もしない
+            })
     }
 
     private fun doDeleteAccount() {
@@ -92,32 +116,5 @@ class SignOutActivity : BaseActivity(), ConfirmDialog.ConfirmEventListener {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
-        when (bundle?.get("tag")) {
-            TAG_CONFIRM_1 -> {
-                if (which == DialogInterface.BUTTON_POSITIVE) {
-                    // データ削除した、なので削除決行
-                    doDeleteAccount()
-                } else {
-                    // データ削除しなくてよいかもう一度確認
-                    val dialog = ConfirmDialog.Builder().data(Bundle().apply {
-                        putString("tag", TAG_CONFIRM_2)
-                    })
-                        .message(R.string.confirm_account_delete_2)
-                        .create()
-                    dialog.show(supportFragmentManager, TAG_CONFIRM_2)
-                }
-            }
-            TAG_CONFIRM_2 -> {
-                if (which == DialogInterface.BUTTON_POSITIVE) {
-                    // アカウント削除してよい、なので削除決行
-                    doDeleteAccount()
-                } else {
-                    // いいえなので何もしない
-                }
-            }
-        }
     }
 }

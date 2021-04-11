@@ -3,10 +3,10 @@ package jp.les.kasa.sample.mykotlinapp.alert
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.*
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.les.kasa.sample.mykotlinapp.R
 import jp.les.kasa.sample.mykotlinapp.utils.AnalyticsUtilI
@@ -19,24 +19,11 @@ import org.koin.android.ext.android.inject
  **/
 class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
 
-    interface ConfirmEventListener {
-        /**
-         * 確認ダイアログのコールバック<br>
-         * @param which : AlertDialogの押されたボタン(POSITIVE or NEGATIVE)
-         * @param bundle : data()でセットしたBundleデータ
-         * @param requestCode : targetFragmentと併せて指定したrequestCode
-         */
-        fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int)
-    }
-
     private val analyticsUtil: AnalyticsUtilI by inject()
 
     class Builder() {
         private var message: String? = null
         private var messageResId: Int = 0
-        private var target: Fragment? = null
-        private var requestCode: Int = 0
-        private var data: Bundle? = null
 
         fun message(message: String): Builder {
             this.message = message
@@ -48,24 +35,6 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
             return this
         }
 
-        fun target(fragment: Fragment): Builder {
-            this.target = fragment
-            return this
-        }
-
-        /**
-         * only for targetFragment
-         */
-        fun requestCode(requestCode: Int): Builder {
-            this.requestCode = requestCode
-            return this
-        }
-
-        fun data(bundle: Bundle): Builder {
-            this.data = bundle
-            return this
-        }
-
         fun create(): ConfirmDialog {
             val d = ConfirmDialog()
             d.arguments = Bundle().apply {
@@ -74,12 +43,6 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
                 } else {
                     putInt(KEY_RESOURCE_ID, messageResId)
                 }
-                if (data != null) {
-                    putBundle(KEY_DATA, data)
-                }
-            }
-            if (target != null) {
-                d.setTargetFragment(target, requestCode)
             }
             return d
         }
@@ -88,8 +51,12 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
     companion object {
         const val KEY_MESSAGE = "message"
         const val KEY_RESOURCE_ID = "res_id"
-        const val KEY_DATA = "data"
         const val SCREEN_NAME = "確認ダイアログ"
+
+        const val TAG = "ConfirmDialog"
+        const val REQUEST_KEY = "confirmDialog"
+        const val RESULT_KEY_NEGATIVE = "confirmDialogNegative"
+        const val RESULT_KEY_POSITIVE = "confirmDialogPositive"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -120,22 +87,51 @@ class ConfirmDialog : DialogFragment(), DialogInterface.OnClickListener {
         analyticsUtil.sendScreenName(SCREEN_NAME)
     }
 
+    fun show(
+        activity: AppCompatActivity,
+        onPositive: (() -> Unit)? = null,
+        onNegative: (() -> Unit)? = null
+    ) {
+        activity.supportFragmentManager.setFragmentResultListener(
+            REQUEST_KEY,
+            activity
+        ) { requestKey, bundle ->
+            if (requestKey != REQUEST_KEY) return@setFragmentResultListener
+
+            when {
+                bundle.containsKey(RESULT_KEY_NEGATIVE) -> onNegative?.invoke()
+                bundle.containsKey(RESULT_KEY_POSITIVE) -> onPositive?.invoke()
+            }
+        }
+        show(activity.supportFragmentManager, TAG)
+    }
+
+    fun show(
+        target: Fragment,
+        onPositive: (() -> Unit)? = null,
+        onNegative: (() -> Unit)? = null
+    ) {
+        target.childFragmentManager.setFragmentResultListener(
+            REQUEST_KEY,
+            target.viewLifecycleOwner
+        ) { requestKey, bundle ->
+            if (requestKey != REQUEST_KEY) return@setFragmentResultListener
+            when {
+                bundle.containsKey(RESULT_KEY_NEGATIVE) -> onNegative?.invoke()
+                bundle.containsKey(RESULT_KEY_POSITIVE) -> onPositive?.invoke()
+            }
+        }
+        show(target.childFragmentManager, TAG)
+    }
+
     override fun onClick(dialog: DialogInterface?, which: Int) {
         FirebaseCrashlytics.getInstance().log("ConfirmDialog selected:$which")
-        val data = requireArguments().getBundle(KEY_DATA)
-        if (targetFragment is ConfirmEventListener) {
-            val listener = targetFragment as ConfirmEventListener
-            listener.onConfirmResult(which, data, targetRequestCode)
-            return
-        } else if (activity is ConfirmEventListener) {
-            val listener = activity as ConfirmEventListener
-            listener.onConfirmResult(which, data, targetRequestCode)
-            return
+        when (which) {
+            DialogInterface.BUTTON_POSITIVE ->
+                setFragmentResult(REQUEST_KEY, bundleOf(RESULT_KEY_POSITIVE to true))
+            else ->
+                setFragmentResult(REQUEST_KEY, bundleOf(RESULT_KEY_NEGATIVE to true))
         }
-        Log.e(
-            "ConfirmDialog",
-            "Target Fragment or Activity should implement ConfirmEventListener!!"
-        )
     }
 
 }

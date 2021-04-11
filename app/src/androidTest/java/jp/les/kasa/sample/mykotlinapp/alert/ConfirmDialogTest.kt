@@ -1,7 +1,10 @@
 package jp.les.kasa.sample.mykotlinapp.alert
 
-import android.content.DialogInterface
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso
@@ -14,22 +17,27 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 // 本体アプリではConfirmDialogがFragmentから参照されていないので、テスト用に作る
-class SampleFragment : Fragment(), ConfirmDialog.ConfirmEventListener {
+class SampleFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val view = TextView(context)
+        view.text = "HELLO"
+        return view
+    }
+
     fun showConfirm() {
         val dialog: ConfirmDialog = ConfirmDialog.Builder()
-            .target(this).requestCode(100)
             .message("てすと").create()
-        dialog.show(requireFragmentManager(), "tag")
+        dialog.show(
+            this,
+            onPositive = { confirmResult = true },
+            onNegative = { confirmResult = false })
     }
 
     var confirmResult: Boolean? = null
-
-    override fun onConfirmResult(which: Int, bundle: Bundle?, requestCode: Int) {
-        confirmResult = when (which) {
-            DialogInterface.BUTTON_POSITIVE -> true
-            else -> false
-        }
-    }
 }
 
 class ConfirmDialogTest {
