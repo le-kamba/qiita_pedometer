@@ -49,8 +49,8 @@ class MainViewModelTest : AutoCloseKoinTest() {
     @Test
     fun addStepCount() = runBlocking<Unit> {
 
-        viewModel.addStepCount(StepCountLog("2019/06/21", 123))
-        viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT))
+        viewModel.addStepCount(StepCountLog("2019/06/21", 123)).join()
+        viewModel.addStepCount(StepCountLog("2019/06/22", 456, LEVEL.BAD, WEATHER.HOT)).join()
 
         val list = viewModel.repository.allLogs()
         assertThat(list.size).isEqualTo(2)
