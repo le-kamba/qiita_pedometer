@@ -43,4 +43,5 @@ workflows:
             branches:
               only: 
                 - feature/qiita_10_sub/circleci
+                - feature/lib_for_test
                 - /^feature/qiita_1[1-9]/
