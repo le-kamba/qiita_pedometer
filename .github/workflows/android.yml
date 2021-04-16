@@ -64,7 +64,7 @@ jobs:
       
     - name: Android Emulator Runner
       if: always()
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: reactivecircus/android-emulator-runner@v2.15.0
       with:
         api-level: 28
         profile: Nexus 6
