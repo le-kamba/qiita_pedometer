@@ -71,5 +71,8 @@ workflows:
             branches:
               only: 
                 - feature/circleci
-      - notify-slack
+      - notify-slack:
+          requires:
+            - debug-build-test
+            - release-build
       
