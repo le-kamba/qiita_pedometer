@@ -14,6 +14,7 @@ jobs:
     steps:
       - checkout
       - run: 
+          name: Setup google-services.json
           command: | 
             echo $GOOGLE_SERVICES_JSON
             echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
@@ -43,6 +44,7 @@ jobs:
     steps:
       - checkout
       - run: 
+          name: Setup google-services.json
           command: | 
             echo $GOOGLE_SERVICES_JSON
             echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
