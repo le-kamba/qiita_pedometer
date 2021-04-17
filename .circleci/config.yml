@@ -47,6 +47,8 @@ jobs:
           destination: app-release-unsigned.apk
 
   notify-slack:
+    docker:
+      - image: 'cimg/base:stable'
     steps:
       - slack/status:
           success_message: ':circleci-pass: $CIRCLE_BRANCH のビルドが完了しました\n:github_octocat: User：$CIRCLE_USERNAME'
