@@ -38,6 +38,10 @@ jobs:
 
     steps:
       - checkout
+      - run: 
+          command: | 
+            echo $GOOGLE_SERVICES_JSON
+            echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
       - run:
           name: Release build
           command: ./gradlew assembleRelease
