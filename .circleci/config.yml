@@ -30,12 +30,11 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           destination: app-debug.apk
           
-  release-buld:
-    executor:
-      name: android/android
-      environment:
-          JAVA_OPTS: -Xmx1536m
-          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1536m -XX:+HeapDumpOnOutOfMemoryError"'
+  release-build:
+    executor: android/android
+    environment:
+        JAVA_OPTS: -Xmx1536m
+        GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1536m -XX:+HeapDumpOnOutOfMemoryError"'
 
     steps:
       - checkout
@@ -72,4 +71,5 @@ workflows:
             branches:
               only: 
                 - feature/circleci
-      - notify-slack:
+      - notify-slack
+      
