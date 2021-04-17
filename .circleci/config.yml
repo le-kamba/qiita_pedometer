@@ -5,7 +5,7 @@ orbs:
  slack: circleci/slack@3.4.2
  
 jobs:
-  build:
+  debug-build-test:
     executor: android/android
     environment:
         JAVA_OPTS: -Xmx1536m
@@ -29,6 +29,25 @@ jobs:
       - store_artifacts:
           path: app/build/outputs/apk/debug/app-debug.apk
           destination: app-debug.apk
+          
+  release-buld:
+    executor:
+      name: android/android
+      environment:
+          JAVA_OPTS: -Xmx1536m
+          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1536m -XX:+HeapDumpOnOutOfMemoryError"'
+
+    steps:
+      - checkout
+      - run:
+          name: Release build
+          command: ./gradlew assembleRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          destination: app-release-unsigned.apk
+
+  notify-slack:
+    steps:
       - slack/status:
           success_message: ':circleci-pass: $CIRCLE_BRANCH のビルドが完了しました\n:github_octocat: User：$CIRCLE_USERNAME'
           failure_message: ':circleci-fail: $CIRCLE_BRANCH のビルドが失敗しました\n:github_octocat: User：$CIRCLE_USERNAME'
@@ -36,11 +55,19 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy:
+  build-and-test:
     jobs:
-      - build:
+      - debug-build-test:
           filters:
             branches:
               only: 
                 - feature/qiita_10_sub/circleci
+                - feature/lib_for_test
+                - /^feature/qiita_1[1-9]/
                 - feature/circleci
+      - release-build:
+          filters:
+            branches:
+              only: 
+                - feature/circleci
+      - notify-slack:
