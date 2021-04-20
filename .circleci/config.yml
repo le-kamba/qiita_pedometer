@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   android: circleci/android@0.2.0
-  slack: circleci/slack@4.1
+  slack: circleci/slack@4.4
  
 commands:
   setup_google_json:
