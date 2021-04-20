@@ -8,6 +8,7 @@ commands:
   setup_google_json:
     steps:
       - run:
+          name: Setup google-services.json
           command: | 
             echo $GOOGLE_SERVICES_JSON
             echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
@@ -16,115 +17,13 @@ commands:
     steps:
       - slack/notify:
           event: pass
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":circleci-pass: *Success!*"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Project:*\n${CIRCLE_PROJECT_REPONAME}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*When:*\n$(TZ=Asia/Tokyo date +'%Y/%m/%d %T')"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job:*\n${CIRCLE_JOB}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": ":github_octcat: *Author:*\n${CIRCLE_USERNAME}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch:*\n${CIRCLE_BRANCH}"
-                    },
-                  ]
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Job"
-                      },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  ]
-                }
-              ]
-            }
-
+          template: basic_success_1
+          
   notify_slack_fail:
     steps:
       - slack/notify:
           event: fail
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":circleci-fail: *Failed* :bangbang:"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Project:*\n${CIRCLE_PROJECT_REPONAME}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*When:*\n$(TZ=Asia/Tokyo date +'%Y/%m/%d %T')"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Job:*\n${CIRCLE_JOB}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author:*\n${CIRCLE_USERNAME}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch:*\n${CIRCLE_BRANCH}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Tag:*\n${CIRCLE_TAG}"
-                    }
-                  ]
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View Job"
-                      },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  ]
-                }
-              ]
-            }
+          template: basic_fail_1
 
 jobs:
   debug-build-test:
