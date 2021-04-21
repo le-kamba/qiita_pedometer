@@ -38,6 +38,7 @@ jobs:
       - run:
           name: Debug build
           command: ./gradlew assembleDebug
+      - run: exit 1
       - run:
           name: Unit Test
           command: ./gradlew testDebugUnitTest
