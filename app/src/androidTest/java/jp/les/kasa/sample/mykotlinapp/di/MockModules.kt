@@ -61,7 +61,7 @@ class TestCalendarProvider : CalendarProviderI {
 class TestAuthProvider(app: Application) : AuthProviderI(app) {
     override val user: FirebaseUser?
         get() {
-            return if (mockFirebaseUser) MockFirebaseUser()
+            return if (mockFirebaseUser) TestFirebaseUser()
             else null
         }
 
@@ -76,7 +76,7 @@ class TestAuthProvider(app: Application) : AuthProviderI(app) {
     var mockFirebaseUser = false
 
     override fun createSignInIntent(context: Context): Intent {
-        return Intent(context, MockAuthUIActivity::class.java)
+        return Intent(context, TestAuthUIActivity::class.java)
     }
 
     override fun signOut(context: Context): Task<Void?> {
@@ -89,7 +89,7 @@ class TestAuthProvider(app: Application) : AuthProviderI(app) {
 }
 
 // FirebaseUserモック
-class MockFirebaseUser : FirebaseUser() {
+class TestFirebaseUser : FirebaseUser() {
     override fun zzg(): String {
         TODO("Not yet implemented")
     }
@@ -179,7 +179,7 @@ class MockFirebaseUser : FirebaseUser() {
     }
 }
 
-class MockAuthUIActivity : AppCompatActivity()
+class TestAuthUIActivity : AppCompatActivity()
 
 // AnalyticsUtilのモッククラス
 class TestAnalyticsUtil : AnalyticsUtilI() {

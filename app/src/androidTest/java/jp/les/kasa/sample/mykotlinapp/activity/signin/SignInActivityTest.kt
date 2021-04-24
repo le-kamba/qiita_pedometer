@@ -15,8 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.firebase.ui.auth.ErrorCodes
 import jp.les.kasa.sample.mykotlinapp.R
-import jp.les.kasa.sample.mykotlinapp.di.MockAuthUIActivity
 import jp.les.kasa.sample.mykotlinapp.di.TestAuthProvider
+import jp.les.kasa.sample.mykotlinapp.di.TestAuthUIActivity
 import jp.les.kasa.sample.mykotlinapp.di.testMockModule
 import jp.les.kasa.sample.mykotlinapp.utils.AuthProviderI
 import org.assertj.core.api.Assertions.assertThat
@@ -73,7 +73,7 @@ class SignInActivityTest : AutoCloseKoinTest() {
 
         // ResultActivityの起動を監視
         val monitor = Instrumentation.ActivityMonitor(
-            MockAuthUIActivity::class.java.canonicalName, null, false
+            TestAuthUIActivity::class.java.canonicalName, null, false
         )
         InstrumentationRegistry.getInstrumentation().addMonitor(monitor)
 
