@@ -22,7 +22,7 @@ import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
 
 @RunWith(AndroidJUnit4::class)
-class SignOutActivityTest : AutoCloseKoinTest() {
+class SignOutActivityTestI : AutoCloseKoinTest() {
     @get:Rule
     val activityRule = ActivityTestRule(SignOutActivity::class.java, false, false)
 
