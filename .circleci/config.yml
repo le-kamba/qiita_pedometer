@@ -1,11 +1,32 @@
 version: 2.1
 
 orbs:
- android: circleci/android@0.2.0
- slack: circleci/slack@3.4.2
+  android: circleci/android@0.2.0
+  slack: circleci/slack@4.4
  
+commands:
+  setup_google_json:
+    steps:
+      - run:
+          name: Setup google-services.json
+          command: | 
+            echo $GOOGLE_SERVICES_JSON
+            echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
+
+  notify_slack_pass:
+    steps:
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+          
+  notify_slack_fail:
+    steps:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+
 jobs:
-  build:
+  debug-build-test:
     executor: android/android
     environment:
         JAVA_OPTS: -Xmx1536m
@@ -13,13 +34,12 @@ jobs:
 
     steps:
       - checkout
-      - run: 
-          command: | 
-            echo $GOOGLE_SERVICES_JSON
-            echo $GOOGLE_SERVICES_JSON | base64 -di > ./app/google-services.json
+      - setup_google_json
       - run:
+          name: Debug build
           command: ./gradlew assembleDebug
       - run:
+          name: Unit Test
           command: ./gradlew testDebugUnitTest
       - store_artifacts:
           path: app/build/reports
@@ -29,19 +49,42 @@ jobs:
       - store_artifacts:
           path: app/build/outputs/apk/debug/app-debug.apk
           destination: app-debug.apk
-      - slack/status:
-          success_message: ':circleci-pass: $CIRCLE_BRANCH のビルドが完了しました\n:github_octocat: User：$CIRCLE_USERNAME'
-          failure_message: ':circleci-fail: $CIRCLE_BRANCH のビルドが失敗しました\n:github_octocat: User：$CIRCLE_USERNAME'
-          webhook: '${SLACK_WEBHOOK}'
+      - notify_slack_fail
+          
+  release-build:
+    executor: android/android
+    environment:
+        JAVA_OPTS: -Xmx1536m
+        GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx1536m -XX:+HeapDumpOnOutOfMemoryError"'
 
+    steps:
+      - checkout
+      - setup_google_json
+      - run:
+          name: Release build
+          command: ./gradlew assembleRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          destination: app-release-unsigned.apk
+      - notify_slack_fail
+      - notify_slack_pass
+      
 workflows:
   version: 2
-  build-deploy:
+  build-and-test:
     jobs:
-      - build:
+      - debug-build-test:
           filters:
             branches:
               only: 
                 - feature/qiita_10_sub/circleci
                 - feature/lib_for_test
                 - /^feature/qiita_1[1-9]/
+                - feature/circleci
+      - release-build:
+          filters:
+            branches:
+              only: 
+                - feature/circleci
+          requires:
+            - debug-build-test
