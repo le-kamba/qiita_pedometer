@@ -3,6 +3,9 @@ package jp.les.kasa.sample.mykotlinapp.activity.main
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
@@ -24,6 +27,9 @@ import jp.les.kasa.sample.mykotlinapp.espresso.ViewPagerMatchers
 import jp.les.kasa.sample.mykotlinapp.espresso.atPositionOnView
 import jp.les.kasa.sample.mykotlinapp.espresso.withDrawable
 import kotlinx.coroutines.runBlocking
+import les.kasa.android.mytestlibrary.espresso.ViewPagerIdleWatcher
+import les.kasa.android.mytestlibrary.espresso.swipeNext
+import les.kasa.android.mytestlibrary.espresso.swipePrevious
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -31,6 +37,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
 
@@ -45,6 +52,21 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     private val repository: LogRepository by inject()
 
+    class TestRegistry(
+        private val resultCode: Int,
+        private val resultData: Intent?
+    ) :
+        ActivityResultRegistry() {
+        override fun <I, O> onLaunch(
+            requestCode: Int,
+            contract: ActivityResultContract<I, O>,
+            input: I,
+            options: ActivityOptionsCompat?
+        ) {
+            dispatchResult(requestCode, resultCode, resultData)
+        }
+    }
+
     @Before
     fun setUp() {
         loadKoinModules(testMockModule)
@@ -57,8 +79,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_Add() {
-        activityRule.launchActivity(Intent())
-
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
@@ -66,10 +86,17 @@ class MainActivityTestI : AutoCloseKoinTest() {
             // @formatter:on
         }
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        val testRegistry = TestRegistry(Activity.RESULT_OK, resultData)
+
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
+
+        activityRule.launchActivity(Intent())
 
         val index = 24
 
@@ -79,14 +106,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
 
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
-        resultActivity.setResult(Activity.RESULT_OK, resultData)
-        resultActivity.finish()
-
-        getInstrumentation().waitForIdleSync()
-        // テストを一括実行しているとこの処理が間に合わないことがあるらしい?
-        // GCなどの影響があるのか?
-        Thread.sleep(2 * 1000)
         val all = activityRule.activity.viewModel.repository.allLogs()
         assertThat(all.size).isEqualTo(1)
         getInstrumentation().waitForIdleSync()
@@ -99,40 +118,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
             .check(matches(atPositionOnView(index,
                 withDrawable(R.drawable.ic_sentiment_dissatisfied_black_24dp), R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
-                        withDrawable(R.drawable.ic_grain_gley_24dp),R.id.weatherImageView)))
-            // @formatter:on
-    }
-
-    @Test
-    fun onActivityResult_Cancel() {
-        activityRule.launchActivity(Intent())
-
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
-
-        val index = 24
-
-        // 登録画面を起動
-        onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+                withDrawable(R.drawable.ic_grain_gley_24dp),R.id.weatherImageView)))
         // @formatter:on
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
-        resultActivity.setResult(Activity.RESULT_CANCELED, null)
-        resultActivity.finish()
-
-        getInstrumentation().waitForIdleSync()
-        // テストを一括実行しているとこの処理が間に合わないことがあるらしい?
-        // GCなどの影響があるのか?
-        Thread.sleep(2 * 1000)
-        val all = activityRule.activity.viewModel.repository.allLogs()
-        assertThat(all.size).isEqualTo(0)
-        getInstrumentation().waitForIdleSync()
-
-        checkCellNull(index, "19")
     }
 
     @Test
@@ -142,21 +129,26 @@ class MainActivityTestI : AutoCloseKoinTest() {
             repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             repository.insert(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
-        activityRule.launchActivity(Intent())
-
-        getInstrumentation().waitForIdleSync()
-
+        // 起動したActivityが返すIntentを作成
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 5000, LEVEL.NORMAL, WEATHER.CLOUD))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus())
             // @formatter:on
         }
+        val testRegistry = TestRegistry(Activity.RESULT_OK, resultData)
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
+
+        activityRule.launchActivity(Intent())
+
+        getInstrumentation().waitForIdleSync()
 
         // 編集画面を起動
         val index = 24
@@ -165,13 +157,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
         onView(withId(R.id.log_list))
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
-        getInstrumentation().waitForIdleSync()
-
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
-        resultActivity.setResult(Activity.RESULT_OK, resultData)
-        resultActivity.finish()
-        getInstrumentation().waitForIdleSync()
 
         val all = activityRule.activity.viewModel.repository.allLogs()
         assertThat(all.size).isEqualTo(2)
@@ -185,8 +170,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
             .check(matches(atPositionOnView(index,
                 withDrawable(R.drawable.ic_sentiment_neutral_green_24dp), R.id.levelImageView)))
             .check(matches(atPositionOnView(index,
-                        withDrawable(R.drawable.ic_cloud_gley_24dp),R.id.weatherImageView)))
-            // @formatter:on
+                withDrawable(R.drawable.ic_cloud_gley_24dp),R.id.weatherImageView)))
+        // @formatter:on
     }
 
     @Test
@@ -196,19 +181,25 @@ class MainActivityTestI : AutoCloseKoinTest() {
             repository.insert(StepCountLog("2019/06/13", 12345, LEVEL.GOOD))
             repository.insert(StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
         }
-        activityRule.launchActivity(Intent())
-        getInstrumentation().waitForIdleSync()
 
+        // 起動したActivityが返すIntentを作成
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.RAIN))
             // @formatter:on
         }
+        val testRegistry = TestRegistry(MainActivity.RESULT_CODE_DELETE, resultData)
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
+
+        activityRule.launchActivity(Intent())
+        getInstrumentation().waitForIdleSync()
 
         // テストを一括実行しているとここの処理が間に合っていないことが多い
         // GCなどが走りやすいタイミングなのか？
@@ -223,12 +214,6 @@ class MainActivityTestI : AutoCloseKoinTest() {
             // @formatter:off
             .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
         // @formatter:on
-        getInstrumentation().waitForIdleSync()
-
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
-        resultActivity.setResult(MainActivity.RESULT_CODE_DELETE, resultData)
-        resultActivity.finish()
         getInstrumentation().waitForIdleSync()
 
         // テストを一括実行しているとここの処理が間に合っていないことが多い
@@ -247,29 +232,23 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_TwitterShare() {
-        activityRule.launchActivity(Intent())
-
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(true, true, false))
             // @formatter:on
         }
+        val testRegistry = TestRegistry(Activity.RESULT_OK, resultData)
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
 
-        // 登録画面を起動
-        val index = 24
-        onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
-        // @formatter:on
-        getInstrumentation().waitForIdleSync()
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
+        activityRule.launchActivity(Intent())
 
         // Twitterシェア画面起動確認用のモニタ
         val shareMonitor = Instrumentation.ActivityMonitor(
@@ -277,11 +256,12 @@ class MainActivityTestI : AutoCloseKoinTest() {
         )
         getInstrumentation().addMonitor(shareMonitor)
 
-        // 登録画面に結果をセットして終了させる
-        resultActivity.setResult(Activity.RESULT_OK, resultData)
-        resultActivity.finish()
-
-        getInstrumentation().waitForIdleSync()
+        // 登録画面を起動
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         // Twitterシェア画面起動を確認
         val shareActivity = getInstrumentation()
@@ -292,28 +272,23 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_InstagramShare() {
-        activityRule.launchActivity(Intent())
-
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(true, false, true))
             // @formatter:on
         }
+        val testRegistry = TestRegistry(Activity.RESULT_OK, resultData)
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
 
-        // 登録画面を起動
-        val index = 24
-        onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
-        // @formatter:on
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
+        activityRule.launchActivity(Intent())
 
         // シェア画面起動確認用のモニタ
         val shareMonitor = Instrumentation.ActivityMonitor(
@@ -321,10 +296,12 @@ class MainActivityTestI : AutoCloseKoinTest() {
         )
         getInstrumentation().addMonitor(shareMonitor)
 
-        // 登録画面に結果をセットして終了させる
-        resultActivity.setResult(Activity.RESULT_OK, resultData)
-        resultActivity.finish()
-
+        // 登録画面を起動
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
         getInstrumentation().waitForIdleSync()
 
         // シェア画面起動を確認
@@ -336,28 +313,23 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_NoneShare() {
-        activityRule.launchActivity(Intent())
-
         val resultData = Intent().apply {
             // @formatter:off
             putExtra(LogItemActivity.EXTRA_KEY_DATA, StepCountLog("2019/06/19", 666, LEVEL.BAD, WEATHER.SNOW))
             putExtra(LogItemActivity.EXTRA_KEY_SHARE_STATUS, ShareStatus(false, true, true))
             // @formatter:on
         }
+        val testRegistry = TestRegistry(Activity.RESULT_OK, resultData)
 
-        val monitor = Instrumentation.ActivityMonitor(
-            LogItemActivity::class.java.canonicalName, null, false
-        )
-        getInstrumentation().addMonitor(monitor)
+        // 追加のモジュールにセット
+        val scopedModule = module {
+            scope<MainActivity> {
+                scoped<ActivityResultRegistry>(override = true) { testRegistry }
+            }
+        }
+        loadKoinModules(scopedModule)
 
-        // 登録画面を起動
-        val index = 24
-        onView(withId(R.id.log_list))
-            // @formatter:off
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
-        // @formatter:on
-
-        val resultActivity = getInstrumentation().waitForMonitorWithTimeout(monitor, 500L)
+        activityRule.launchActivity(Intent())
 
         // Twitter/Instagramシェア画面起動確認用のモニタ
         val shareMonitor = Instrumentation.ActivityMonitor(
@@ -369,11 +341,12 @@ class MainActivityTestI : AutoCloseKoinTest() {
         )
         getInstrumentation().addMonitor(shareMonitor2)
 
-        // 登録画面に結果をセットして終了させる
-        resultActivity.setResult(Activity.RESULT_OK, resultData)
-        resultActivity.finish()
-
-        getInstrumentation().waitForIdleSync()
+        // 登録画面を起動
+        val index = 24
+        onView(withId(R.id.log_list))
+            // @formatter:off
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(index, click()))
+        // @formatter:on
 
         // シェア画面起動なしを確認
         val shareActivity = getInstrumentation().waitForMonitorWithTimeout(shareMonitor, 500L)
@@ -386,6 +359,8 @@ class MainActivityTestI : AutoCloseKoinTest() {
 
     @Test
     fun onActivityResult_ShareAll() {
+        // このテストだけは、TestRegistryによる結果の偽装では連続してActivityが起動したかのチェックが出来ない
+        // そのため従来通りのテストのままとする
         activityRule.launchActivity(Intent())
 
         val resultData = Intent().apply {
@@ -515,16 +490,15 @@ class MainActivityTestI : AutoCloseKoinTest() {
         // currentPageのチェック
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(6)))
         // 左からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(les.kasa.android.mytestlibrary.espresso.swipePrevious())
+        onView(withId(R.id.viewPager)).perform(swipePrevious())
 
-        val idleWatcher =
-            les.kasa.android.mytestlibrary.espresso.ViewPagerIdleWatcher(mainActivity.binding.viewPager)
+        val idleWatcher = ViewPagerIdleWatcher(mainActivity.binding.viewPager)
         idleWatcher.waitForIdle()
         onIdle()
         onView(withId(R.id.viewPager)).check(matches(ViewPagerMatchers.isCurrent(5)))
 
         // 右からスワイプしてカレントページインデックスのチェック
-        onView(withId(R.id.viewPager)).perform(les.kasa.android.mytestlibrary.espresso.swipeNext())
+        onView(withId(R.id.viewPager)).perform(swipeNext())
 
         idleWatcher.waitForIdle()
         onIdle()
