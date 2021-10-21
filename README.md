@@ -5,5 +5,5 @@
 
 Androidのテストでだけ使うライブラリモジュールを作る
 
-リンクはWIP
+https://qiita.com/kasa_le/items/a1d63dbf97bf0952c0c5
 
